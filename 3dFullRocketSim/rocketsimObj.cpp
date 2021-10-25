@@ -88,6 +88,11 @@ public:
     bool colided;
     fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel)
     {
+        fixedPlanet::ID = fixedPlanetID;
+        fixedPlanet::mass = mass;
+        fixedPlanet::raduis = radius;
+        fixedPlanet::pos = pos;
+        fixedPlanet::vel = vel;
     }
     void updatePos()
     {
