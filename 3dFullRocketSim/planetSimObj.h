@@ -1,56 +1,18 @@
+#ifndef planetSimObj_h
+#define planetSimObj_h
+
+#include "msRocketFung.h"
 #include "fixedPlanetSimObj.h"
 
-/*std::list<planet> planetList;
+std::list<planet> planetList;
 std::list<fixedPlanet> fixedPlanetList;
 
-void asignelistOfplanets(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
+void asignelistOfPlanetsPlanets(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
+
 }
-
-class fixedPlanet
-{
-public:
-    long double mass, radius;
-    int ID;
-    vector3d pos, vel;
-    bool colided;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel)
-    {
-        fixedPlanet::ID = fixedPlanetID;
-        fixedPlanet::mass = mass;
-        fixedPlanet::raduis = radius;
-        fixedPlanet::pos = pos;
-        fixedPlanet::vel = vel;
-    }
-
-    void checkColisionFixedPlanet()
-    {
-        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-        {
-            if (ID != it->ID)
-            {
-                long double distanse = generateDistanse(this->pos, it->pos);
-
-                if (distanse <= radius + it->radius)
-                {
-                    colided = true;
-                }
-            }
-        }
-        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-        {
-            long double distanse = generateDistanse(this->pos, it->pos);
-
-            if (distanse <= radius + it->radius)
-            {
-                colided = true;
-            }
-        }
-        colided = false;
-    }
-};
 
 class planet
 {
@@ -118,52 +80,3 @@ public:
         colided = false;
     }
 };
-
-class rocketStage
-{
-    vector3d generateGravity(){
-    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-    {
-
-    }
-    }
-public:
-    rocketStage(long double wetMass, long double dryMass)
-    {
-
-    }
-
-    rocketUpdate(int startTime, int i){
-        if (startTime <= i)
-        {
-
-        }
-    }
-};*/
-
-startUp(listOfAllPlanets,listOfAllFixedPlanets){
-    void asignelistOfPlanetsFixedPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-    void asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-}
-
-void planetUpdate()
-{
-    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-    {
-        it->gravity = {0, 0, 0};
-        it->gravity = it->generateGravityPlanet();
-    }
-    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-    {
-        it->checkColisionPlanet();
-        it->vel.x += generateVelosity(it->mass, it->gravity.x);
-        it->vel.x += generateVelosity(it->mass, it->gravity.y);
-        it->vel.x += generateVelosity(it->mass, it->gravity.z);
-        it->pos = plussEqualVector3d(it->pos, it->vel);
-    }
-    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-    {
-        it->updatePos();
-        it->checkColisionFixedPlanet();
-    }
-}
