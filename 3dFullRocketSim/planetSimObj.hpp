@@ -1,4 +1,3 @@
-
 #include "include.hpp"
 
 std::list<planet> planetList;
