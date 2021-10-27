@@ -1,7 +1,7 @@
 #ifndef planetSimObj_h
 #define planetSimObj_h
 
-#include "incude.hpp"
+#include "include.hpp"
 
 std::list<planet> planetList;
 std::list<fixedPlanet> fixedPlanetList;
