@@ -1,5 +1,3 @@
-#ifndef planetSimObj_h
-#define planetSimObj_h
 
 #include "include.hpp"
 

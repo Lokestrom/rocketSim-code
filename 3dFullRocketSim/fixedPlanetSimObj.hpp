@@ -1,5 +1,3 @@
-#ifndef fixedPlanetSimObj_h
-#define fixedPlanetSimObj_h
 
 #include "include.hpp"
 
@@ -54,5 +52,3 @@ public:
         colided = false;
     }
 };
-
-#endif
