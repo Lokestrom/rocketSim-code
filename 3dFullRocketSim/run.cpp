@@ -1,4 +1,4 @@
-#include "rocketsimObj.cpp"
+#include "rocketsimObj.hpp"
 
 int main()
 {

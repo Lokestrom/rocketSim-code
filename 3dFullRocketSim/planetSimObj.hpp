@@ -1,4 +1,6 @@
-#include "include.hpp"
+
+class planet;
+class fixedPlanet;
 
 std::list<planet> planetList;
 std::list<fixedPlanet> fixedPlanetList;
