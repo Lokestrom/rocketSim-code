@@ -1,5 +1,3 @@
-#ifndef msRocketGraffFung_h
-#define msRocketGraffFung_h
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -215,14 +213,3 @@ long double angleFix(long double angle)
     }
     return angle;
 }
-
-long double angle0Fix(long double angle)
-{
-    if (angle < 1E-8 && angle > -1E-8)
-    {
-        return 0;
-    }
-    return angle;
-}
-
-#endif
