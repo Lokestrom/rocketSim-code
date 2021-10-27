@@ -1,8 +1,7 @@
 #ifndef planetSimObj_h
 #define planetSimObj_h
 
-#include "msRocketFung.h"
-#include "fixedPlanetSimObj.h"
+#include "incude.hpp"
 
 std::list<planet> planetList;
 std::list<fixedPlanet> fixedPlanetList;
