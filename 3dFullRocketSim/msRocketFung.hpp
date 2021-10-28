@@ -1,3 +1,6 @@
+#ifndef msRocketFung_hpp
+#define msRocketFung_hpp
+
 #include <cmath>
 #include <iostream>
 #include <random>
@@ -204,3 +207,5 @@ long double angleFix(long double angle)
     }
     return angle;
 }
+
+#endif
