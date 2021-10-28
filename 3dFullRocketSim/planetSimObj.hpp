@@ -67,7 +67,7 @@ public:
 
                 if (distanse <= radius + it->radius)
                 {
-                    colided = true;
+                    std::cout << "planet: " << ID << " colided with planet: " << it->ID << std::endl;
                 }
             }
         }
@@ -77,10 +77,9 @@ public:
 
             if (distanse <= radius + it->radius)
             {
-                colided = true;
+                std::cout << "planet: " << ID << " colided with fixedPlanet:" << it->ID << std::endl;
             }
         }
-        colided = false;
     }
 };
 

@@ -22,7 +22,6 @@ public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    bool colided;
     fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel)
     {
         fixedPlanet::ID = fixedPlanetID;
@@ -36,26 +35,25 @@ public:
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
         {
+            long double distanse = generateDistanse(this->pos, it->pos);
+
+            if (distanse <= radius + it->radius)
+            {
+                std::cout << "fixedPlanet: " << ID << " colided with planet: " << it->ID << std::endl;
+            }
+        }
+        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
+        {
             if (ID != it->ID)
             {
                 long double distanse = generateDistanse(this->pos, it->pos);
 
                 if (distanse <= radius + it->radius)
                 {
-                    colided = true;
+                    std::cout << "fixedPlanet: " << ID << " colided with fixedPlanet:" << it->ID << std::endl;
                 }
             }
         }
-        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-        {
-            long double distanse = generateDistanse(this->pos, it->pos);
-
-            if (distanse <= radius + it->radius)
-            {
-                colided = true;
-            }
-        }
-        colided = false;
     }
 };
 
