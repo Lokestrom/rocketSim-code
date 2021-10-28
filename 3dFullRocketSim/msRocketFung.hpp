@@ -81,7 +81,7 @@ long double modPow(long double x, long double y)
 {
     if (x < 0)
     {
-        return -powl(absval(x), y);
+        return -powl(-x, y);
     }
     return powl(x,y);
 }
@@ -90,7 +90,7 @@ long double modSqrt(long double x)
 {
     if (x < 0)
     {
-        return -sqrtl(absVal(x));
+        return -sqrtl(-x);
     }
     return sqrtl(x);
 }
@@ -188,7 +188,10 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
 
 long double findRest(long double x, long double y)
 {
-    return x % y;
+    while(x >= y){
+        x -= y;
+    }
+    return x;
 }
 
 long double angleFix(long double angle)

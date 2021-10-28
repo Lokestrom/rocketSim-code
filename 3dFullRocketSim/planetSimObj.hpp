@@ -1,16 +1,15 @@
-#include "fixedPlanetSimObj.hpp"
-#include "msRocketFung.hpp"
-
 #ifndef planetSimObj_hpp
 #define planetSimObj_hpp
 
+#include "fixedPlanetSimObj.hpp"
+#include "msRocketFung.hpp"
+
 class planet;
-class fixedPlanet;
 
 std::list<planet> planetList;
-std::list<fixedPlanet> fixedPlanetList;
+//std::list<fixedPlanet> fixedPlanetList_;
 
-void asignelistOfPlanetsPlanets(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
+void asignelistOfPlanetsPlanet(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());

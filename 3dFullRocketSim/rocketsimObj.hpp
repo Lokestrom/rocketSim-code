@@ -1,6 +1,6 @@
-#include "include.hpp"
+#include "planetSimObj.hpp"
 
-class rocketStage
+/*class rocketStage
 {
     void generateGravity(){
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
@@ -23,11 +23,11 @@ public:
 
         }
     }
-};
+};*/
 
-startUp(listOfAllPlanets,listOfAllFixedPlanets){
-    void asignelistOfPlanetsFixedPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-    void asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
+void startUp(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets){
+    asignelistOfPlanetsFixedPlanet(listOfAllFixedPlanets);
+    asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
 }
 
 void planetUpdate()
@@ -47,7 +47,7 @@ void planetUpdate()
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
     {
-        it->updatePos();
+        //it->updatePos();
         it->checkColisionFixedPlanet();
     }
 }
