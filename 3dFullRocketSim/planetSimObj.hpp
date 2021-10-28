@@ -1,4 +1,5 @@
 #include "fixedPlanetSimObj.hpp"
+#include "msRocketFung.hpp"
 
 #ifndef planetSimObj_hpp
 #define planetSimObj_hpp
