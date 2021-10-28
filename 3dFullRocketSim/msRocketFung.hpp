@@ -76,12 +76,11 @@ long double absVal(long double x)
 
 long double modPow(long double x, long double y)
 {
-    long double svar = powl(x, y);
-    if (x < 0 && svar > 0)
+    if (x < 0)
     {
-        return -svar;
+        return -pow(absval(x), y);
     }
-    return svar;
+    return pow(x,y);
 }
 
 long double modSqrt(long double x)
