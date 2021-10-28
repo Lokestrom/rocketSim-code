@@ -208,4 +208,14 @@ long double angleFix(long double angle)
     return angle;
 }
 
+long double gravityFormula(long double m, long double M, long double r){
+    return (G * m*M)/pow(r,2);
+}
+
+vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
+    return {generateMultiplierX(latitude, longitude) * gravityFormula(m,M,r),
+            generateMultiplierY(latitude, longitude) * gravityFormula(m,M,r),
+            generateMultiplierZ(latitude) * gravityFormula(m,M,r)};
+}
+
 #endif
