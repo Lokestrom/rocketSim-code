@@ -1,3 +1,5 @@
+#include "fixedPlanetSimObj.hpp"
+
 #ifndef planetSimObj_hpp
 #define planetSimObj_hpp
 

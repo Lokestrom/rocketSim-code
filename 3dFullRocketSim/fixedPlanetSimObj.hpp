@@ -1,8 +1,9 @@
+#include "planetSimObj.hpp"
+
 #ifndef fixedPlanetSimObj_hpp
 #define fixedPlanetSimObj_hpp
 
-#include "planetSimObj.hpp"
-
+class planet;
 class fixedPlanet;
 
 std::list<planet> planetList;
