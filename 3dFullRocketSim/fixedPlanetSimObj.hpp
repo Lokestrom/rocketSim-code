@@ -1,3 +1,6 @@
+#ifndef fixedPlanetSimObj_hpp
+#define fixedPlanetSimObj_hpp
+
 #include "planetSimObj.hpp"
 
 class fixedPlanet;
@@ -53,3 +56,5 @@ public:
         colided = false;
     }
 };
+
+#endif

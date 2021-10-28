@@ -1,3 +1,5 @@
+#ifndef planetSimObj_hpp
+#define planetSimObj_hpp
 
 class planet;
 class fixedPlanet;
@@ -78,3 +80,5 @@ public:
         colided = false;
     }
 };
+
+#endif
