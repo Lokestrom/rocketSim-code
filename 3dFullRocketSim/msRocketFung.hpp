@@ -57,19 +57,19 @@ long double radToDeg(long double x)
 
 long double degSin(long double x)
 {
-    return sin(degToRad(x));
+    return sinl(degToRad(x));
 }
 
 long double degCos(long double x)
 {
-    return cos(degToRad(x));
+    return cosl(degToRad(x));
 }
 
 long double absVal(long double x)
 {
     if (x < 0)
     {
-        return x - x - x;
+        return -x;
     }
     return x;
 }
@@ -78,9 +78,9 @@ long double modPow(long double x, long double y)
 {
     if (x < 0)
     {
-        return -pow(absval(x), y);
+        return -powl(absval(x), y);
     }
-    return pow(x,y);
+    return powl(x,y);
 }
 
 long double modSqrt(long double x)
@@ -185,15 +185,7 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
 
 long double findRest(long double x, long double y)
 {
-    if (y < 0)
-    {
-        return x;
-    }
-    while (x >= y)
-    {
-        x -= y;
-    }
-    return x;
+    return x % y;
 }
 
 long double angleFix(long double angle)
