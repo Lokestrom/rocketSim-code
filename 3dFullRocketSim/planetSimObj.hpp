@@ -7,13 +7,11 @@
 class planet;
 
 std::list<planet> planetList;
-//std::list<fixedPlanet> fixedPlanetList_;
 
 void asignelistOfPlanetsPlanet(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
-
 }
 
 class planet
@@ -40,9 +38,7 @@ public:
                 long double longitude = findLongitude(this->pos, it->pos), latitude = findLatitude(this->pos, it->pos);
                 long double distanse = generateDistanse(this->pos, it->pos);
 
-                gravity.x += -generateMultiplierX(latitude, longitude) * G * ((mass * it->mass) / modPow(distanse, 2));
-                gravity.y += -generateMultiplierY(latitude, longitude) * G * ((mass * it->mass) / modPow(distanse, 2));
-                gravity.z += -generateMultiplierZ(latitude) * G * ((mass * it->mass) / modPow(distanse, 2));
+                gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
             }
         }
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
@@ -50,9 +46,7 @@ public:
             long double longitude = findLongitude(this->pos, it->pos), latitude = findLatitude(this->pos, it->pos);
             long double distanse = generateDistanse(this->pos, it->pos);
 
-            gravity.x += -generateMultiplierX(latitude, longitude) * G * ((mass * it->mass) / modPow(distanse, 2));
-            gravity.y += -generateMultiplierY(latitude, longitude) * G * ((mass * it->mass) / modPow(distanse, 2));
-            gravity.z += -generateMultiplierZ(latitude) * G * ((mass * it->mass) / modPow(distanse, 2));
+            gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
         return gravity;
     }
