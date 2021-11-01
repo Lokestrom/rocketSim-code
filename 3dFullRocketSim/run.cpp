@@ -3,14 +3,22 @@
 void startUp(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets){
     asignelistOfPlanetsFixedPlanet(listOfAllFixedPlanets);
     asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
+    asignelistOfplanetsRocket(listOfAllPlanets, listOfAllFixedPlanets)
 }
 
-void planetUpdate()
+void Update()
 {
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
         it->gravity = {0, 0, 0};
         it->gravity = it->generateGravityPlanet();
+    }
+    for (std::list<rocketStage>::iterator it = planetList.begin(); it != planetList.end(); it++)
+    {
+        it->gravity = {0, 0, 0}
+        it->drag = {0, 0, 0}
+        it->generateGravityRocket();
+        it->generateDragRocket();
     }
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
@@ -25,6 +33,10 @@ void planetUpdate()
         //it->updatePos();
         it->checkColisionFixedPlanet();
     }
+    for (std::list<rocketStage>::iterator it = planetList.begin(); it != planetList.end(); it++)
+    {
+
+    }
 }
 
 int main()
@@ -36,7 +48,6 @@ int main()
     std::list<planet> listOfPlanets = {planet1, planet2};
     std::list<fixedPlanet> listOfFixedPlanets = {};
     startUp(listOfPlanets, listOfFixedPlanets);
-    //asignelistOfplanets(listOfPlanets, listOfFixedPlanets);
 
     /*rocketStage rocketStage1(2, 1);
     while (i < 1)
