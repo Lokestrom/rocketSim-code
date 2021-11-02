@@ -18,6 +18,36 @@ struct vector3d
     long double x, y, z;
 };
 
+struct rocketDefine
+{
+    long double mass, drymass, fuleUsePerMiliSecond EngineGimblePointToCG, CGpos, PCpos;
+};
+
+struct boxColider
+{
+    long double hight, length, withe, pos;
+};
+
+struct sphereColider
+{
+    long double radius, pos;
+};
+
+class colider
+{
+public:
+    colider(int sphereColiderNum, std::vector<sphereColiders> sphereColiders, int boxColideresNum, std::vector<boxColiders> boxColiders){
+        if(sphereColiderNum != sphereColiders.std::size()){
+            std::cout << "all sphere coliders not defined"
+
+        }
+        if(boxColideresNum != boxColiders.std::size()){
+            std::cout << "all box coliders not defined"
+        }
+    }
+
+};
+
 void setSeed(long double costumSeed)
 {
     seed = costumSeed;

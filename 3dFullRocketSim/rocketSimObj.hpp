@@ -12,9 +12,12 @@ void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fix
 class rocketStage
 {
 public:
+    rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
     rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent){
-
+        rocket.mass = wetMass;
+        rocket.dryMass = dryMass,
+        rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
     }
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
         if (planetTypeFlaseIsPlanetTrueIsFixedPlanet){
