@@ -12,6 +12,30 @@ void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fix
 class rocketStage
 {
 public:
+    vector3d vel, gravity, drag, pos;
+    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent){
+
+    }
+    void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
+        if (planetTypeFlaseIsPlanetTrueIsFixedPlanet){
+            for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++){
+                if(startPlanetID == it->ID){
+                vel = generateRocketStartVelFixedPlanet();
+                pos = gnenerateRocketStartPosPlanet();
+                return 0;
+                }
+            }
+        }
+        else{
+            for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++){
+                if(startPlanetID == it->ID){
+                vel = generateRocketStartVelFixedPlanet();
+                pos = gnenerateRocketStartPosPlanet();
+                return 0;
+                }
+            }
+        }
+    }
     void generateGravityRocket(){
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
         {
@@ -26,10 +50,6 @@ public:
 
         gravity += plussEqualVector3d(gravity,generateGravity(latitude, longitude, mass, it->mass, distanse))
         }
-    }
-    rocketStage(long double wetMass, long double dryMass)
-    {
-
     }
 
     rocketUpdate(int startTime, int i){

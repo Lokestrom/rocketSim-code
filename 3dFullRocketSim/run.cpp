@@ -1,9 +1,10 @@
 #include "rocketsimObj.hpp"
 
-void startUp(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets){
+void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
     asignelistOfPlanetsFixedPlanet(listOfAllFixedPlanets);
     asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-    asignelistOfplanetsRocket(listOfAllPlanets, listOfAllFixedPlanets)
+    asignelistOfplanetsRocket(listOfAllPlanets, listOfAllFixedPlanets);
+    startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID)
 }
 
 void Update()
@@ -47,7 +48,7 @@ int main()
     planet planet2(2, 200000, 2, {1, 0, 0}, {1, 0, 0});
     std::list<planet> listOfPlanets = {planet1, planet2};
     std::list<fixedPlanet> listOfFixedPlanets = {};
-    startUp(listOfPlanets, listOfFixedPlanets);
+    startup(listOfPlanets, listOfFixedPlanets, );
 
     /*rocketStage rocketStage1(2, 1);
     while (i < 1)
