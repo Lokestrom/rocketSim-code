@@ -185,7 +185,6 @@ long double findLongitude(vector3d pos, vector3d otherPos)
     }
     else if (relativePos.x <= 0 && relativePos.y <= 0)
     {
-
         return radToDeg(atanl((relativePos.y / relativePos.x))) + 180;
     }
     else if (relativePos.x > 0 && relativePos.y < 0)
