@@ -23,26 +23,31 @@ struct rocketDefine
     long double mass, drymass, fuleUsePerMiliSecond EngineGimblePointToCG, CGpos, PCpos;
 };
 
-struct boxColider
+struct boxCollider
 {
     long double hight, length, withe, pos;
 };
 
-struct sphereColider
+struct sphereCollider
 {
     long double radius, pos;
 };
 
+struct sylinderCollider
+{
+
+}
+
 class colider
 {
 public:
-    colider(int sphereColiderNum, std::vector<sphereColiders> sphereColiders, int boxColideresNum, std::vector<boxColiders> boxColiders){
+    colider(int sphereColiderNum, std::vector<sphereColliders> sphereColiders, int boxColideresNum, std::vector<boxColliders> boxColiders){
         if(sphereColiderNum != sphereColiders.std::size()){
-            std::cout << "all sphere coliders not defined"
+            std::cout << "all sphere colliders not defined"
 
         }
         if(boxColideresNum != boxColiders.std::size()){
-            std::cout << "all box coliders not defined"
+            std::cout << "all box colliders not defined"
         }
     }
 
