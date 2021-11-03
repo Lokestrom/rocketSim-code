@@ -44,7 +44,7 @@ struct sylinderCollider
 class colider
 {
 public:
-    colider(int sphereColiderNum, std::vector<sphereColliders> sphereColiders, int boxColideresNum, std::vector<boxColliders> boxColiders){
+    colider(int sphereColiderNum, std::vector<sphereColliders> sphereColiders, int boxColideresNum, std::vector<boxColliders> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders){
         if(sphereColiderNum != sphereColiders.std::size()){
             std::cout << "all sphere colliders not defined"
 
