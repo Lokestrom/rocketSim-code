@@ -9,12 +9,13 @@ void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fix
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class rocketStage
+class rocketStage : collider
 {
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
-    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent){
+    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent) : collider()
+    {
         rocket.mass = wetMass;
         rocket.dryMass = dryMass,
         rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
@@ -25,7 +26,7 @@ public:
                 if(startPlanetID == it->ID){
                 vel = generateRocketStartVelFixedPlanet();
                 pos = gnenerateRocketStartPosPlanet();
-                return 0;
+                return;
                 }
             }
         }
@@ -34,7 +35,7 @@ public:
                 if(startPlanetID == it->ID){
                 vel = generateRocketStartVelFixedPlanet();
                 pos = gnenerateRocketStartPosPlanet();
-                return 0;
+                return;
                 }
             }
         }

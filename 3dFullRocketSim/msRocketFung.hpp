@@ -39,7 +39,7 @@ struct sylinderCollider
 {
     long double radius, hight;
     vector3d pos;
-}
+};
 
 class colider
 {
