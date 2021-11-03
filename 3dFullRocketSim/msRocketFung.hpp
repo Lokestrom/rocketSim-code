@@ -25,17 +25,20 @@ struct rocketDefine
 
 struct boxCollider
 {
-    long double hight, length, withe, pos;
+    long double hight, length, withe;
+    vector3d pos;
 };
 
 struct sphereCollider
 {
-    long double radius, pos;
+    long double radius;
+    vector3d pos;
 };
 
 struct sylinderCollider
 {
-
+    long double radius, hight;
+    vector3d pos;
 }
 
 class colider
