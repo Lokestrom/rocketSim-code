@@ -29,15 +29,17 @@ void Update()
         it->vel.x += generateVelosity(it->mass, it->gravity.y);
         it->vel.x += generateVelosity(it->mass, it->gravity.z);
         it->pos = plussEqualVector3d(it->pos, it->vel);
+        it->update();
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
     {
         //it->updatePos();
         it->checkColisionFixedPlanet();
+        it->update();
     }
     for (std::list<rocketStage>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
-
+        it ->update();
     }
 }
 
