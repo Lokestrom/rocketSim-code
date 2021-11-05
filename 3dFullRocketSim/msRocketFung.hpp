@@ -45,15 +45,14 @@ class collider
 {
 public:
     collider(int sphereColiderNum, std::vector<sphereColliders> sphereColiders, int boxColideresNum, std::vector<boxColliders> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders){
-        if(sphereColiderNum != sphereColiders.std::size()){
+        if(sphereColiderNum != sphereColiders.size()){
             std::cout << "all sphere colliders not defined"
 
         }
-        if(boxColideresNum != boxColiders.std::size()){
+        if(boxColideresNum != boxColiders.size()){
             std::cout << "all box colliders not defined"
         }
     }
-
 };
 
 void setSeed(long double costumSeed)

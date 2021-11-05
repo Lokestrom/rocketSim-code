@@ -12,7 +12,7 @@ void asignelistOfPlanetsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class fixedPlanet : collider
+class fixedPlanet
 {
 public:
     long double mass, radius;
