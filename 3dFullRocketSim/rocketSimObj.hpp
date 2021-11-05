@@ -3,8 +3,7 @@
 
 #include "planetSimObj.hpp"
 
-void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
-{
+void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets){
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
@@ -14,8 +13,7 @@ class rocketStage : collider
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
-    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent) : collider()
-    {
+    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent) : collider(sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
         rocket.mass = wetMass;
         rocket.dryMass = dryMass,
         rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
@@ -41,13 +39,13 @@ public:
         }
     }
     void generateGravityRocket(){
-        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-        {
+        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++){
         long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
         long double distanse = generateDistanse(pos, it->pos);
 
         gravity += plussEqualVector3d(gravity,generateGravity(latitude, longitude, mass, it->mass, distanse))
         }
+
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanet.end(); it++){
         long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
         long double distanse = generateDistanse(pos, it->pos);
@@ -57,8 +55,7 @@ public:
     }
 
     rocketUpdate(int startTime, int i){
-        if (startTime <= i)
-        {
+        if (startTime <= i){
 
         }
     }

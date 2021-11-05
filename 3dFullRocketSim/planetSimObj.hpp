@@ -21,8 +21,7 @@ public:
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, int mass, long double radius, vector3d pos, vector3d vel)
-    {
+    planet(int planetID, int mass, long double radius, vector3d pos, vector3d vel){
         planet::ID = planetID;
         planet::mass = mass;
         planet::radius = radius;
