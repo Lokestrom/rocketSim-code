@@ -59,6 +59,9 @@ public:
 
         }
     }
+    update(std::list<()){
+        planetColliders = planetColliders
+    }
 };
 
 #endif

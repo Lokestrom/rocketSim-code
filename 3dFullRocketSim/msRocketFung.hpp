@@ -41,6 +41,11 @@ struct sylinderCollider
     vector3d pos;
 };
 
+class planetCollider
+{
+public
+};
+
 class collider
 {
 public:
