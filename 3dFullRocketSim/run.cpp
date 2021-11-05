@@ -1,10 +1,10 @@
 #include "rocketsimObj.hpp"
 
-void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
+void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, std::list<collider> listOfAllColliders, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
     asignelistOfPlanetsFixedPlanet(listOfAllFixedPlanets);
     asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
     asignelistOfplanetsRocket(listOfAllPlanets, listOfAllFixedPlanets);
-    startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID)
+    startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
 }
 
 void Update()
