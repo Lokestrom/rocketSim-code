@@ -12,18 +12,22 @@ void asignelistOfPlanetsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class fixedPlanet
+class fixedPlanet : planetCollider
 {
 public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel){
+    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
         fixedPlanet::ID = fixedPlanetID;
         fixedPlanet::mass = mass;
         fixedPlanet::radius = radius;
         fixedPlanet::pos = pos;
         fixedPlanet::vel = vel;
+    }
+
+    update(){
+        planetCollider::collider.pos = pos;
     }
 
     void checkColisionFixedPlanet()

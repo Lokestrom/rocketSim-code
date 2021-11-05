@@ -28,6 +28,11 @@ public:
         planet::pos = pos;
         planet::vel = vel;
     }
+
+    update(){
+        planetCollider::collider.pos = pos;
+    }
+    
     vector3d generateGravityPlanet()
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)

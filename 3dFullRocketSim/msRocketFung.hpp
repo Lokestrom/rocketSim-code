@@ -18,11 +18,6 @@ struct vector3d
     long double x, y, z;
 };
 
-struct rocketDefine
-{
-    long double mass, drymass, fuleUsePerMiliSecond EngineGimblePointToCG, CGpos, PCpos;
-};
-
 struct boxCollider
 {
     long double hight, length, withe;
@@ -43,7 +38,12 @@ struct sylinderCollider
 
 class planetCollider
 {
-public
+public:
+    sphereCollider collider;
+    planetCollider(long double radius, vector3d pos){
+        collider.radius = radius;
+        collider.pos = pos;
+    }
 };
 
 class collider
