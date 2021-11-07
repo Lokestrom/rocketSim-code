@@ -14,14 +14,14 @@ void asignelistOfPlanetsPlanet(std::list<planet> listOfAllPlanets, std::list<fix
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class planet
+class planet : planetCollider
 {
 public:
     long double mass, radius;
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, int mass, long double radius, vector3d pos, vector3d vel){
+    planet(int planetID, int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
         planet::ID = planetID;
         planet::mass = mass;
         planet::radius = radius;
@@ -29,8 +29,8 @@ public:
         planet::vel = vel;
     }
 
-    update(){
-        planetCollider::collider.pos = pos;
+    void update(){
+        planetCollider::colliderx.pos = pos;
     }
     
     vector3d generateGravityPlanet()

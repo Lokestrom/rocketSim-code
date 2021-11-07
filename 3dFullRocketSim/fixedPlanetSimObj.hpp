@@ -26,8 +26,8 @@ public:
         fixedPlanet::vel = vel;
     }
 
-    update(){
-        planetCollider::collider.pos = pos;
+    void update(){
+        planetCollider::colliderx.pos = pos;
     }
 
     void checkColisionFixedPlanet()

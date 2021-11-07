@@ -20,7 +20,7 @@ struct vector3d
 
 struct boxCollider
 {
-    long double hight, length, withe;
+    long double hight, length, width;
     vector3d pos;
 };
 
@@ -39,24 +39,32 @@ struct sylinderCollider
 class planetCollider
 {
 public:
-    sphereCollider collider;
+    sphereCollider colliderx;
     planetCollider(long double radius, vector3d pos){
-        collider.radius = radius;
-        collider.pos = pos;
+        colliderx.radius = radius;
+        colliderx.pos = pos;
     }
+};
+
+struct colliderStats
+{
+    long double hight, length, width;
+    vector3d pos;
 };
 
 class collider
 {
 public:
-    collider(int sphereColiderNum, std::vector<sphereColliders> sphereColiders, int boxColideresNum, std::vector<boxColliders> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders){
+    colliderStats colliderDefinision;
+    collider(colliderStats colliderDefinision, int sphereColiderNum, std::vector<sphereCollider> sphereColiders, int boxColideresNum, std::vector<boxCollider> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders){
         if(sphereColiderNum != sphereColiders.size()){
-            std::cout << "all sphere colliders not defined"
+            std::cout << "all sphere colliders not defined";
 
         }
         if(boxColideresNum != boxColiders.size()){
-            std::cout << "all box colliders not defined"
+            std::cout << "all box colliders not defined";
         }
+        collider::colliderDefinision = colliderDefinision;
     }
 };
 
