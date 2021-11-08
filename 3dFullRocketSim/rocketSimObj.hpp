@@ -76,7 +76,12 @@ public:
     }
 
     void stageSep(int i, int nextStageID){
-        for (std::list<rocketStage>::iterator it = rocketSimObj_hpp)
+        for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++){
+            if(it->ID == nextStageID){
+
+                return;
+            }
+        }
     }
 };
 
