@@ -16,6 +16,9 @@ struct rocketDefine
 
 class rocketStage : collider
 {
+private:
+    fstream file;
+    file
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
@@ -78,7 +81,7 @@ public:
     void stageSep(int i, int nextStageID){
         for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++){
             if(it->ID == nextStageID){
-
+                
                 return;
             }
         }

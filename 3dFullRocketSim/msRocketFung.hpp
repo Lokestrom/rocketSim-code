@@ -6,6 +6,7 @@
 #include <random>
 #include <limits>
 #include <list>
+#include <fstream>
 
 typedef std::numeric_limits<long double> dbl;
 
