@@ -10,7 +10,7 @@ void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fix
 
 struct rocketDefine
 {
-    long double mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG; 
+    long double ID, mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG; 
     vector3d CGpos, CPpos, EGpos;
 };
 
@@ -19,7 +19,8 @@ class rocketStage : collider
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
-    rocketStage(long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint, colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
+    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint, colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
+        rocket.ID = ID;
         rocket.mass = wetMass;
         rocket.dryMass = dryMass,
         rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
@@ -72,6 +73,10 @@ public:
 
         gravity = plussEqualVector3d(gravity,generateGravity(latitude, longitude, rocket.mass, it->mass, distanse));
         }
+    }
+
+    void stageSep(int i, int nextStageID){
+        for (std::list<rocketStage>::iterator it = rocketSimObj_hpp)
     }
 };
 
