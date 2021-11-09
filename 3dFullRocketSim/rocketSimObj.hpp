@@ -78,10 +78,11 @@ public:
         }
     }
 
-    void stageSep(int i, int nextStageID){
+    void stageSep(int i, int nextStageID, long double stageSepForce){
         for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++){
             if(it->ID == nextStageID){
                 it->active = true;
+                it->pos = pos.x + posPoint.x - it->posPoint.x, pos.y + posPoint.y - it->posPoint.y, pos.z + posPoint.z - posPoint.z
                 return;
             }
         }
