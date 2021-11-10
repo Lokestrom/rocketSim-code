@@ -128,15 +128,6 @@ long double absVal(long double x)
     return x;
 }
 
-long double modPow(long double x, long double y)
-{
-    if (x < 0)
-    {
-        return -powl(-x, y);
-    }
-    return powl(x,y);
-}
-
 long double modSqrt(long double x)
 {
     if (x < 0)
@@ -222,18 +213,16 @@ long double findLongitude(vector3d pos, vector3d otherPos)
 //latitude: (x*y = 0) + positiv z = 90 grader, (x*y = 0) + negativ z = -90 grader, (z = 0) = 0 grader;
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    vector3d relativePos = {pos.x - otherPos.x, pos.y - otherPos.y, pos.z - otherPos.z};
-    if (relativePos.z == 0)
+    if (pos.z - otherPos.z == 0)
     {
         return 0;
     }
-    return radToDeg(atanl(relativePos.z / (modSqrt(powl(relativePos.y, 2) + powl(relativePos.x, 2)))));
+    return radToDeg(atanl((pos.z - otherPos.z) / absVal(modSqrt((pos.y - otherPos.y)*(pos.y - otherPos.y) + (pos.x - otherPos.x)*(pos.x - otherPos.x)))));
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
 {
-    vector3d relativePos = {pos.x - otherPos.x, pos.y - otherPos.y, pos.z - otherPos.z};
-    return modSqrt(modPow(absVal(relativePos.x), 2) + modPow(absVal(relativePos.y), 2) + modPow(absVal(relativePos.z), 2));
+    return modSqrt(absVal((pos.x - otherPos.x)*(pos.x - otherPos.x)) + absVal((pos.y - otherPos.y)*(pos.y - otherPos.y)) + absVal((pos.z - otherPos.z)*(pos.z - otherPos.z)));
 }
 
 long double findRest(long double x, long double y)
@@ -262,7 +251,7 @@ long double angleFix(long double angle)
 }
 
 long double gravityFormula(long double m, long double M, long double r){
-    return (G * m*M)/pow(r,2);
+    return (G * m*M)/(r*r);
 }
 
 vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){

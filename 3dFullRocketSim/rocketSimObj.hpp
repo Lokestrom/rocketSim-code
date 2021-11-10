@@ -28,7 +28,7 @@ public:
         rocket.dryMass = dryMass,
         rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
         rocket.exitVelosityOfPropelent = exitVelosityOfPropelent;
-        rocket.EGToCG = sqrt(absVal(modPow(engineGimblePoint.x - centeOfGravityPoint.x, 2)) + absVal(pow(engineGimblePoint.y - centeOfGravityPoint.y, 2)) + absVal(pow(engineGimblePoint.z - centeOfGravityPoint.z, 2)));
+        rocket.EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x)*(engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y)*(engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z)*(engineGimblePoint.z - centeOfGravityPoint.z)));
         rocket.CGpos = centeOfGravityPoint;
         rocket.CPpos = centerOfPresurePoint;
         rocket.EGpos = engineGimblePoint;
