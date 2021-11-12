@@ -40,10 +40,10 @@ struct sylinderCollider
 class planetCollider
 {
 public:
-    sphereCollider colliderx;
+    sphereCollider colliderP;
     planetCollider(long double radius, vector3d pos){
-        colliderx.radius = radius;
-        colliderx.pos = pos;
+        colliderP.radius = radius;
+        colliderP.pos = pos;
     }
 };
 

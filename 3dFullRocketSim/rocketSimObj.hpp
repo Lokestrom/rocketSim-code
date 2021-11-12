@@ -18,7 +18,7 @@ class rocketStage : collider
 {
 private:
     fstream file;
-    file
+    long double thrust;
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
@@ -26,7 +26,7 @@ public:
         rocket.ID = ID;
         rocket.mass = wetMass;
         rocket.dryMass = dryMass,
-        rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
+        rocket.fuleUsePerMiliSecond = fuleUsePerSecond;
         rocket.exitVelosityOfPropelent = exitVelosityOfPropelent;
         rocket.EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x)*(engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y)*(engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z)*(engineGimblePoint.z - centeOfGravityPoint.z)));
         rocket.CGpos = centeOfGravityPoint;
@@ -39,7 +39,15 @@ public:
     }
 
     void update(){
-        collider::colliderDefinision.pos = pos;
+        thrust = exitVelosityOfPropelent * fuleUsePerSecond * generateRand(1-thrustunsertentyProsnet, 1+thrustunsertentyProsnet);
+        collider:clliderDefinision.pos = pos;
+        file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
+            << ")   rotasion: ("  rotasion.x << "," << rotasion.y << "," << rotasion.z 
+            << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
+            << ")   drag: (" << drag.x << "," << drag.y << "," << drag.z
+            << ")   mass: " << mass
+            << ")   accseleration: " << generateVelosity(mass, thrust)
+            << "\n";
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID){
