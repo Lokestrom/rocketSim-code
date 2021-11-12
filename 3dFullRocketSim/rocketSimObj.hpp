@@ -17,7 +17,6 @@ struct rocketDefine
 class rocketStage : collider
 {
 private:
-    fstream file;
     long double thrust;
 public:
     rocketDefine rocket;
@@ -35,7 +34,9 @@ public:
 
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
-
+        
+        string filename = "rocketStage: " << ID;
+        fstream file("")
     }
 
     void update(){
