@@ -41,7 +41,7 @@ public:
 
     void update(){
         thrust = exitVelosityOfPropelent * fuleUsePerSecond * generateRand(1-thrustunsertentyProsnet, 1+thrustunsertentyProsnet);
-        collider:clliderDefinision.pos = pos;
+        collider::clliderDefinision.pos = pos;
         file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
             << ")   rotasion: ("  rotasion.x << "," << rotasion.y << "," << rotasion.z 
             << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
