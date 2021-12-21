@@ -11,11 +11,12 @@ std::list<planet> planetList;
 void asignelistOfPlanetsPlanet(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
-    fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
 class planet : planetCollider
 {
+private:
+    std::fstream file;
 public:
     long double mass, radius;
     int ID;
@@ -27,10 +28,15 @@ public:
         planet::radius = radius;
         planet::pos = pos;
         planet::vel = vel;
+        std::string filename = "planet: " + (char)ID;
+        file.open(filename);
     }
 
     void update(){
-        planetCollider::colliderx.pos = pos;
+        file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
+            << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
+            << "\n";
+        //planetCollider::colliderx.pos = pos;
     }
     
     vector3d generateGravityPlanet()

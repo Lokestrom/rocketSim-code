@@ -3,14 +3,17 @@
 
 #include "planetSimObj.hpp"
 
-void asignelistOfPlanetsRocket(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets){
-    planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
-    fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
+class rocketStage;
+
+std::list<rocketStage> rocketStageList;
+
+void asignelistsRocket(std::list<rocketStage> listOfAllRocketStages){
+    rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end())
 }
 
 struct rocketDefine
 {
-    long double ID, mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG; 
+    long double ID, mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustunsertentyProsnet; 
     vector3d CGpos, CPpos, EGpos;
 };
 
@@ -18,32 +21,34 @@ class rocketStage : collider
 {
 private:
     long double thrust;
+    std::fstream file;
 public:
     rocketDefine rocket;
     vector3d vel, gravity, drag, pos;
-    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint, colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
+    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint, colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
         rocket.ID = ID;
         rocket.mass = wetMass;
         rocket.dryMass = dryMass,
-        rocket.fuleUsePerMiliSecond = fuleUsePerSecond;
+        rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
         rocket.exitVelosityOfPropelent = exitVelosityOfPropelent;
         rocket.EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x)*(engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y)*(engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z)*(engineGimblePoint.z - centeOfGravityPoint.z)));
         rocket.CGpos = centeOfGravityPoint;
         rocket.CPpos = centerOfPresurePoint;
         rocket.EGpos = engineGimblePoint;
+        rocket.thrustunsertentyProsnet = thrustunsertentyProsnet;
 
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
         
-        string filename = "rocketStage: " << ID;
-        fstream file("")
+        std::string filename = "rocketStage: " + (char)ID;
+        file.open(filename);
     }
 
     void update(){
-        thrust = exitVelosityOfPropelent * fuleUsePerSecond * generateRand(1-thrustunsertentyProsnet, 1+thrustunsertentyProsnet);
-        collider:clliderDefinision.pos = pos;
+        thrust = rocket.exitVelosityOfPropelent * rocket.fuleUsePerMiliSecond * generateRand(1-rocket.thrustunsertentyProsnet, 1+rocket.thrustunsertentyProsnet);
+        //collider::clliderDefinision.pos = pos;
         file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
-            << ")   rotasion: ("  rotasion.x << "," << rotasion.y << "," << rotasion.z 
+            << ")   rotasion: (" << rotasion.x << "," << rotasion.y << "," << rotasion.z 
             << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
             << ")   drag: (" << drag.x << "," << drag.y << "," << drag.z
             << ")   mass: " << mass

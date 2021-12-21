@@ -2,12 +2,12 @@
 
 std::list<rocketStage> rocketStageList;
 
-void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, std::list<collider> listOfAllColliders, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
+void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, std::list<rocketStageList> listOgAllRocketStages, std::list<collider> listOfAllColliders, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 {
-    asignelistOfPlanetsFixedPlanet(listOfAllFixedPlanets);
-    asignelistOfPlanetsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-    asignelistOfPlanetsRocket(listOfAllPlanets, listOfAllFixedPlanets);
-    for(std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++){
+    asignelistsFixedPlanet(listOfAllFixedPlanets);
+    asignelistsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
+    asignelistsRocket(listOfAllPlanets, listOfAllFixedPlanets, listOgAllRocketStages);
+    for(std::list<rocketStage>::iterator it = listOgAllRocketStages.begin(); it != listOgAllRocketStages.end(); it++){
         if(it->active == true)
         it -> startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
     }
@@ -32,15 +32,17 @@ void Update()
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
         it->checkColisionPlanet();
-        /*it->vel.x += generateVelosity(it->mass, it->gravity.x);
+        it->vel.x += generateVelosity(it->mass, it->gravity.x);
         it->vel.x += generateVelosity(it->mass, it->gravity.y);
-        it->vel.x += generateVelosity(it->mass, it->gravity.z);*/
+        it->vel.x += generateVelosity(it->mass, it->gravity.z);
         it->pos = plussEqualVector3d(it->pos, it->vel);
         it->update();
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
     {
-        //it->updatePos();
+        it->vel.x += generateVelosity(it->mass, it->gravity.x);
+        it->vel.x += generateVelosity(it->mass, it->gravity.y);
+        it->vel.x += generateVelosity(it->mass, it->gravity.z);
         it->checkColisionFixedPlanet();
         it->update();
     }
@@ -71,9 +73,10 @@ int main()
 
     rocketStage stage1(wetMass, dryMass, vel, pos, fuleUsePerMiliSecond, exitVelosityOfPropelent, engineGimblePoint, centeOfGravityPoint, centerOfPresurePoint);
 
-    planet planet1(1, 100000, 1, {0, 0, 0}, {0, 0, 0});
+    planet planet1(1, 1E+14, 1, {0, 0, 0}, {0, 0, 0});
+    planet planet2(1, 1000, 1, {100,0,0}, {0,sqrt((G*1E+14)/100),0});
 
-    std::list<planet> planetList;
+    std::list<planet> planetList = {planet1, planet2};
     std::list<fixedPlanet> fixedPlanetList;
     std::list<collider> colliderList;
 
@@ -82,7 +85,7 @@ int main()
     startup(planetList, fixedPlanetList, colliderList, planetTypeFlaseIsPlanetTrueIsFixedPlanet, planetID);
 
     /*rocketStage rocketStage1(2, 1);
-    while (i < 1)
+    while (true)
     {
         rocketStage1.rocketUpdate(0, i);
         planetUpdate();

@@ -27,7 +27,7 @@ public:
     }
 
     void update(){
-        planetCollider::colliderx.pos = pos;
+        //planetCollider::colliderx.pos = pos;
     }
 
     void checkColisionFixedPlanet()
