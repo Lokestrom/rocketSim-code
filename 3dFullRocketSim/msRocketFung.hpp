@@ -11,6 +11,12 @@
 typedef std::numeric_limits<long double> dbl;
 
 #define G 6.674E-11
+#define earthMass 5.972E24
+#define earthRadius 6.371E6
+#define moonMass 7.34767309E22
+#define moonRadius 1.7374E6
+#define MarsMass 6.39E23
+#define marsRadius 3.3895E6
 
 long double seed = unsigned(time(nullptr));
 
