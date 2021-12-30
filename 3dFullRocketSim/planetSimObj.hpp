@@ -15,8 +15,6 @@ void asigneListsPlanet(std::list<planet> listOfAllPlanets)
 
 class planet : planetCollider
 {
-private:
-    std::fstream file;
 public:
     long double mass, radius;
     int ID;
@@ -28,14 +26,9 @@ public:
         planet::radius = radius;
         planet::pos = pos;
         planet::vel = vel;
-        std::string filename = "planet: " + (char)ID;
-        file.open(filename);
     }
 
     void update(){
-        file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
-            << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
-            << "\n";
         //planetCollider::colliderx.pos = pos;
     }
     
