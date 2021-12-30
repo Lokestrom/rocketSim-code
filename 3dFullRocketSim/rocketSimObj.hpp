@@ -7,35 +7,31 @@ class rocketStage;
 
 std::list<rocketStage> rocketStageList;
 
-void asignelistsRocket(std::list<rocketStage> listOfAllRocketStages){
-    rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end())
+void asigneListsRocket(std::list<rocketStage> listOfAllRocketStages){
+    rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end());
 }
 
-struct rocketDefine
-{
-    long double ID, mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustunsertentyProsnet; 
-    vector3d CGpos, CPpos, EGpos;
-};
-
-class rocketStage : collider
+class rocketStage// : collider
 {
 private:
     long double thrust;
     std::fstream file;
 public:
-    rocketDefine rocket;
-    vector3d vel, gravity, drag, pos;
-    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint, colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
-        rocket.ID = ID;
-        rocket.mass = wetMass;
-        rocket.dryMass = dryMass,
-        rocket.fuleUsePerMiliSecond = fuleUsePerMiliSecond;
-        rocket.exitVelosityOfPropelent = exitVelosityOfPropelent;
-        rocket.EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x)*(engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y)*(engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z)*(engineGimblePoint.z - centeOfGravityPoint.z)));
-        rocket.CGpos = centeOfGravityPoint;
-        rocket.CPpos = centerOfPresurePoint;
-        rocket.EGpos = engineGimblePoint;
-        rocket.thrustunsertentyProsnet = thrustunsertentyProsnet;
+    int ID;
+    long double mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustUnsertentyProsnet;
+    vector3d vel, gravity, drag, pos, rotasion, CGpos, CPpos, EGpos;
+    bool active = false;
+    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint){//colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
+        rocketStage::ID = ID;
+        rocketStage::mass = wetMass;
+        rocketStage::dryMass = dryMass,
+        rocketStage::fuleUsePerMiliSecond = fuleUsePerMiliSecond;
+        rocketStage::exitVelosityOfPropelent = exitVelosityOfPropelent;
+        rocketStage::EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x)*(engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y)*(engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z)*(engineGimblePoint.z - centeOfGravityPoint.z)));
+        rocketStage::CGpos = centeOfGravityPoint;
+        rocketStage::CPpos = centerOfPresurePoint;
+        rocketStage::EGpos = engineGimblePoint;
+        rocketStage::thrustUnsertentyProsnet = thrustunsertentyProsnet;
 
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
@@ -45,7 +41,7 @@ public:
     }
 
     void update(){
-        thrust = rocket.exitVelosityOfPropelent * rocket.fuleUsePerMiliSecond * generateRand(1-rocket.thrustunsertentyProsnet, 1+rocket.thrustunsertentyProsnet);
+        thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1-thrustUnsertentyProsnet, 1+thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
         file << "pos: (" << pos.x << "," << pos.y << "," << pos.z 
             << ")   rotasion: (" << rotasion.x << "," << rotasion.y << "," << rotasion.z 
@@ -81,18 +77,18 @@ public:
         long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
         long double distanse = generateDistanse(pos, it->pos);
 
-        gravity = plussEqualVector3d(gravity,generateGravity(latitude, longitude, rocket.mass, it->mass, distanse));
+        gravity = plussEqualVector3d(gravity,generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
 
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++){
         long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
         long double distanse = generateDistanse(pos, it->pos);
 
-        gravity = plussEqualVector3d(gravity,generateGravity(latitude, longitude, rocket.mass, it->mass, distanse));
+        gravity = plussEqualVector3d(gravity,generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
     }
 
-    void stageSep(int i, int nextStageID, long double stageSepForce){
+    /*void stageSep(int i, int nextStageID, long double stageSepForce){
         for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++){
             if(it->ID == nextStageID){
                 it->active = true;
@@ -100,7 +96,7 @@ public:
                 return;
             }
         }
-    }
+    }*/
 };
 
 #endif

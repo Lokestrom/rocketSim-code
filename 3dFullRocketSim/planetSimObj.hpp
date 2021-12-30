@@ -8,7 +8,7 @@ class planet;
 
 std::list<planet> planetList;
 
-void asignelistOfPlanetsPlanet(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets)
+void asigneListsPlanet(std::list<planet> listOfAllPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
 }
@@ -22,7 +22,7 @@ public:
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
+    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
         planet::ID = planetID;
         planet::mass = mass;
         planet::radius = radius;

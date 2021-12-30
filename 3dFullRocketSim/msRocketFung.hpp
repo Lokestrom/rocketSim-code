@@ -25,8 +25,6 @@ struct vector3d
     long double x, y, z;
 };
 
-void defineAllLists()
-
 struct boxCollider
 {
     long double hight, length, width;

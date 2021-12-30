@@ -1,12 +1,10 @@
 #include "rocketsimObj.hpp"
 
-std::list<rocketStage> rocketStageList;
-
-void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, std::list<rocketStageList> listOgAllRocketStages, std::list<collider> listOfAllColliders, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
+void startup(std::list<planet> listOfAllPlanets, std::list<fixedPlanet> listOfAllFixedPlanets, std::list<rocketStage> listOgAllRocketStages, std::list<collider> listOfAllColliders, bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 {
-    asignelistsFixedPlanet(listOfAllFixedPlanets);
-    asignelistsPlanet(listOfAllPlanets, listOfAllFixedPlanets);
-    asignelistsRocket(listOfAllPlanets, listOfAllFixedPlanets, listOgAllRocketStages);
+    asigneListsFixedPlanet(listOfAllFixedPlanets);
+    asigneListsPlanet(listOfAllPlanets);
+    asigneListsRocket(listOgAllRocketStages);
     for(std::list<rocketStage>::iterator it = listOgAllRocketStages.begin(); it != listOgAllRocketStages.end(); it++){
         if(it->active == true)
         it -> startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
@@ -26,7 +24,7 @@ void Update()
             it->gravity = {0, 0, 0};
             it->drag = {0, 0, 0};
             it->generateGravityRocket();
-            it->generateDragRocket();
+            //it->generateDragRocket();
         }
     }
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
@@ -40,13 +38,10 @@ void Update()
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
     {
-        it->vel.x += generateVelosity(it->mass, it->gravity.x);
-        it->vel.x += generateVelosity(it->mass, it->gravity.y);
-        it->vel.x += generateVelosity(it->mass, it->gravity.z);
         it->checkColisionFixedPlanet();
         it->update();
     }
-    for (std::list<rocketStage>::iterator it = planetList.begin(); it != planetList.end(); it++)
+    for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
     {
         it ->update();
     }
@@ -71,18 +66,19 @@ int main()
     centerOfPresurePoint = {0,0,0}
     ;
 
-    rocketStage stage1(wetMass, dryMass, vel, pos, fuleUsePerMiliSecond, exitVelosityOfPropelent, engineGimblePoint, centeOfGravityPoint, centerOfPresurePoint);
+    rocketStage stage1(3,wetMass, dryMass, vel, pos, fuleUsePerMiliSecond, exitVelosityOfPropelent,0, engineGimblePoint, centeOfGravityPoint, centerOfPresurePoint);
 
     planet planet1(1, 1E+14, 1, {0, 0, 0}, {0, 0, 0});
     planet planet2(1, 1000, 1, {100,0,0}, {0,sqrt((G*1E+14)/100),0});
 
+    std::list<rocketStage> rocketStageList;
     std::list<planet> planetList = {planet1, planet2};
     std::list<fixedPlanet> fixedPlanetList;
     std::list<collider> colliderList;
 
     bool planetTypeFlaseIsPlanetTrueIsFixedPlanet = false;
     int planetID = 1;
-    startup(planetList, fixedPlanetList, colliderList, planetTypeFlaseIsPlanetTrueIsFixedPlanet, planetID);
+    startup(planetList, fixedPlanetList, rocketStageList, colliderList, planetTypeFlaseIsPlanetTrueIsFixedPlanet, planetID);
 
     /*rocketStage rocketStage1(2, 1);
     while (true)

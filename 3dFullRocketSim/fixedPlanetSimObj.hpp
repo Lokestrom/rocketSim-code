@@ -7,7 +7,7 @@ class fixedPlanet;
 
 std::list<fixedPlanet> fixedPlanetList;
 
-void asignelistOfPlanetsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
+void asigneListsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
 {
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
