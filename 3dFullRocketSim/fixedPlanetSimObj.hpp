@@ -18,7 +18,8 @@ public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
+    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos)
+    {
         fixedPlanet::ID = fixedPlanetID;
         fixedPlanet::mass = mass;
         fixedPlanet::radius = radius;
@@ -26,7 +27,8 @@ public:
         fixedPlanet::vel = vel;
     }
 
-    void update(){
+    void update()
+    {
         //planetCollider::colliderx.pos = pos;
     }
 

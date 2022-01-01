@@ -20,7 +20,8 @@ public:
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos){
+    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos)
+    {
         planet::ID = planetID;
         planet::mass = mass;
         planet::radius = radius;
@@ -28,10 +29,11 @@ public:
         planet::vel = vel;
     }
 
-    void update(){
+    void update()
+    {
         //planetCollider::colliderx.pos = pos;
     }
-    
+
     vector3d generateGravityPlanet()
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)

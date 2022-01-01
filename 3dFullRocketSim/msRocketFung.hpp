@@ -47,7 +47,8 @@ class planetCollider
 {
 public:
     sphereCollider colliderP;
-    planetCollider(long double radius, vector3d pos){
+    planetCollider(long double radius, vector3d pos)
+    {
         colliderP.radius = radius;
         colliderP.pos = pos;
     }
@@ -63,12 +64,14 @@ class collider
 {
 public:
     colliderStats colliderDefinision;
-    collider(colliderStats colliderDefinision, int sphereColiderNum, std::vector<sphereCollider> sphereColiders, int boxColideresNum, std::vector<boxCollider> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders){
-        if(sphereColiderNum != sphereColiders.size()){
+    collider(colliderStats colliderDefinision, int sphereColiderNum, std::vector<sphereCollider> sphereColiders, int boxColideresNum, std::vector<boxCollider> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders)
+    {
+        if (sphereColiderNum != sphereColiders.size())
+        {
             std::cout << "all sphere colliders not defined";
-
         }
-        if(boxColideresNum != boxColiders.size()){
+        if (boxColideresNum != boxColiders.size())
+        {
             std::cout << "all box colliders not defined";
         }
         collider::colliderDefinision = colliderDefinision;
@@ -223,17 +226,18 @@ long double findLatitude(vector3d pos, vector3d otherPos)
     {
         return 0;
     }
-    return radToDeg(atanl((pos.z - otherPos.z) / absVal(modSqrt((pos.y - otherPos.y)*(pos.y - otherPos.y) + (pos.x - otherPos.x)*(pos.x - otherPos.x)))));
+    return radToDeg(atanl((pos.z - otherPos.z) / absVal(modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))));
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
 {
-    return modSqrt(absVal((pos.x - otherPos.x)*(pos.x - otherPos.x)) + absVal((pos.y - otherPos.y)*(pos.y - otherPos.y)) + absVal((pos.z - otherPos.z)*(pos.z - otherPos.z)));
+    return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
 }
 
 long double findRest(long double x, long double y)
 {
-    while(x >= y){
+    while (x >= y)
+    {
         x -= y;
     }
     return x;
@@ -256,14 +260,16 @@ long double angleFix(long double angle)
     return angle;
 }
 
-long double gravityFormula(long double m, long double M, long double r){
-    return (G * m*M)/(r*r);
+long double gravityFormula(long double m, long double M, long double r)
+{
+    return (G * m * M) / (r * r);
 }
 
-vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
-    return {generateMultiplierX(latitude, longitude) * gravityFormula(m,M,r),
-            generateMultiplierY(latitude, longitude) * gravityFormula(m,M,r),
-            generateMultiplierZ(latitude) * gravityFormula(m,M,r)};
+vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r)
+{
+    return {generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
+            generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
+            generateMultiplierZ(latitude) * gravityFormula(m, M, r)};
 }
 
 #endif
