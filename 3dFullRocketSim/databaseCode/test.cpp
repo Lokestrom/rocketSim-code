@@ -1,10 +1,16 @@
 #include "main.hpp"
 
 int main(){
-    dataBaseReadFile x("hello.txt");
-    std::vector<long double> z = x.getAllDataFromColumnLongDouble("x");
-    std::cout << z.size();
-    for (int i : z){
-        std::cout << i << "\n";
-    }
+    dataBaseWriteFile x("hello.txt");
+    x.addcolumn("a");
+    x.addcolumn("b");
+    x.addcolumn("c");
+
+    x.addData({"1","2","3"});
+    x.closeFile();
+
+
+    dataBaseReadFile y("hello.txt");
+    int z = y.getAllDataFromColumnLongDouble("c")[0];
+    std::cout << z;
 }

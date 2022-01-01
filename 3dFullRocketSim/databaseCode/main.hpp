@@ -64,27 +64,57 @@ class dataBaseWriteFile
 public:
     std::unordered_map<std::string, int> mapOfColumns = {};
     int nextColumnNumber = 0;
-    std::ofstream fileCreateObject;
-    std::string filename;
+    std::ofstream file;
     bool addedData = false;
+    std::string filename;
     dataBaseWriteFile(std::string filename)
     {
         dataBaseWriteFile::filename = filename;
+        file.open(filename);
     }
 
-    void createFile()
+    void closeFile()
     {
-        fileCreateObject.open(filename);
-        fileCreateObject.close();
+        file.close();
     }
 
     void addcolumn(std::string columnName)
     {
+        if (addedData)
+        {
+            std::cout << "can't add column. Data has bean added\n";
+            return;
+        }
         mapOfColumns[columnName] = nextColumnNumber;
         nextColumnNumber++;
+        if (nextColumnNumber == 1)
+        {
+            file << columnName;
+            return;
+        }
+        file << "|" << columnName;
     }
 
-    void addData(std::string column, int row)
+    void addData(std::vector<std::string> data)
     {
+        file << std::endl;
+        addedData = true;
+        if (mapOfColumns.size() > data.size())
+        {
+            std::cout << "More Columns then data\n";
+            return;
+        }
+        if (mapOfColumns.size() < data.size())
+        {
+            std::cout << "More data then columns\n";
+            return;
+        }
+        bool first = true;
+        for (std::string i : data)
+        {
+            if(!first) file << "|";
+            file << i;
+            first = false;
+        }
     }
 };
