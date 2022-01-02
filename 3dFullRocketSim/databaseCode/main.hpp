@@ -4,6 +4,14 @@
 #include <vector>
 #include <iostream>
 
+void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+{
+    std::string error = "Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+    for(int i = 0; i<ErrorFungtionInput.size()-1; i++) error += "\"" + ErrorFungtionInput[i] + "\", ";
+    error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size()-1] +"\");\n";
+    std::cout << error;
+}
+
 class dataBaseReadFile
 {
 public:
@@ -33,8 +41,13 @@ public:
 
     std::vector<long double> getAllDataFromColumnLongDouble(std::string columnName)
     {
-        file.open(filename);
         std::vector<long double> x;
+        if (mapOfColumns[columnName] == 0)
+        {
+            ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
+            return x;
+        }
+        file.open(filename);
         long long int j = 0;
         std::string text, splitElement = "|", token;
         size_t pos;
@@ -82,7 +95,7 @@ public:
     {
         if (addedData)
         {
-            std::cout << "can't add column. Data has bean added\n";
+            ErrorMsg("Can't add column data has been added", "addColumn", {columnName});
             return;
         }
         mapOfColumns[columnName] = nextColumnNumber;
@@ -101,18 +114,19 @@ public:
         addedData = true;
         if (mapOfColumns.size() > data.size())
         {
-            std::cout << "More Columns then data\n";
+            ErrorMsg("More columns then data, Column count: " + std::to_string(mapOfColumns.size()) + " Data count: " + std::to_string(data.size()), "addData", data);
             return;
         }
         if (mapOfColumns.size() < data.size())
         {
-            std::cout << "More data then columns\n";
+            ErrorMsg("Less columns then data, Column count: " + std::to_string(mapOfColumns.size()) + " Data count: " + std::to_string(data.size()), "addData", data);
             return;
         }
         bool first = true;
         for (std::string i : data)
         {
-            if(!first) file << "|";
+            if (!first)
+                file << "|";
             file << i;
             first = false;
         }
