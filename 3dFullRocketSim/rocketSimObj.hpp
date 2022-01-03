@@ -16,7 +16,7 @@ class rocketStage // : collider
 {
 private:
     long double thrust;
-    std::fstream file;
+    dataBaseWriteFile logFile;
 
 public:
     int ID;
@@ -41,19 +41,14 @@ public:
 
         std::string filename = "rocketStage: " + (char)ID;
         file.open(filename);
+        logFile.addcolumnArray({})
     }
 
     void update()
     {
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        file << "pos: (" << pos.x << "," << pos.y << "," << pos.z
-             << ")   rotasion: (" << rotasion.x << "," << rotasion.y << "," << rotasion.z
-             << ")   vel: (" << vel.x << "," << vel.y << "," << vel.z
-             << ")   drag: (" << drag.x << "," << drag.y << "," << drag.z
-             << ")   mass: " << mass
-             << ")   accseleration: " << generateVelosity(mass, thrust)
-             << "\n";
+        logFile.addData({})
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)

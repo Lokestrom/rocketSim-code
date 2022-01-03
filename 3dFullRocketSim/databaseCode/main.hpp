@@ -41,12 +41,52 @@ public:
 
     std::vector<long double> getAllDataFromColumnLongDouble(std::string columnName)
     {
-        std::vector<long double> x;
         if (mapOfColumns[columnName] == 0)
         {
             ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
-            return x;
+            return {};
         }
+        std::vector<long double> x;
+        file.open(filename);
+        long long int j = 0;
+        std::string text, splitElement = "|", token;
+        size_t pos;
+        bool firstline = true;
+        int l = 1;
+        while (getline(file, text))
+        {
+            if (!firstline)
+            {
+                while (j <= mapOfColumns[columnName])
+                {
+                    pos = text.find(splitElement);
+                    token = text.substr(0, pos);
+                    text.erase(0, pos + splitElement.length());
+                    j++;
+                }
+                for(char i : token){ 
+                    if(i != "0" && i != "1" && i != "2" && i != "3" && i != "4" i != "5" && i != "6" && i != "7" && i != "8" && i != "9"){
+                        ErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        return {};
+                    }
+                }
+                x.push_back(std::stold(token));
+            }
+            firstline = false;
+            l++;
+        }
+        file.close();
+        return x;
+    }
+
+    std::vector<std::string> getAllDataFromColumnString(std::string columnName)
+    {
+        if (mapOfColumns[columnName] == 0)
+        {
+            ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
+            return {};
+        }
+        std::vector<long double> x;
         file.open(filename);
         long long int j = 0;
         std::string text, splitElement = "|", token;
@@ -63,7 +103,7 @@ public:
                     text.erase(0, pos + splitElement.length());
                     j++;
                 }
-                x.push_back(std::stold(token));
+                x.push_back(token);
             }
             firstline = false;
         }
@@ -106,6 +146,25 @@ public:
             return;
         }
         file << "|" << columnName;
+    }
+
+    void addColumnArray(std::vector<std::string> columnNames)
+    {
+        if (addedData)
+        {
+            ErrorMsg("Can't add column data has been added", "addColumnArray", {columnName});
+            return;
+        }
+        for(std::string columnName : columnNames)
+        {
+            mapOfColumns[columnName] = nextColumnNumber;
+            nextColumnNumber++;
+            if (nextColumnNumber == 1)
+            {
+                file << columnName;
+            }
+            file << "|" << columnName;
+        }
     }
 
     void addData(std::vector<std::string> data)
