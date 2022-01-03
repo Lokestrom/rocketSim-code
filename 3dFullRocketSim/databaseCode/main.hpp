@@ -163,7 +163,10 @@ public:
             {
                 file << columnName;
             }
+            else
+            {
             file << "|" << columnName;
+            }
         }
     }
 
