@@ -7,8 +7,9 @@
 void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
 {
     std::string error = "Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
-    for(int i = 0; i<ErrorFungtionInput.size()-1; i++) error += "\"" + ErrorFungtionInput[i] + "\", ";
-    error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size()-1] +"\");\n";
+    for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
+        error += "\"" + ErrorFungtionInput[i] + "\", ";
+    error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     std::cout << error;
 }
 
@@ -64,8 +65,10 @@ public:
                     text.erase(0, pos + splitElement.length());
                     j++;
                 }
-                for(char i : token){ 
-                    if(i != "0" && i != "1" && i != "2" && i != "3" && i != "4" i != "5" && i != "6" && i != "7" && i != "8" && i != "9"){
+                for (char i : token)
+                {
+                    if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
+                    {
                         ErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                         return {};
                     }
@@ -86,7 +89,7 @@ public:
             ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
             return {};
         }
-        std::vector<long double> x;
+        std::vector<std::string> x;
         file.open(filename);
         long long int j = 0;
         std::string text, splitElement = "|", token;
@@ -152,10 +155,10 @@ public:
     {
         if (addedData)
         {
-            ErrorMsg("Can't add column data has been added", "addColumnArray", {columnName});
+            ErrorMsg("Can't add column data has been added", "addColumnArray", columnNames);
             return;
         }
-        for(std::string columnName : columnNames)
+        for (std::string columnName : columnNames)
         {
             mapOfColumns[columnName] = nextColumnNumber;
             nextColumnNumber++;
@@ -165,7 +168,7 @@ public:
             }
             else
             {
-            file << "|" << columnName;
+                file << "|" << columnName;
             }
         }
     }
