@@ -113,6 +113,35 @@ public:
         file.close();
         return x;
     }
+
+    /*std::vector<std::vector<std::string>> getAllRowsWhereColumnIsEqualeToAValue(std::string columnName, std::string value){
+        if (mapOfColumns[columnName] == 0)
+        {
+            ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
+            return {{}};
+        }
+        file.open(filename);
+        std::vector<std::vector<std::string>> x = {};
+        std::string text;
+        bool firstline = true;
+        int j = 0;
+        while (getline(file, text))
+        {
+            if (!firstline)
+            {
+                while (j <= mapOfColumns[columnName])
+                {
+                    pos = text.find(splitElement);
+                    token = text.substr(0, pos);
+                    text.erase(0, pos + splitElement.length());
+                    j++;
+                }
+                x.push_back(token);
+            }
+            firstline = false;
+        }
+
+    }*/
 };
 
 class dataBaseWriteFile
@@ -134,7 +163,7 @@ public:
         file.close();
     }
 
-    void addcolumn(std::string columnName)
+    void addColumn(std::string columnName)
     {
         if (addedData)
         {

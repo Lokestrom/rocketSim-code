@@ -7,6 +7,7 @@
 #include <limits>
 #include <list>
 #include <fstream>
+#include "main.hpp"
 
 typedef std::numeric_limits<long double> dbl;
 

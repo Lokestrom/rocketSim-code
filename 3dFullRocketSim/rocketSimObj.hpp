@@ -40,7 +40,6 @@ public:
         rocketStage::pos = posision;
 
         std::string filename = "rocketStage: " + (char)ID;
-        file.open(filename);
         logFile.addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag", "active"});
         std::vector<std::string> planetIDs;
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
@@ -52,7 +51,7 @@ public:
     {
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        logFile.addData({})
+        logFile.addData({});
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
