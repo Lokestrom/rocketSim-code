@@ -41,7 +41,11 @@ public:
 
         std::string filename = "rocketStage: " + (char)ID;
         file.open(filename);
-        logFile.addcolumnArray({})
+        logFile.addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag", "active"});
+        std::vector<std::string> planetIDs;
+        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
+        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
+        logFile.addColumnArray(planetIDs);
     }
 
     void update()
