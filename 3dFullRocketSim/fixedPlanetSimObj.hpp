@@ -32,6 +32,10 @@ public:
         //planetCollider::colliderx.pos = pos;
     }
 
+    void posUpdate(){
+        
+    }
+
     void checkColisionFixedPlanet()
     {
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
