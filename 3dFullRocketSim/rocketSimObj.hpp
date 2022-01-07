@@ -19,6 +19,7 @@ private:
     dataBaseWriteFile logFile;
 
 public:
+    int t;
     int ID;
     long double mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustUnsertentyProsnet;
     vector3d vel, gravity, drag, pos, rotasion, CGpos, CPpos, EGpos;
@@ -49,9 +50,10 @@ public:
 
     void update()
     {
+        t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        logFile.addData({});
+        logFile.addData({(char)t});
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
