@@ -12,11 +12,10 @@ void asigneListsRocket(std::list<rocketStage> listOfAllRocketStages)
     rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end());
 }
 
-class rocketStage // : collider
+class rocketStage : dataBaseWriteFile // : collider
 {
 private:
     long double thrust;
-    dataBaseWriteFile logFile;
 
 public:
     int t;
@@ -24,7 +23,7 @@ public:
     long double mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustUnsertentyProsnet;
     vector3d vel, gravity, drag, pos, rotasion, CGpos, CPpos, EGpos;
     bool active = false;
-    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint)
+    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint) : dataBaseWriteFile("rocketStage: " + (char)ID)
     { //colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
         rocketStage::ID = ID;
         rocketStage::mass = wetMass;
@@ -40,12 +39,11 @@ public:
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
 
-        std::string filename = "rocketStage: " + (char)ID;
-        logFile.addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag", "active"});
+        addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag", "active"});
         std::vector<std::string> planetIDs;
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
-        logFile.addColumnArray(planetIDs);
+        addColumnArray(planetIDs);
     }
 
     void update()
@@ -53,7 +51,7 @@ public:
         t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        logFile.addData({(char)t});
+        addData({std::to_string(t), std::to_string(pos.x), std::to_string(pos.y), std::to_string(pos.z), std::to_string(vel.x), std::to_string(vel.y), std::to_string(vel.z), std::to_string(sqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), std::to_string(mass), std::to_string(thrust), std::to_string(rotasion.x), std::to_string(rotasion.y), std::to_string(rotasion.z) });
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
