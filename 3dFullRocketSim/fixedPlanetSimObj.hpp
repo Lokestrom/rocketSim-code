@@ -12,13 +12,13 @@ void asigneListsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class fixedPlanet : planetCollider
+class fixedPlanet : dataBaseWriteFile, planetCollider
 {
 public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos)
+    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : databaseWhriteFile("") planetCollider(radius, pos)
     {
         fixedPlanet::ID = fixedPlanetID;
         fixedPlanet::mass = mass;

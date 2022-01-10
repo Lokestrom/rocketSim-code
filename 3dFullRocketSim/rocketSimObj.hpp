@@ -30,7 +30,7 @@ public:
         rocketStage::dryMass = dryMass,
         rocketStage::fuleUsePerMiliSecond = fuleUsePerMiliSecond;
         rocketStage::exitVelosityOfPropelent = exitVelosityOfPropelent;
-        rocketStage::EGToCG = sqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x) * (engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y) * (engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z) * (engineGimblePoint.z - centeOfGravityPoint.z)));
+        rocketStage::EGToCG = modSqrt(absVal((engineGimblePoint.x - centeOfGravityPoint.x) * (engineGimblePoint.x - centeOfGravityPoint.x)) + absVal((engineGimblePoint.y - centeOfGravityPoint.y) * (engineGimblePoint.y - centeOfGravityPoint.y)) + absVal((engineGimblePoint.z - centeOfGravityPoint.z) * (engineGimblePoint.z - centeOfGravityPoint.z)));
         rocketStage::CGpos = centeOfGravityPoint;
         rocketStage::CPpos = centerOfPresurePoint;
         rocketStage::EGpos = engineGimblePoint;
@@ -39,7 +39,7 @@ public:
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
 
-        addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag", "active"});
+        addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag"});
         std::vector<std::string> planetIDs;
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
@@ -48,10 +48,11 @@ public:
 
     void update()
     {
+        
         t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        addData({std::to_string(t), std::to_string(pos.x), std::to_string(pos.y), std::to_string(pos.z), std::to_string(vel.x), std::to_string(vel.y), std::to_string(vel.z), std::to_string(sqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), std::to_string(mass), std::to_string(thrust), std::to_string(rotasion.x), std::to_string(rotasion.y), std::to_string(rotasion.z) });
+        addData({toS(t), toS(pos.x), toS(pos.y), toS(pos.z), toS(vel.x), toS(vel.y), toS(vel.z), toS(modSqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), toS(mass), toS(thrust), toS(rotasion.x), toS(rotasion.y), toS(rotasion.z), toS(gravity.x), toS(gravity.y), toS(gravity.z), toS(modSqrt((gravity.x * gravity.x)+(gravity.y * gravity.y)+(gravity.z * gravity.z))), toS(drag.x), toS(drag.y), toS(drag.z), toS(modSqrt((drag.x * drag.x)+(drag.y * drag.y)+(drag.z * drag.z))), });
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)

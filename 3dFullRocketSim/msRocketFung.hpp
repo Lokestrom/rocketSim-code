@@ -18,6 +18,8 @@ typedef std::numeric_limits<long double> dbl;
 #define moonRadius 1.7374E6
 #define MarsMass 6.39E23
 #define marsRadius 3.3895E6
+#define sunMass 1.989E30
+#define sunRadius 6.9634E8
 
 long double seed = unsigned(time(nullptr));
 
@@ -244,16 +246,12 @@ long double findRest(long double x, long double y)
     return x;
 }
 
-long double angleFix(long double angle)
-{
-    if (angle >= 360)
-    {
+long double angleFix(long double angle){
+    if (angle >= 360){
         return findRest(angle, 360);
     }
-    if (angle < 0)
-    {
-        while (angle < 0)
-        {
+    if (angle < 0){
+        while (angle < 0){
             angle += 360;
         }
         return angle;
@@ -261,16 +259,18 @@ long double angleFix(long double angle)
     return angle;
 }
 
-long double gravityFormula(long double m, long double M, long double r)
-{
+long double gravityFormula(long double m, long double M, long double r){
     return (G * m * M) / (r * r);
 }
 
-vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r)
-{
+vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
     return {generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
             generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
             generateMultiplierZ(latitude) * gravityFormula(m, M, r)};
+}
+
+long double orbitSpeedFormula(long double M, long double r){
+    return modSqrt((G * M) / r)
 }
 
 #endif

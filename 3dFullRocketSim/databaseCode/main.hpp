@@ -1,12 +1,19 @@
+#ifndef databaseCode_hpp
+#define databaseCode_hpp
+
 #include <fstream>
 #include <map>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
 
+std::String toS(long double x){
+    return std::to_string(x);
+}
+
 void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
 {
-    std::string error = "Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+    std::string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
     for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
@@ -208,12 +215,12 @@ public:
         addedData = true;
         if (mapOfColumns.size() > data.size())
         {
-            ErrorMsg("More columns then data, Column count: " + std::to_string(mapOfColumns.size()) + " Data count: " + std::to_string(data.size()), "addData", data);
+            ErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
             return;
         }
         if (mapOfColumns.size() < data.size())
         {
-            ErrorMsg("Less columns then data, Column count: " + std::to_string(mapOfColumns.size()) + " Data count: " + std::to_string(data.size()), "addData", data);
+            ErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
             return;
         }
         bool first = true;
@@ -226,3 +233,5 @@ public:
         }
     }
 };
+
+#endif
