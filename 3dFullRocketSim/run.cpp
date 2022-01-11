@@ -35,7 +35,7 @@ void Update()
         it->vel.x += generateVelosity(it->mass, it->gravity.x);
         it->vel.x += generateVelosity(it->mass, it->gravity.y);
         it->vel.x += generateVelosity(it->mass, it->gravity.z);
-        it->pos = plussEqualVector3d(it->pos, it->vel);
+        plussEqualVector3d(it->pos, it->vel);
         it->update();
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)

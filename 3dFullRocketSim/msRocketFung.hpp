@@ -23,6 +23,7 @@ typedef std::numeric_limits<long double> dbl;
 
 long double seed = unsigned(time(nullptr));
 
+//struct holding x,y,z directions
 struct vector3d
 {
     long double x, y, z;
@@ -164,15 +165,14 @@ long double generateMultiplierZ(long double latitude)
     return degSin(latitude);
 }
 
-vector3d plussEqualVector3d(vector3d x, vector3d y)
+void plussEqualVector3d(vector3d& x, vector3d y)
 {
     x.x += y.x;
     x.y += y.y;
     x.z += y.z;
-    return x;
 }
 
-long double generateVelosity(long double massKG, long double thrustN)
+long double generateAccselerasion(long double massKG, long double thrustN)
 {
     long double a = thrustN / massKG / 1000;
     return a;

@@ -7,19 +7,39 @@
 #include <vector>
 #include <iostream>
 
+//alias for std::to_string
 std::String toS(long double x){
     return std::to_string(x);
 }
 
+bool terminateProgram = false;
+bool terminateWriteFile = false;
+bool errorHasBeenThrown = false;
+
+void onErrorTerminateProgram(bool x){
+    terminateProgram = x;
+}
+
+void onErrorTerminateWriteFile(bool x){
+    terminateWriteFile = x;
+}
+
+//prints error msg to console
 void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
 {
+    errorHasBeenThrown = true;
     std::string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
     for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     std::cout << error;
+
+    if(terminateProgram == true){
+
+    }
 }
 
+//used to read a file in the database
 class dataBaseReadFile
 {
 public:
@@ -28,6 +48,7 @@ public:
     std::ifstream file;
     std::string filename;
 
+    //constructer
     dataBaseReadFile(std::string filename)
     {
         dataBaseReadFile::filename = filename;
@@ -36,6 +57,8 @@ public:
         std::string text, splitElement = "|", token;
         size_t pos;
         getline(file, text);
+
+        //findes all the colomn names in the file
         while ((pos = text.find(splitElement)) != std::string::npos)
         {
             token = text.substr(0, pos);
@@ -151,6 +174,7 @@ public:
     }*/
 };
 
+//whrites a file to the database
 class dataBaseWriteFile
 {
 public:
@@ -159,6 +183,7 @@ public:
     std::ofstream file;
     bool addedData = false;
     std::string filename;
+    //constructor opens file
     dataBaseWriteFile(std::string filename)
     {
         dataBaseWriteFile::filename = filename;
@@ -168,8 +193,12 @@ public:
     void closeFile()
     {
         file.close();
+        if(errorHasBeenThrown == true && terminateWriteFile == true){
+            
+        }
     }
 
+    //add's a column to the file
     void addColumn(std::string columnName)
     {
         if (addedData)
@@ -187,6 +216,7 @@ public:
         file << "|" << columnName;
     }
 
+    //add's an array of column's to the file
     void addColumnArray(std::vector<std::string> columnNames)
     {
         if (addedData)
@@ -208,7 +238,8 @@ public:
             }
         }
     }
-
+    
+    //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
     void addData(std::vector<std::string> data)
     {
         file << std::endl;

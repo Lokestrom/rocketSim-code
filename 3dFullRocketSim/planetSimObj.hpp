@@ -43,7 +43,7 @@ public:
                 long double longitude = findLongitude(this->pos, it->pos), latitude = findLatitude(this->pos, it->pos);
                 long double distanse = generateDistanse(this->pos, it->pos);
 
-                gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
+                plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
             }
         }
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
@@ -51,7 +51,7 @@ public:
             long double longitude = findLongitude(this->pos, it->pos), latitude = findLatitude(this->pos, it->pos);
             long double distanse = generateDistanse(this->pos, it->pos);
 
-            gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
+            plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
         return gravity;
     }

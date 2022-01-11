@@ -51,6 +51,7 @@ public:
         
         t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
+        plussEqualVector3d()
         //collider::clliderDefinision.pos = pos;
         addData({toS(t), toS(pos.x), toS(pos.y), toS(pos.z), toS(vel.x), toS(vel.y), toS(vel.z), toS(modSqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), toS(mass), toS(thrust), toS(rotasion.x), toS(rotasion.y), toS(rotasion.z), toS(gravity.x), toS(gravity.y), toS(gravity.z), toS(modSqrt((gravity.x * gravity.x)+(gravity.y * gravity.y)+(gravity.z * gravity.z))), toS(drag.x), toS(drag.y), toS(drag.z), toS(modSqrt((drag.x * drag.x)+(drag.y * drag.y)+(drag.z * drag.z))), });
     }
@@ -89,7 +90,7 @@ public:
             long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
             long double distanse = generateDistanse(pos, it->pos);
 
-            gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
+            plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
 
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
@@ -97,7 +98,7 @@ public:
             long double latitude = findLatitude(pos, it->pos), longitude = findLongitude(pos, it->pos);
             long double distanse = generateDistanse(pos, it->pos);
 
-            gravity = plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
+            plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
     }
 
