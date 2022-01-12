@@ -12,6 +12,7 @@ std::String toS(long double x){
     return std::to_string(x);
 }
 
+std::string filename;
 bool terminateProgram = false;
 bool terminateWriteFile = false;
 bool errorHasBeenThrown = false;
@@ -33,9 +34,11 @@ void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     std::cout << error;
-
     if(terminateProgram == true){
-
+        if(terminateWriteFile == true){
+            
+        }
+        std::exit;
     }
 }
 
@@ -46,12 +49,11 @@ public:
     int nextColumnNumber = 0;
     std::unordered_map<std::string, int> mapOfColumns = {};
     std::ifstream file;
-    std::string filename;
 
     //constructer
-    dataBaseReadFile(std::string filename)
+    dataBaseReadFile(std::string fileName)
     {
-        dataBaseReadFile::filename = filename;
+        filename = fileName;
         file.open(filename);
         bool firstLine = true;
         std::string text, splitElement = "|", token;
@@ -182,11 +184,10 @@ public:
     int nextColumnNumber = 0;
     std::ofstream file;
     bool addedData = false;
-    std::string filename;
     //constructor opens file
-    dataBaseWriteFile(std::string filename)
+    dataBaseWriteFile(std::string fileName)
     {
-        dataBaseWriteFile::filename = filename;
+        filename = fileName;
         file.open(filename);
     }
 
