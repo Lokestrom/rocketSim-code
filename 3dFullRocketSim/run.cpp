@@ -87,4 +87,6 @@ int main()
         planetUpdate();
         i++;
     }*/
+
+    return 0;
 }
