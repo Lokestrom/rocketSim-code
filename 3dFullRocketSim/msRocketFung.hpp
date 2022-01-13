@@ -7,7 +7,6 @@
 #include <limits>
 #include <list>
 #include <fstream>
-#include <studio.h>
 #include "databaseCode/main.hpp"
 
 typedef std::numeric_limits<long double> dbl;
@@ -271,7 +270,7 @@ vector3d generateGravity(long double latitude, long double longitude, long doubl
 }
 
 long double orbitSpeedFormula(long double M, long double r){
-    return modSqrt((G * M) / r)
+    return modSqrt((G * M) / r);
 }
 
 #endif
