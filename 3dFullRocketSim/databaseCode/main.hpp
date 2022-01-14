@@ -8,12 +8,9 @@
 #include <iostream>
 
 //alias for std::to_string
-std::string toS(long double x){
+std::String toS(long double x){
     return std::to_string(x);
 }
-
-std::string splitElement = "|";
-std::string text, token;
 
 bool terminateProgram = false;
 bool terminateWriteFile = false;
@@ -48,7 +45,7 @@ public:
     int nextColumnNumber = 0;
     std::unordered_map<std::string, int> mapOfColumns = {};
     std::ifstream file;
-    std::string filename;
+    std:filename;
 
     //constructer
     dataBaseReadFile(std::string fileName)
@@ -56,6 +53,7 @@ public:
         dataBaseReadFile::filename = fileName;
         file.open(filename);
         bool firstLine = true;
+        std::string text, splitElement = "|", token;
         size_t pos;
         getline(file, text);
 
@@ -81,6 +79,7 @@ public:
         std::vector<long double> x;
         file.open(filename);
         long long int j = 0;
+        std::string text, splitElement = "|", token;
         size_t pos;
         bool firstline = true;
         int l = 1;
@@ -122,7 +121,7 @@ public:
         std::vector<std::string> x;
         file.open(filename);
         long long int j = 0;
-
+        std::string text, splitElement = "|", token;
         size_t pos;
         bool firstline = true;
         while (getline(file, text))
@@ -152,6 +151,7 @@ public:
         }
         file.open(filename);
         std::vector<std::vector<std::string>> x = {};
+        std::string text;
         bool firstline = true;
         int j = 0, i = 0;
         size_t pos;
@@ -171,10 +171,10 @@ public:
                 if(x[i][mapOfColumns[columnName]] == value){
                     i++;
                 }
+                x.push_back(token);
             }
             firstline = false;
         }
-
     }
 };
 
@@ -194,12 +194,12 @@ public:
         file.open(filename);
     }
 
-    void dataBaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput){
+    dataBaseWriteFileErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput){
         if(terminateWriteFile == true && terminateProgram == true){
             file.close();
             deleteFile();
         }
-        ErrorMsg(ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
+        ErrorMsg(ErrorMsg, ErrorFungtion, ErrorFungtionInput);
     }
 
     void closeFile()

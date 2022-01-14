@@ -13,7 +13,7 @@ void asigneListsPlanet(std::list<planet> listOfAllPlanets)
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
 }
 
-class planet : planetCollider
+class planet : dataBaseWriteFile, planetCollider
 {
 public:
     long double mass, radius;
