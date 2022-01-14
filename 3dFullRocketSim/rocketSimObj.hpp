@@ -1,5 +1,4 @@
-#ifndef rocketSimObj_hpp
-#define rocketSimObj_hpp
+#pragma once
 
 #include "planetSimObj.hpp"
 
@@ -12,7 +11,7 @@ void asigneListsRocket(std::list<rocketStage> listOfAllRocketStages)
     rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end());
 }
 
-class rocketStage : dataBaseWriteFile // : collider
+class rocketStage : databaseWriteFile // : collider
 {
 private:
     long double thrust;
@@ -23,7 +22,7 @@ public:
     long double mass, dryMass, fuleUsePerMiliSecond, exitVelosityOfPropelent, EGToCG, thrustUnsertentyProsnet;
     vector3d vel, gravity, drag, pos, rotasion, CGpos, CPpos, EGpos;
     bool active = false;
-    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint) : dataBaseWriteFile("rocketStage: " + (char)ID)
+    rocketStage(int ID, long double wetMass, long double dryMass, vector3d Velosity, vector3d posision, long double fuleUsePerMiliSecond, long double exitVelosityOfPropelent, long double thrustunsertentyProsnet, vector3d engineGimblePoint, vector3d centeOfGravityPoint, vector3d centerOfPresurePoint) : databaseWriteFile("rocketStage: " + (char)ID)
     { //colliderStats rocketColliderStats, int sphereCollliderNum, std::vector<sphereCollider> sphereColliderDefinedList, int boxColliderNum, std::vector<boxCollider> boxColliderDefinedList, int sylinderColliderNum, std::vector<sylinderCollider> sylinderColliderDefinedList) : collider(rocketColliderStats, sphereCollliderNum, sphereColliderDefinedList, boxColliderNum, boxColliderDefinedList, sylinderColliderNum, sylinderColliderDefinedList){
         rocketStage::ID = ID;
         rocketStage::mass = wetMass;
@@ -51,7 +50,6 @@ public:
         
         t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
-        plussEqualVector3d();
         //collider::clliderDefinision.pos = pos;
         addData({toS(t), toS(pos.x), toS(pos.y), toS(pos.z), toS(vel.x), toS(vel.y), toS(vel.z), toS(modSqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), toS(mass), toS(thrust), toS(rotasion.x), toS(rotasion.y), toS(rotasion.z), toS(gravity.x), toS(gravity.y), toS(gravity.z), toS(modSqrt((gravity.x * gravity.x)+(gravity.y * gravity.y)+(gravity.z * gravity.z))), toS(drag.x), toS(drag.y), toS(drag.z), toS(modSqrt((drag.x * drag.x)+(drag.y * drag.y)+(drag.z * drag.z))), });
     }
@@ -112,5 +110,3 @@ public:
         }
     }*/
 };
-
-#endif

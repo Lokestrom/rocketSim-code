@@ -1,5 +1,4 @@
-#ifndef databaseCode_hpp
-#define databaseCode_hpp
+#pragma once
 
 #include <fstream>
 #include <map>
@@ -8,9 +7,11 @@
 #include <iostream>
 
 //alias for std::to_string
-std::String toS(long double x){
+std::string toS(long double x){
     return std::to_string(x);
 }
+
+std::string splitElement = "|", token, text;
 
 bool terminateProgram = false;
 bool terminateWriteFile = false;
@@ -39,21 +40,20 @@ void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::
 }
 
 //used to read a file in the database
-class dataBaseReadFile
+class databaseReadFile
 {
 public:
     int nextColumnNumber = 0;
     std::unordered_map<std::string, int> mapOfColumns = {};
     std::ifstream file;
-    std:filename;
+    std::string filename;
 
     //constructer
-    dataBaseReadFile(std::string fileName)
+    databaseReadFile(std::string fileName)
     {
-        dataBaseReadFile::filename = fileName;
+        databaseReadFile::filename = fileName;
         file.open(filename);
         bool firstLine = true;
-        std::string text, splitElement = "|", token;
         size_t pos;
         getline(file, text);
 
@@ -69,17 +69,16 @@ public:
         file.close();
     }
 
-    std::vector<long double> getAllDataFromColumnLongDouble(std::string columnName)
+    std::vector<double> getAllDataFromColumnDouble(std::string columnName)
     {
-        if (mapOfColumns[columnName] == 0)
+        if (!mapOfColumns.count(columnName))
         {
             ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
             return {};
         }
-        std::vector<long double> x;
+        std::vector<double> x;
         file.open(filename);
         long long int j = 0;
-        std::string text, splitElement = "|", token;
         size_t pos;
         bool firstline = true;
         int l = 1;
@@ -87,6 +86,7 @@ public:
         {
             if (!firstline)
             {
+                j = 0;
                 while (j <= mapOfColumns[columnName])
                 {
                     pos = text.find(splitElement);
@@ -113,7 +113,7 @@ public:
 
     std::vector<std::string> getAllDataFromColumnString(std::string columnName)
     {
-        if (mapOfColumns[columnName] == 0)
+        if (!mapOfColumns.count(columnName))
         {
             ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
             return {};
@@ -121,13 +121,13 @@ public:
         std::vector<std::string> x;
         file.open(filename);
         long long int j = 0;
-        std::string text, splitElement = "|", token;
         size_t pos;
         bool firstline = true;
         while (getline(file, text))
         {
             if (!firstline)
             {
+                j=0;
                 while (j <= mapOfColumns[columnName])
                 {
                     pos = text.find(splitElement);
@@ -144,14 +144,13 @@ public:
     }
 
     std::vector<std::vector<std::string>> getAllRowsWhereColumnIsEqualeToAValue(std::string columnName, std::string value){
-        if (mapOfColumns[columnName] == 0)
+        if (!mapOfColumns.count(columnName))
         {
             ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
             return {{}};
         }
         file.open(filename);
         std::vector<std::vector<std::string>> x = {};
-        std::string text;
         bool firstline = true;
         int j = 0, i = 0;
         size_t pos;
@@ -171,7 +170,6 @@ public:
                 if(x[i][mapOfColumns[columnName]] == value){
                     i++;
                 }
-                x.push_back(token);
             }
             firstline = false;
         }
@@ -179,7 +177,8 @@ public:
 };
 
 //whrites a file to the database
-class dataBaseWriteFile
+//remember to close file
+class databaseWriteFile
 {
 public:
     std::string filename;
@@ -188,18 +187,18 @@ public:
     std::ofstream file;
     bool addedData = false;
     //constructor opens file
-    dataBaseWriteFile(std::string fileName)
+    databaseWriteFile(std::string fileName)
     {
-        dataBaseWriteFile::filename = fileName;
+        databaseWriteFile::filename = fileName;
         file.open(filename);
     }
 
-    dataBaseWriteFileErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput){
+    void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput){
         if(terminateWriteFile == true && terminateProgram == true){
             file.close();
             deleteFile();
         }
-        ErrorMsg(ErrorMsg, ErrorFungtion, ErrorFungtionInput);
+        ErrorMsg(ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
     }
 
     void closeFile()
@@ -211,7 +210,7 @@ public:
     }
 
     void deleteFile(){
-        remove(filename);
+        remove(filename.c_str());
     }
 
     //add's a column to the file
@@ -219,7 +218,7 @@ public:
     {
         if (addedData)
         {
-            dataBaseWriteFileErrorMsg("Can't add column data has been added", "addColumn", {columnName});
+            databaseWriteFileErrorMsg("Can't add column data has been added", "addColumn", {columnName});
             return;
         }
         mapOfColumns[columnName] = nextColumnNumber;
@@ -237,7 +236,7 @@ public:
     {
         if (addedData)
         {
-            dataBaseWriteFileErrorMsg("Can't add column data has been added", "addColumnArray", columnNames);
+            databaseWriteFileErrorMsg("Can't add column data has been added", "addColumnArray", columnNames);
             return;
         }
         for (std::string columnName : columnNames)
@@ -262,12 +261,12 @@ public:
         addedData = true;
         if (mapOfColumns.size() > data.size())
         {
-            dataBaseWriteFileErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
+            databaseWriteFileErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
             return;
         }
         if (mapOfColumns.size() < data.size())
         {
-            dataBaseWriteFileErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
+            databaseWriteFileErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
             return;
         }
         bool first = true;
@@ -280,5 +279,3 @@ public:
         }
     }
 };
-
-#endif

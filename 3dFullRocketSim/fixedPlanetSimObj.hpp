@@ -1,5 +1,4 @@
-#ifndef fixedPlanetSimObj_hpp
-#define fixedPlanetSimObj_hpp
+#pragma once
 
 #include "msRocketFung.hpp"
 
@@ -12,13 +11,13 @@ void asigneListsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class fixedPlanet : dataBaseWriteFile, planetCollider
+class fixedPlanet : databaseWriteFile, planetCollider
 {
 public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : databaseWhriteFile("") planetCollider(radius, pos)
+    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile(""), planetCollider(radius, pos)
     {
         fixedPlanet::ID = fixedPlanetID;
         fixedPlanet::mass = mass;
@@ -52,5 +51,3 @@ public:
         }
     }
 };
-
-#endif

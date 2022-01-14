@@ -1,5 +1,4 @@
-#ifndef msRocketFung_hpp
-#define msRocketFung_hpp
+#pragma once
 
 #include <cmath>
 #include <iostream>
@@ -272,5 +271,3 @@ vector3d generateGravity(long double latitude, long double longitude, long doubl
 long double orbitSpeedFormula(long double M, long double r){
     return modSqrt((G * M) / r);
 }
-
-#endif

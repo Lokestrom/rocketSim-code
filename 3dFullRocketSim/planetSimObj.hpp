@@ -1,5 +1,4 @@
-#ifndef planetSimObj_hpp
-#define planetSimObj_hpp
+#pragma once
 
 #include "fixedPlanetSimObj.hpp"
 #include "msRocketFung.hpp"
@@ -13,14 +12,14 @@ void asigneListsPlanet(std::list<planet> listOfAllPlanets)
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
 }
 
-class planet : dataBaseWriteFile, planetCollider
+class planet : databaseWriteFile, planetCollider
 {
 public:
     long double mass, radius;
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : planetCollider(radius, pos)
+    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile(""),planetCollider(radius, pos)
     {
         planet::ID = planetID;
         planet::mass = mass;
@@ -80,5 +79,3 @@ public:
         }
     }
 };
-
-#endif
