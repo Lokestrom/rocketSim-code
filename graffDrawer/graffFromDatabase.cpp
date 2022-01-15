@@ -12,8 +12,8 @@ int main()
 
     //put in column navnene
     std::string 
-    xAksenNavn = "a",
-    yAksenNavn = "b";
+    xAksenNavn = "",
+    yAksenNavn = "";
 
     //put in brede og høyden av bildet
     int

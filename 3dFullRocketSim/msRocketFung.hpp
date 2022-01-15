@@ -131,37 +131,49 @@ long double degCos(long double x)
     return cosl(degToRad(x));
 }
 
+long double findRest(long double x, long double y)
+{
+    while (x >= y) x -= y;
+    return x;
+}
+
+long double fixAngle(long double angle){
+    if (angle >= 360) return findRest(angle, 360);
+
+    if (angle < 0){
+        while (angle < 0){
+            angle += 360;
+        }
+        return angle;
+    }
+    return angle;
+}
+
 long double absVal(long double x)
 {
-    if (x < 0)
-    {
-        return -x;
-    }
+    if (x < 0) return -x;
     return x;
 }
 
 long double modSqrt(long double x)
 {
-    if (x < 0)
-    {
-        return -sqrtl(-x);
-    }
+    if (x < 0) return -sqrtl(-x);
     return sqrtl(x);
 }
 
 long double generateMultiplierX(long double latitude, long double longitude)
 {
-    return degCos(latitude) * degCos(longitude);
+    return degCos(latitude) * degSin(longitude);
 }
 
 long double generateMultiplierY(long double latitude, long double longitude)
 {
-    return degCos(latitude) * degSin(longitude);
+    return degSin(latitude) * degSin(longitude);
 }
 
 long double generateMultiplierZ(long double latitude)
 {
-    return degSin(latitude);
+    return degCos(latitude);
 }
 
 void plussEqualVector3d(vector3d& x, vector3d y)
@@ -173,8 +185,7 @@ void plussEqualVector3d(vector3d& x, vector3d y)
 
 long double generateAccselerasion(long double massKG, long double thrustN)
 {
-    long double a = thrustN / massKG / 1000;
-    return a;
+    return thrustN / massKG / 1000;;
 }
 
 long double generateAirDensity(long double h, int n)
@@ -195,67 +206,22 @@ long double generateAirDensity(long double h, int n)
     return 0;
 }
 
-//longitude: positiv x = 0 grader, positiv y = 90 grader, negativ x = 180, negativ y = 270;
-
+//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    vector3d relativePos = {pos.x - otherPos.x, pos.y - otherPos.y, pos.z - otherPos.z};
-    if (relativePos.x < 0 && relativePos.y > 0)
-    {
-        long double add = (90 - absVal(radToDeg(atanl((relativePos.y / relativePos.x))))) * 2;
-
-        return absVal(radToDeg(atanl((relativePos.y / relativePos.x)))) + add;
-    }
-    else if (relativePos.x <= 0 && relativePos.y <= 0)
-    {
-        return radToDeg(atanl((relativePos.y / relativePos.x))) + 180;
-    }
-    else if (relativePos.x > 0 && relativePos.y < 0)
-    {
-
-        long double add = (90 - absVal(radToDeg(atanl((relativePos.y / relativePos.x))))) * 2;
-
-        return absVal(radToDeg(atanl((relativePos.y / relativePos.x)))) + add + 180;
-    }
-
-    return radToDeg(atanl((relativePos.y / relativePos.x)));
+    return fixAngle(radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
 }
 
-//latitude: (x*y = 0) + positiv z = 90 grader, (x*y = 0) + negativ z = -90 grader, (z = 0) = 0 grader;
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    if (pos.z - otherPos.z == 0)
-    {
-        return 0;
-    }
-    return radToDeg(atanl((pos.z - otherPos.z) / absVal(modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))));
+    if (pos.z - otherPos.z == 0) return 0;
+    return radToDeg(atanl((pos.z - otherPos.z) / modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))));
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
 {
     return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
-}
-
-long double findRest(long double x, long double y)
-{
-    while (x >= y)
-    {
-        x -= y;
-    }
-    return x;
-}
-
-long double angleFix(long double angle){
-    if (angle >= 360){
-        return findRest(angle, 360);
-    }
-    if (angle < 0){
-        while (angle < 0){
-            angle += 360;
-        }
-        return angle;
-    }
-    return angle;
 }
 
 long double gravityFormula(long double m, long double M, long double r){
@@ -271,3 +237,9 @@ vector3d generateGravity(long double latitude, long double longitude, long doubl
 long double orbitSpeedFormula(long double M, long double r){
     return modSqrt((G * M) / r);
 }
+
+/*
+sirkel kordinatsystem fra: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+phi = longitude
+theta = latitude
+*/
