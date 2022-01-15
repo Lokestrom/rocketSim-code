@@ -216,7 +216,7 @@ long double findLongitude(vector3d pos, vector3d otherPos)
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
     if (pos.z - otherPos.z == 0) return 0;
-    return radToDeg(atanl((pos.z - otherPos.z) / modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))));
+    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))));
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
