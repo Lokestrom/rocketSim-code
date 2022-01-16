@@ -163,7 +163,7 @@ long double modSqrt(long double x)
 
 long double generateMultiplierX(long double latitude, long double longitude)
 {
-    return degCos(latitude) * degSin(longitude);
+    return degSin(latitude) * degCos(longitude);
 }
 
 long double generateMultiplierY(long double latitude, long double longitude)
@@ -209,14 +209,14 @@ long double generateAirDensity(long double h, int n)
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    return fixAngle(radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
+    return fixAngle(-radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    if (pos.z - otherPos.z == 0) return 0;
-    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))));
+    if (pos.z - otherPos.z == 0) return 90;
+    return fixAngle(-radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))))))+90;
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
@@ -229,6 +229,7 @@ long double gravityFormula(long double m, long double M, long double r){
 }
 
 vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
+    std::cout << latitude << "   " << longitude << "   " << m << "   " << M << "   " << r << "\n";
     return {generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
             generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
             generateMultiplierZ(latitude) * gravityFormula(m, M, r)};

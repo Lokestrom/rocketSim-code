@@ -7,7 +7,8 @@
 #include <iostream>
 
 //alias for std::to_string
-std::string toS(long double x){
+std::string toS(long double x)
+{
     return std::to_string(x);
 }
 
@@ -16,12 +17,15 @@ std::string splitElement = "|", token, text;
 bool terminateProgram = false;
 bool terminateWriteFile = false;
 bool errorHasBeenThrown = false;
+bool NANinData = false;
 
-void onErrorTerminateProgram(bool x){
+void onErrorTerminateProgram(bool x)
+{
     terminateProgram = x;
 }
 
-void onErrorTerminateWriteFile(bool x){
+void onErrorTerminateWriteFile(bool x)
+{
     terminateWriteFile = x;
 }
 
@@ -34,7 +38,7 @@ void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     std::cout << error;
-    if(terminateProgram == true){
+    if (terminateProgram){
         std::exit;
     }
 }
@@ -45,17 +49,17 @@ class databaseReadFile
 public:
     int nextColumnNumber = 0;
     std::unordered_map<std::string, int> mapOfColumns = {};
-    std::ifstream file;
+    std::ifstream *file = new std::ifstream;
     std::string filename;
 
     //constructer
     databaseReadFile(std::string fileName)
     {
         databaseReadFile::filename = fileName;
-        file.open(filename);
+        file->open(filename);
         bool firstLine = true;
         size_t pos;
-        getline(file, text);
+        getline(*file, text);
 
         //findes all the colomn names in the file
         while ((pos = text.find(splitElement)) != std::string::npos)
@@ -66,7 +70,7 @@ public:
             nextColumnNumber++;
         }
         mapOfColumns[text] = nextColumnNumber;
-        file.close();
+        file->close();
     }
 
     std::vector<double> getAllDataFromColumnDouble(std::string columnName)
@@ -77,12 +81,12 @@ public:
             return {};
         }
         std::vector<double> x;
-        file.open(filename);
+        file->open(filename);
         long long int j = 0;
         size_t pos;
         bool firstline = true;
         int l = 1;
-        while (getline(file, text))
+        while (getline(*file, text))
         {
             if (!firstline)
             {
@@ -107,7 +111,7 @@ public:
             firstline = false;
             l++;
         }
-        file.close();
+        file->close();
         return x;
     }
 
@@ -119,15 +123,15 @@ public:
             return {};
         }
         std::vector<std::string> x;
-        file.open(filename);
+        file->open(filename);
         long long int j = 0;
         size_t pos;
         bool firstline = true;
-        while (getline(file, text))
+        while (getline(*file, text))
         {
             if (!firstline)
             {
-                j=0;
+                j = 0;
                 while (j <= mapOfColumns[columnName])
                 {
                     pos = text.find(splitElement);
@@ -139,22 +143,23 @@ public:
             }
             firstline = false;
         }
-        file.close();
+        file->close();
         return x;
     }
 
-    std::vector<std::vector<std::string>> getAllRowsWhereColumnIsEqualeToAValue(std::string columnName, std::string value){
+    std::vector<std::vector<std::string>> getAllRowsWhereColumnIsEqualeToAValue(std::string columnName, std::string value)
+    {
         if (!mapOfColumns.count(columnName))
         {
             ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
             return {{}};
         }
-        file.open(filename);
+        file->open(filename);
         std::vector<std::vector<std::string>> x = {};
         bool firstline = true;
         int j = 0, i = 0;
         size_t pos;
-        while (getline(file, text))
+        while (getline(*file, text))
         {
             if (!firstline)
             {
@@ -167,16 +172,18 @@ public:
                     x[i][j] = token;
                     j++;
                 }
-                if(x[i][mapOfColumns[columnName]] == value){
+                if (x[i][mapOfColumns[columnName]] == value)
+                {
                     i++;
                 }
             }
             firstline = false;
         }
+        file->close();
     }
 };
 
-//whrites a file to the database
+//writes a file to the database
 //remember to close file
 class databaseWriteFile
 {
@@ -184,18 +191,20 @@ public:
     std::string filename;
     std::unordered_map<std::string, int> mapOfColumns = {};
     int nextColumnNumber = 0;
-    std::ofstream file;
+    std::ofstream *file = new std::ofstream;
     bool addedData = false;
     //constructor opens file
     databaseWriteFile(std::string fileName)
     {
         databaseWriteFile::filename = fileName;
-        file.open(filename);
+        file->open(filename);
     }
 
-    void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput){
-        if(terminateWriteFile == true && terminateProgram == true){
-            file.close();
+    void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+    {
+        if (terminateWriteFile == true && terminateProgram == true)
+        {
+            file->close();
             deleteFile();
         }
         ErrorMsg(ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
@@ -203,13 +212,13 @@ public:
 
     void closeFile()
     {
-        file.close();
-        if(errorHasBeenThrown == true && terminateWriteFile == true){
+        file->close();
+        if (errorHasBeenThrown == true && terminateWriteFile == true)
             deleteFile();
-        }
     }
 
-    void deleteFile(){
+    void deleteFile()
+    {
         remove(filename.c_str());
     }
 
@@ -225,10 +234,10 @@ public:
         nextColumnNumber++;
         if (nextColumnNumber == 1)
         {
-            file << columnName;
+            *file << columnName;
             return;
         }
-        file << "|" << columnName;
+        *file << "|" << columnName;
     }
 
     //add's an array of column's to the file
@@ -244,20 +253,16 @@ public:
             mapOfColumns[columnName] = nextColumnNumber;
             nextColumnNumber++;
             if (nextColumnNumber == 1)
-            {
-                file << columnName;
-            }
+                *file << columnName;
             else
-            {
-                file << "|" << columnName;
-            }
+                *file << "|" << columnName;
         }
     }
-    
+
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
     void addData(std::vector<std::string> data)
     {
-        file << std::endl;
+        *file << std::endl;
         addedData = true;
         if (mapOfColumns.size() > data.size())
         {
@@ -273,8 +278,8 @@ public:
         for (std::string i : data)
         {
             if (!first)
-                file << "|";
-            file << i;
+                *file << "|";
+            *file << i;
             first = false;
         }
     }
