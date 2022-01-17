@@ -230,9 +230,9 @@ long double gravityFormula(long double m, long double M, long double r){
 
 vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
     std::cout << latitude << "   " << longitude << "   " << m << "   " << M << "   " << r << "\n";
-    return {generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
-            generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
-            generateMultiplierZ(latitude) * gravityFormula(m, M, r)};
+    return {-generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
+            -generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
+            -generateMultiplierZ(latitude) * gravityFormula(m, M, r)};
 }
 
 long double orbitSpeedFormula(long double M, long double r){

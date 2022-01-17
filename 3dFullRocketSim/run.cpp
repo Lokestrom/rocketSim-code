@@ -86,11 +86,10 @@ int main()
     planet planet1(1, 1E+14, 1, {0, 0, 0}, {0, 0, 0});
     planet planet2(1, 1000, 1, {100, 0, 0}, {0, sqrt((G * 1E+14) / 100), 0});
 
-    rocketStageList = {};
+    rocketStageList = {stage1};
     planetList = {planet1, planet2};
     fixedPlanetList = {};
-    colliderList = {};
-
+    
     int startPlanetID = ;
     bool planetTypeFlaseIsPlanetTrueIsFixedPlanet
     startup(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
