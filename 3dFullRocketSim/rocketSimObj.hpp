@@ -4,14 +4,14 @@
 
 class rocketStage;
 
-std::list<rocketStage> rocketStageList;
+std::list<rocketStage>& rocketStageList;
 
 void asigneListsRocket(std::list<rocketStage> listOfAllRocketStages)
 {
-    rocketStageList.assign(listOfAllRocketStages.begin(), listOfAllRocketStages.end());
+    rocketStageList = listOfAllRocketStages
 }
 
-class rocketStage : databaseWriteFile // : collider
+class rocketStage : public databaseWriteFile // : collider
 {
 private:
     long double thrust;

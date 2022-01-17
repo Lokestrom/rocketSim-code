@@ -11,7 +11,7 @@ void asigneListsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
     fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
 }
 
-class fixedPlanet : databaseWriteFile, planetCollider
+class fixedPlanet : public databaseWriteFile, planetCollider
 {
 public:
     long double mass, radius;

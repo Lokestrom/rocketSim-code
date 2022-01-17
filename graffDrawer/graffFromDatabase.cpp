@@ -29,6 +29,6 @@ int main()
     DrawScatterPlot(imageRef, brede, høyde, &X, &Y);
 
     std::vector<double> *pngData = ConvertToPNG(imageRef->image);
-    WriteToFile(pngData, xAksenNavn + " over " + yAksenNavn + " graff.png");
+    WriteToFile(pngData, yAksenNavn + " over " + xAksenNavn + " graff.png");
     DeleteImage(imageRef->image);
 }

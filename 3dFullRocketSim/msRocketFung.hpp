@@ -209,14 +209,14 @@ long double generateAirDensity(long double h, int n)
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    return fixAngle(-radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
+    return fixAngle(radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
     if (pos.z - otherPos.z == 0) return 90;
-    return fixAngle(-radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))))))+90;
+    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))))))+90;
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
