@@ -24,5 +24,5 @@ public class planetscript : MonoBehaviour
     void Update()
     {
         
-    }
+    } 
 }
