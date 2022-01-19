@@ -24,6 +24,7 @@ public:
     {
         if(f)
             return;
+        
         plussEqualVector3d(v, g);
         plussEqualVector3d(p, v);
         addData({toS(p.x), toS(p.y), toS(p.z), toS(sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z))), toS(v.x), toS(v.y), toS(v.z)});
@@ -43,7 +44,7 @@ public:
 int main()
 {
     planet planet1(1, 1E+14, {0, 0, 0}, {0, 0, 0}, true);
-    planet planet2(2, 1, {100, 0, 0}, {0, sqrt((G * 1E+14) / 100), 0}, false);
+    planet planet2(2, 1, {100, 0, 0}, {0, orbitSpeedFormula(planet1.m, generateDistanse({100, 0, 0}, planet1.p)), 0}, false);
 
     std::list<planet> pl = {planet1, planet2};
 

@@ -188,6 +188,13 @@ long double generateAccselerasion(long double massKG, long double thrustN)
     return thrustN / massKG / 1000;;
 }
 
+vector3d generateAccselerasionVector(long double massKG, vector3d gravityN){
+    gravityN.x = generateAccselerasion(mass, gravityN.x);
+    gravityN.y = generateAccselerasion(mass, gravityN.y);
+    gravityN.z = generateAccselerasion(mass, gravityN.z);
+    return gravityN;
+}
+
 long double generateAirDensity(long double h, int n)
 {
     int i = 0;
@@ -229,10 +236,10 @@ long double gravityFormula(long double m, long double M, long double r){
 }
 
 vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
-    std::cout << latitude << "   " << longitude << "   " << m << "   " << M << "   " << r << "\n";
-    return {-generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
+    return generateAccselerasionVector(m, 
+            {-generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
             -generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
-            -generateMultiplierZ(latitude) * gravityFormula(m, M, r)};
+            -generateMultiplierZ(latitude) * gravityFormula(m, M, r)});
 }
 
 long double orbitSpeedFormula(long double M, long double r){
