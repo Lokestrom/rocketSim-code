@@ -17,17 +17,17 @@ public:
         p = pos;
         v = vel;
         m = mass;
-        addColumnArray({toS(id) + "posX", toS(id) + "posY", toS(id) + "posZ", toS(id) + "vel", toS(id) + "velX", toS(id) + "velY", toS(id) + "velZ"});
+        addColumnArray({"t" ,"posX", "posY", "posZ", "vel", "velX", "velY", "velZ"});
     }
 
-    void update()
+    void update(int t)
     {
         if(f)
             return;
         
         plussEqualVector3d(v, g);
         plussEqualVector3d(p, v);
-        addData({toS(p.x), toS(p.y), toS(p.z), toS(sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z))), toS(v.x), toS(v.y), toS(v.z)});
+        addData({toS(t) ,toS(p.x), toS(p.y), toS(p.z), toS(sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z))), toS(v.x), toS(v.y), toS(v.z)});
     }
 
     void grav(std::list<planet> pl)
@@ -48,12 +48,12 @@ int main()
 
     std::list<planet> pl = {planet1, planet2};
 
-    for (int i = 0; i < 3; i++)
+    for (int t = 0; t < 1000; t++)
     {
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
             it->grav(pl);
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
-            it->update();
+            it->update(t);
     }
     for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
         it->closeFile();

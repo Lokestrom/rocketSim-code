@@ -77,7 +77,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
+            ErrorMsg("Not a column name", "getAllDataFromColumnDouble", {columnName});
             return {};
         }
         std::vector<double> x;
@@ -119,7 +119,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("Not a column name", "getAllDataFromColumnLongDouble", {columnName});
+            ErrorMsg("Not a column name", "getAllDataFromColumnString", {columnName});
             return {};
         }
         std::vector<std::string> x;

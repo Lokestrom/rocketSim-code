@@ -189,9 +189,9 @@ long double generateAccselerasion(long double massKG, long double thrustN)
 }
 
 vector3d generateAccselerasionVector(long double massKG, vector3d gravityN){
-    gravityN.x = generateAccselerasion(mass, gravityN.x);
-    gravityN.y = generateAccselerasion(mass, gravityN.y);
-    gravityN.z = generateAccselerasion(mass, gravityN.z);
+    gravityN.x = generateAccselerasion(massKG, gravityN.x);
+    gravityN.y = generateAccselerasion(massKG, gravityN.y);
+    gravityN.z = generateAccselerasion(massKG, gravityN.z);
     return gravityN;
 }
 

@@ -7,18 +7,18 @@ int main()
 
     onErrorTerminateProgram(true);
     //filePath til filen
-    std::string fileName = "";
+    std::string fileName = "D:\\code\\codeProsjekt\\flightControler\\2.000000.txt";
     databaseReadFile file(fileName);
 
     //put in column navnene
     std::string 
-    xAksenNavn = "",
-    yAksenNavn = "";
+    xAksenNavn = "t",
+    yAksenNavn = "vel";
 
     //put in brede og høyden av bildet
     int
-    brede = 10000,
-    høyde = 10000;
+    brede = 1000,
+    høyde = 1000;
 
 
     std::vector<double> X = file.getAllDataFromColumnDouble(xAksenNavn);
