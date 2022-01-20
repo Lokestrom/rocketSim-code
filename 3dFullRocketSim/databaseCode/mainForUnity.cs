@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
+stof(string s){
+    return float.Parse(s, CultureInfo.InvariantCulture.NumberFormat);
+}
+
 void ErrorMsg(string ErrorMsg, string ErrorFungtion, string[] ErrorFungtionInput)
 {
     string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
@@ -19,7 +23,7 @@ public class databaseReadFile
     string filename;
 
     //constructer
-    databaseReadFile(string fileName)
+    public databaseReadFile(string fileName)
     {
         filename = fileName;
         bool firstLine = true;
@@ -48,7 +52,7 @@ public class databaseReadFile
         bool firstline = true;
         foreach (string line in System.IO.File.ReadLines(filename))
         {
-            if(!firstline) floatx[i] = float.Parse(line.Split("|")[mapOfColumns[columnName]], CultureInfo.InvariantCulture.NumberFormat);
+            if(!firstline) x[i] = stof(line.Split("|")[mapOfColumns[columnName]]);
         }
         return x;
     }

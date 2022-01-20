@@ -3,6 +3,7 @@
 std::list<rocketStage> rocketStageList;
 std::list<planet> planetList;
 std::list<fixedPlanet> fixedPlanetList;
+int runID = 0;
 
 void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 {
@@ -14,6 +15,8 @@ void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
         if (it->active == true)
             it->startupRocket(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
     }
+    databaseWriteFile* startupFile = new databaseWriteFile("InfoRun:" + toS(runID));
+    startupFile->
 }
 
 void end(){
@@ -67,6 +70,8 @@ void Update()
 int main()
 {
     std::cout << std::fixed;
+
+    runID = 0;
 
     long double
         wetMass = 1,

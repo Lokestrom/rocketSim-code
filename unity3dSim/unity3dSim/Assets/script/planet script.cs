@@ -1,28 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using databaseReadFile;
 
-public class planetscript : MonoBehaviour
+public class planet : databaseReadFile
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        string text = System.IO.File.ReadText(@"C:\Users\Public\TestFolder\WriteText.txt");
-
-        string[] lines = System.IO.File.ReadAllLines(@"C:\Users\Public\TestFolder\WriteLines2.txt");
-
-        // Display the file contents by using a foreach loop.
-        System.Console.WriteLine("Contents of WriteLines2.txt = ");
-        foreach (string line in lines)
-        {
-            // Use a tab to indent each line of the file.
-            Console.WriteLine("\t" + line);
-        }
+    GameObject sphere = GameObject.CreatePrimative(PrimativeType.sphere)
+    string fileName;
+    int timer = 0;
+    public planet(string file, int radius, vector3 pos) : databaseReadFile(file){
+        fileName = file;
+        sphere.transform.position = pos;
+        sphere.transform.localScale = new vector3(radius, radius, radius);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    } 
+    public void update(){
+        timer += Time.deltaTime;
+        pos.set(getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posX"]],
+                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posY"]],
+                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posZ"]]);
+
+    }
 }

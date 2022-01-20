@@ -6,13 +6,40 @@
 #include <vector>
 #include <iostream>
 
+const std::string splitElement = "|", 
+std::string token, text;
+
 //alias for std::to_string
 std::string toS(long double x)
 {
     return std::to_string(x);
 }
 
-std::string splitElement = "|", token, text;
+std::vector<std::string> split(std::string s, std::string x){
+    std::vector<std::string> splitarr = {};
+    size_t pos;
+
+    //findes all the colomn names in the file
+    while ((pos = s.find(x)) != std::string::npos)
+    {
+        splitarr.push_back(s.substr(0, pos));
+        s.erase(0, pos + x.length());
+    }
+    return splitarr
+}
+
+std::string splitIndex(std::string s, std::string x, int index){
+    std::string produkt = "";
+    size_t pos;
+    int i = 0;
+    //findes all the colomn names in the file
+    while ((pos = s.find(x)) != std::string::npos && i <= index)
+    {
+        produkt = (s.substr(0, pos));
+        s.erase(0, pos + x.length());
+    }
+    return produkt;
+}
 
 bool terminateProgram = false;
 bool terminateWriteFile = false;
@@ -57,18 +84,8 @@ public:
     {
         databaseReadFile::filename = fileName;
         file->open(filename);
-        bool firstLine = true;
-        size_t pos;
         getline(*file, text);
 
-        //findes all the colomn names in the file
-        while ((pos = text.find(splitElement)) != std::string::npos)
-        {
-            token = text.substr(0, pos);
-            text.erase(0, pos + splitElement.length());
-            mapOfColumns[token] = nextColumnNumber;
-            nextColumnNumber++;
-        }
         mapOfColumns[text] = nextColumnNumber;
         file->close();
     }
@@ -90,14 +107,7 @@ public:
         {
             if (!firstline)
             {
-                j = 0;
-                while (j <= mapOfColumns[columnName])
-                {
-                    pos = text.find(splitElement);
-                    token = text.substr(0, pos);
-                    text.erase(0, pos + splitElement.length());
-                    j++;
-                }
+                token = splitIndex(text, splitElement, mapOfColumns[columnName]);
                 for (char i : token)
                 {
                     if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
@@ -124,21 +134,12 @@ public:
         }
         std::vector<std::string> x;
         file->open(filename);
-        long long int j = 0;
-        size_t pos;
         bool firstline = true;
         while (getline(*file, text))
         {
             if (!firstline)
             {
-                j = 0;
-                while (j <= mapOfColumns[columnName])
-                {
-                    pos = text.find(splitElement);
-                    token = text.substr(0, pos);
-                    text.erase(0, pos + splitElement.length());
-                    j++;
-                }
+                splitIndex(text, splitElement, mapOfColumns[columnName])
                 x.push_back(token);
             }
             firstline = false;
