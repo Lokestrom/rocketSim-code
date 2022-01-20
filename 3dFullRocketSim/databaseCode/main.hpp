@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 
-const std::string splitElement = "|", 
+const std::string splitElement = "|";
 std::string token, text;
 
 //alias for std::to_string
@@ -25,7 +25,7 @@ std::vector<std::string> split(std::string s, std::string x){
         splitarr.push_back(s.substr(0, pos));
         s.erase(0, pos + x.length());
     }
-    return splitarr
+    return splitarr;
 }
 
 std::string splitIndex(std::string s, std::string x, int index){
@@ -139,8 +139,7 @@ public:
         {
             if (!firstline)
             {
-                splitIndex(text, splitElement, mapOfColumns[columnName])
-                x.push_back(token);
+                x.push_back(splitIndex(text, splitElement, mapOfColumns[columnName]));
             }
             firstline = false;
         }

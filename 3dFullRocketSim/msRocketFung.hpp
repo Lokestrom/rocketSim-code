@@ -161,19 +161,26 @@ long double modSqrt(long double x)
     return sqrtl(x);
 }
 
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double generateMultiplierX(long double latitude, long double longitude)
 {
     return degSin(latitude) * degCos(longitude);
 }
 
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double generateMultiplierY(long double latitude, long double longitude)
 {
     return degSin(latitude) * degSin(longitude);
 }
 
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double generateMultiplierZ(long double latitude)
 {
     return degCos(latitude);
+}
+
+long double pytagoras3d(vector3d x){
+    return modSqrt((x.x * x.x) + (x.y * x.y) + (x.z * x.z));
 }
 
 void plussEqualVector3d(vector3d& x, vector3d y)

@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using databaseReadFile;
+using database;
 
+namespace unity3dRocketSim{
 public class planet : databaseReadFile
 {
-    GameObject sphere = GameObject.CreatePrimative(PrimativeType.sphere)
+    GameObject sphere = GameObject.CreatePrimative(PrimativeType.sphere);
     string fileName;
     int timer = 0;
-    public planet(string file, int radius, vector3 pos) : databaseReadFile(file){
+    public planet(string file, int radius, vector3 pos) : base(file){
         fileName = file;
         sphere.transform.position = pos;
         sphere.transform.localScale = new vector3(radius, radius, radius);
@@ -21,4 +22,5 @@ public class planet : databaseReadFile
                 getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posZ"]]);
 
     }
+}
 }
