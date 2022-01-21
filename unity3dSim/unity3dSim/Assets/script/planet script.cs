@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using database;
+using unity3dRocketSim;
 
 namespace unity3dRocketSim{
 public class planet : databaseReadFile
@@ -15,12 +16,10 @@ public class planet : databaseReadFile
         sphere.transform.localScale = new vector3(radius, radius, radius);
     }
 
-    public void update(){
-        timer += Time.deltaTime;
-        pos.set(getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posX"]],
-                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posY"]],
-                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)timer)[mapOfColumns["posZ"]]);
-
+    public void updatePlanet(){
+        pos.set(getAllFromRowWhereColumnIsEqualeToAValue("t", (int)ControlVariables.timer * ControlVariables.speedMultiplier)[mapOfColumns["posX"]],
+                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)ControlVariables.timer * ControlVariables.speedMultiplier)[mapOfColumns["posY"]],
+                getAllFromRowWhereColumnIsEqualeToAValue("t", (int)ControlVariables.timer * ControlVariables.speedMultiplier)[mapOfColumns["posZ"]]);
     }
 }
 }

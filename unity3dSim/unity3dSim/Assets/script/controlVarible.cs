@@ -29,6 +29,7 @@ public class ControlVariables{
             else if ((c == '\n') || (c == '\r')) // enter/return
             {
                 speedMultiplier = stof(speedMultiplierInput.text);
+                timer = timer/speedMultiplier;
             }
             else
             {

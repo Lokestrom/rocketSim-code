@@ -20,17 +20,17 @@ void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
     databaseWriteFile *rocketFile = new databaseWriteFile("rocketInfo:" + toS(runID));
 
     startupFile->addColumnArray({});
-    planetFile->addColumnArray({});
-    rocketFile->addColumnArray({"fileName", "id", "mass", "radius", "posX", "posY", "posZ", "vel", "velX", "velY", "velZ", "fixed"});
+    planetFile->addColumnArray({"fileName", "id", "mass", "radius", "posX", "posY", "posZ", "vel", "velX", "velY", "velZ", "fixed"});
+    rocketFile->addColumnArray({});
 
     startupFile->addData({});
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
-        planetFile->addData({"planet: " + toS(it->ID), toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z), toS(pytagoras3d(it->vel)), toS(it->vel.x), toS(it->vel.y), toS(it->vel.z), toS(0)});
+        planetFile->addData({"planet: " + toS(it->ID) + ".txt", toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z), toS(pytagoras3d(it->vel)), toS(it->vel.x), toS(it->vel.y), toS(it->vel.z), toS(0)});
     }
     for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
     {
-        planetFile->addData({"fixedPlanet: " + toS(it->ID), toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z), toS(pytagoras3d(it->vel)), toS(it->vel.x), toS(it->vel.y), toS(it->vel.z), toS(1)});
+        planetFile->addData({"fixedPlanet: " + toS(it->ID) + ".txt", toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z), toS(pytagoras3d(it->vel)), toS(it->vel.x), toS(it->vel.y), toS(it->vel.z), toS(1)});
     }
     rocketFile->addData({});
 }

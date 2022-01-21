@@ -27,7 +27,7 @@ public:
         
         plussEqualVector3d(v, g);
         plussEqualVector3d(p, v);
-        addData({toS(t) ,toS(p.x), toS(p.y), toS(p.z), toS(sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z))), toS(v.x), toS(v.y), toS(v.z)});
+        addData({toS(t) ,toS(p.x), toS(p.y), toS(p.z), toS(py), toS(v.x), toS(v.y), toS(v.z)});
     }
 
     void grav(std::list<planet> pl)
@@ -43,10 +43,17 @@ public:
 
 int main()
 {
+    databaseWriteFile* infoFile = new databaseWriteFile("infoFile.txt");
+    infoFile->addColumnArray({"fileName", "id", "mass", "radius", "posX", "posY", "posZ", "vel", "velX", "velY", "velZ", "fixed"});
     planet planet1(1, 1E+14, {0, 0, 0}, {0, 0, 0}, true);
     planet planet2(2, 1, {100, 0, 0}, {0, orbitSpeedFormula(planet1.m, generateDistanse({100, 0, 0}, planet1.p)), 0}, false);
 
     std::list<planet> pl = {planet1, planet2};
+    
+    for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
+    {
+        planetFile->addData({"planet: " + toS(it->ID) + ".txt", toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z)});
+    }
 
     for (int t = 0; t < 1000; t++)
     {
