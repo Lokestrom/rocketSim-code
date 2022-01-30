@@ -6,35 +6,37 @@ class planet : public databaseWriteFile
 {
 public:
     vector3d p = {0, 0, 0}, v = {0, 0, 0}, g = {0, 0, 0};
-    long long int m = 0;
+    double m = 0, r = 0;
     int i;
     bool f;
-    planet(int id, long long int mass, vector3d pos, vector3d vel, bool fixed)
-        : databaseWriteFile(toS(id) + ".txt")
+    planet(int id, double mass, double radius, vector3d pos, vector3d vel, bool fixed)
+        : databaseWriteFile("D:\\code\\codeProsjekt\\flightControler\\planet " + toS(id) + ".txt")
     {
         f = fixed;
         i = id;
         p = pos;
         v = vel;
         m = mass;
-        addColumnArray({"t" ,"posX", "posY", "posZ", "vel", "velX", "velY", "velZ"});
+        r = radius;
+        addColumnArray({"t", "posX", "posY", "posZ", "vel", "velX", "velY", "velZ"});
+        addData({"0", toS(p.x), toS(p.y), toS(p.z), toS(pytagoras3d(v)), toS(v.x), toS(v.y), toS(v.z)});
     }
 
     void update(int t)
     {
-        if(f)
-            return;
-        
+        fixSmallValueVector(g);
         plussEqualVector3d(v, g);
+        fixSmallValueVector(v);
         plussEqualVector3d(p, v);
-        addData({toS(t) ,toS(p.x), toS(p.y), toS(p.z), toS(py), toS(v.x), toS(v.y), toS(v.z)});
+        fixSmallValueVector(p);
+        addData({toS(t), toS(p.x), toS(p.y), toS(p.z), toS(pytagoras3d(v)), toS(v.x), toS(v.y), toS(v.z)});
     }
 
     void grav(std::list<planet> pl)
     {
-        if(f)
-            return;
         g = {0, 0, 0};
+        if (f)
+            return;
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
             if (i != it->i)
                 plussEqualVector3d(g, generateGravity(findLatitude(p, it->p), findLongitude(p, it->p), m, it->m, generateDistanse(p, it->p)));
@@ -43,19 +45,20 @@ public:
 
 int main()
 {
-    databaseWriteFile* infoFile = new databaseWriteFile("infoFile.txt");
-    infoFile->addColumnArray({"fileName", "id", "mass", "radius", "posX", "posY", "posZ", "vel", "velX", "velY", "velZ", "fixed"});
-    planet planet1(1, 1E+14, {0, 0, 0}, {0, 0, 0}, true);
-    planet planet2(2, 1, {100, 0, 0}, {0, orbitSpeedFormula(planet1.m, generateDistanse({100, 0, 0}, planet1.p)), 0}, false);
+    databaseWriteFile *planetInfoFile = new databaseWriteFile("infoFile.txt");
+    planetInfoFile->addColumnArray({"fileName", "id", "mass", "radius", "posX", "posY", "posZ"});
+    planet planet1(1, 1E14, 40, {0, 0, 0}, {0, 0, 0}, true);
+    planet planet2(2, 1, 15, {100, 0, 0}, {0, 5.77668, 5.77668}, false);
 
     std::list<planet> pl = {planet1, planet2};
-    
+
     for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
     {
-        planetFile->addData({"planet: " + toS(it->ID) + ".txt", toS(it->ID), toS(it->mass), toS(it->radius), toS(it->pos.x), toS(it->pos.y), toS(it->pos.z)});
+        planetInfoFile->addData({"D:\\code\\codeProsjekt\\flightControler\\planet " + toS(it->i) + ".txt", toS(it->i), toS(it->m), toS(it->r), toS(it->p.x), toS(it->p.y), toS(it->p.z)});
     }
+    planetInfoFile->closeFile();
 
-    for (int t = 0; t < 1000; t++)
+    for (int t = 1; t < 10000; t++)
     {
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
             it->grav(pl);

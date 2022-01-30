@@ -12,10 +12,18 @@ std::string token, text;
 //alias for std::to_string
 std::string toS(long double x)
 {
-    return std::to_string(x);
+    std::string str{std::to_string(x)};
+    int offset{1};
+    if (str.find_last_not_of('0') == str.find('.'))
+    {
+        offset = 0;
+    }
+    str.erase(str.find_last_not_of('0') + offset, std::string::npos);
+    return str;
 }
 
-std::vector<std::string> split(std::string s, std::string x){
+std::vector<std::string> split(std::string s, std::string x)
+{
     std::vector<std::string> splitarr = {};
     size_t pos;
 
@@ -25,10 +33,12 @@ std::vector<std::string> split(std::string s, std::string x){
         splitarr.push_back(s.substr(0, pos));
         s.erase(0, pos + x.length());
     }
+    splitarr.push_back(s);
     return splitarr;
 }
 
-std::string splitIndex(std::string s, std::string x, int index){
+std::string splitIndex(std::string s, std::string x, int index)
+{
     std::string produkt = "";
     size_t pos;
     int i = 0;
@@ -37,6 +47,7 @@ std::string splitIndex(std::string s, std::string x, int index){
     {
         produkt = (s.substr(0, pos));
         s.erase(0, pos + x.length());
+        i++;
     }
     return produkt;
 }
@@ -65,7 +76,8 @@ void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     std::cout << error;
-    if (terminateProgram){
+    if (terminateProgram)
+    {
         std::exit;
     }
 }
@@ -86,7 +98,11 @@ public:
         file->open(filename);
         getline(*file, text);
 
-        mapOfColumns[text] = nextColumnNumber;
+        for (std::string i : split(text, splitElement))
+        {
+            mapOfColumns[i] = nextColumnNumber;
+            nextColumnNumber++;
+        }
         file->close();
     }
 
@@ -180,6 +196,7 @@ public:
             firstline = false;
         }
         file->close();
+        return x;
     }
 };
 

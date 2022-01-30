@@ -1,129 +1,126 @@
+using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using UnityEngine;
 
-namespace database{
-
-public class databaseFung{
-float stof(string s){
-    return float.Parse(s, CultureInfo.InvariantCulture.NumberFormat);
-}
-
-void ErrorMsg(string ErrorMsg, string ErrorFungtion, string[] ErrorFungtionInput)
+namespace database
 {
-    string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
-    for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
-        error += "\"" + ErrorFungtionInput[i] + "\", ";
-    error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
-    System.Console.WriteLine(error);
-
-T[] InitializeArray<T>(int length) where T : new()
-{
-    T[] array = new T[length];
-    for (int i = 0; i < length; ++i)
+    public class databaseFung
     {
-        array[i] = new T();
-    }
-
-    return array;
-}
-}
-}
-public class databaseReadFile
-{
-    int nextColumnNumber = 0;
-    Dictionary mapOfColumns = new Dictionary<string,object>();
-    string filename;
-
-    //constructer
-    public databaseReadFile(string fileName)
-    {
-        filename = fileName;
-        bool firstLine = true;
-
-        //findes all the colomn names in the file
-        foreach (string token in System.IO.File.ReadLines(filename))
+        public float stof(string s)
         {
-            foreach (var column in token.Split("|"))
+            return float.Parse(s, CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        public string toS(double x)
+        {
+            return Convert.ToString(x);
+        }
+
+        public void ErrorMsg(string ErrorMsg, string ErrorFungtion, List<string> ErrorFungtionInput)
+        {
+            string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+            for (int i = 0; i < ErrorFungtionInput.Count - 1; i++)
+                error += "\"" + ErrorFungtionInput[i] + "\", ";
+            error += "\"" + ErrorFungtionInput[ErrorFungtionInput.Count - 1] + "\");\n";
+            Debug.Log(error);
+        }
+    }
+    public class databaseReadFile : databaseFung
+    {
+        int nextColumnNumber = 0;
+        public Dictionary<string, int> mapOfColumns = new Dictionary<string, int>();
+        string filename;
+        char splitElement = '|';
+
+        //constructer
+        public databaseReadFile(string fileName)
+        {
+            filename = fileName;
+
+            //findes all the colomn names in the file
+            foreach (string token in System.IO.File.ReadLines(fileName))
             {
-                mapOfColumns[column] = nextColumnNumber;
-                nextColumnNumber++;
-            }
-            break;
-        }
-    }
-
-    float[] getAllDataFromColumnDouble(string columnName)
-    {
-        if (!mapOfColumns.count(columnName))
-        {
-            ErrorMsg("Not a column name", "getAllDataFromColumnFloat", new string[] {columnName});
-            return new string[] {};
-        }
-        string[] x;
-        int i = 0;
-        bool firstline = true;
-        foreach (string line in System.IO.File.ReadLines(filename))
-        {
-            if(!firstline) x[i] = stof(line.Split("|")[mapOfColumns[columnName]]);
-        }
-        return x;
-    }
-
-    string[] getAllDataFromColumnString(string columnName)
-    {
-        if (!mapOfColumns.count(columnName))
-        {
-            ErrorMsg("Not a column name", "getAllDataFromColumnString", new string[] {columnName});
-            return new string[] {};
-        }
-        string[] x;
-        int i = 0;
-        bool firstline = true;
-        foreach (string line in System.IO.File.ReadLines(filename))
-        {
-            if(!firstline)  x[i] = line.Split("|")[mapOfColumns[columnName]];
-        }
-        return x;
-    }
-
-    string[] getAllFromRowWhereColumnIsEqualeToAValue(string columnName, string value)
-    {
-        if (!mapOfColumns.count(columnName))
-        {
-            ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", new string[] {columnName, value});
-            return new string[] {};
-        }
-        string[] x = {};
-
-        foreach (string line in System.IO.File.ReadLines(filename))
-        {
-            x = line.Split("|");
-            if(x[mapOfColumns[columnName]] == value){
-                return x;
+                foreach (string column in token.Split(splitElement))
+                {
+                    mapOfColumns[column] = nextColumnNumber;
+                    nextColumnNumber++;
+                }
+                break;
             }
         }
-        return new string[] {};
-    }
 
-    //puts all the data in a 2d string array
-    //not recomended for big files
-    string[,] getAllData(){
-        string[] splitvar;
-        string[,] x = {{}};
-        int i = 0, j = 0;
-        foreach (string line in System.IO.File.ReadLines(filename))
+        public List<float> getAllDataFromColumnFloat(string columnName)
         {
-            splitvar = line.Split("|");
-            foreach (string item in splitvar)
+            if (!mapOfColumns.ContainsKey(columnName))
             {
-                x[i][j] = item;
-                j++;
+                ErrorMsg("Not a column name", "getAllDataFromColumnFloat", new List<string> { columnName });
+                return new List<float>();
             }
-            i++;
+            List<float> x = new List<float>();
+            bool firstline = true;
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                if (!firstline) x.Add(stof(line.Split(splitElement)[mapOfColumns[columnName]]));
+            }
+            return x;
         }
-        return x;
-    }
-};
+
+        public List<string> getAllDataFromColumnString(string columnName)
+        {
+            if (!mapOfColumns.ContainsKey(columnName))
+            {
+                ErrorMsg("Not a column name", "getAllDataFromColumnString", new List<string> { columnName });
+                return new List<string>();
+            }
+            List<string> x = new List<string>();
+            bool firstline = true;
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                if (!firstline) x.Add(line.Split(splitElement)[mapOfColumns[columnName]]);
+            }
+            return x;
+        }
+
+        public List<string> getAllFromRowWhereColumnIsEqualeToAValue(string columnName, string value)
+        {
+            if (!mapOfColumns.ContainsKey(columnName))
+            {
+                ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", new List<string> { columnName, value });
+                return new List<string>();
+            }
+            List<string> x = new List<string>();
+
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                x = new List<string>(line.Split(splitElement));
+                if (x[mapOfColumns[columnName]] == value)
+                {
+                    return x;
+                }
+            }
+            return new List<string>();
+        }
+
+        //puts all the data in a 2d string array
+        //not recomended for big files
+        public List<List<string>> getAllData()
+        {
+            int i = 0;
+            List<List<string>> x = new List<List<string>>();
+            foreach (string line in System.IO.File.ReadLines(filename))
+            {
+                x.Add(new List<string>());
+                foreach (string item in line.Split(splitElement))
+                {
+                    x[i].Add(item);
+                }
+                i++;
+            }
+            x.RemoveAt(0);
+            return x;
+        }
+    };
 }

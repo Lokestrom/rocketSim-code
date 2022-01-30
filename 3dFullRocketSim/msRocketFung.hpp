@@ -133,15 +133,20 @@ long double degCos(long double x)
 
 long double findRest(long double x, long double y)
 {
-    while (x >= y) x -= y;
+    while (x >= y)
+        x -= y;
     return x;
 }
 
-long double fixAngle(long double angle){
-    if (angle >= 360) return findRest(angle, 360);
+long double fixAngle(long double angle)
+{
+    if (angle >= 360)
+        return findRest(angle, 360);
 
-    if (angle < 0){
-        while (angle < 0){
+    if (angle < 0)
+    {
+        while (angle < 0)
+        {
             angle += 360;
         }
         return angle;
@@ -149,15 +154,30 @@ long double fixAngle(long double angle){
     return angle;
 }
 
+void fixSmallValue(long double &value)
+{
+    if (value < 1E-9 && value > -1E-9)
+        value = 0;
+}
+
+void fixSmallValueVector(vector3d &vector)
+{
+    fixSmallValue(vector.x);
+    fixSmallValue(vector.y);
+    fixSmallValue(vector.z);
+}
+
 long double absVal(long double x)
 {
-    if (x < 0) return -x;
+    if (x < 0)
+        return -x;
     return x;
 }
 
 long double modSqrt(long double x)
 {
-    if (x < 0) return -sqrtl(-x);
+    if (x < 0)
+        return -sqrtl(-x);
     return sqrtl(x);
 }
 
@@ -179,23 +199,33 @@ long double generateMultiplierZ(long double latitude)
     return degCos(latitude);
 }
 
-long double pytagoras3d(vector3d x){
+long double pytagoras3d(vector3d x)
+{
     return modSqrt((x.x * x.x) + (x.y * x.y) + (x.z * x.z));
 }
 
-void plussEqualVector3d(vector3d& x, vector3d y)
+void plussEqualVector3d(vector3d &x, vector3d y)
 {
     x.x += y.x;
     x.y += y.y;
     x.z += y.z;
 }
 
-long double generateAccselerasion(long double massKG, long double thrustN)
+vector3d devideEqualVector3d(vector3d x, vector3d y)
 {
-    return thrustN / massKG / 1000;;
+    x.x /= y.x;
+    x.y /= y.y;
+    x.z /= y.z;
+    return x;
 }
 
-vector3d generateAccselerasionVector(long double massKG, vector3d gravityN){
+long double generateAccselerasion(long double massKG, long double thrustN)
+{
+    return thrustN / massKG;
+}
+
+vector3d generateAccselerasionVector(long double massKG, vector3d gravityN)
+{
     gravityN.x = generateAccselerasion(massKG, gravityN.x);
     gravityN.y = generateAccselerasion(massKG, gravityN.y);
     gravityN.z = generateAccselerasion(massKG, gravityN.z);
@@ -223,14 +253,15 @@ long double generateAirDensity(long double h, int n)
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    return fixAngle(radToDeg(atan2(pos.y - otherPos.y,pos.x - otherPos.x)));
+    return fixAngle(radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x)));
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    if (pos.z - otherPos.z == 0) return 90;
-    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x))))))+90;
+    if (pos.z - otherPos.z == 0)
+        return 90;
+    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))))) + 90;
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
@@ -238,18 +269,21 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
     return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
 }
 
-long double gravityFormula(long double m, long double M, long double r){
+long double gravityFormula(long double m, long double M, long double r)
+{
     return (G * m * M) / (r * r);
 }
 
-vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r){
-    return generateAccselerasionVector(m, 
-            {-generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
-            -generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
-            -generateMultiplierZ(latitude) * gravityFormula(m, M, r)});
+vector3d generateGravity(long double latitude, long double longitude, long double m, long double M, long double r)
+{
+    return generateAccselerasionVector(m,
+                                       {-generateMultiplierX(latitude, longitude) * gravityFormula(m, M, r),
+                                        -generateMultiplierY(latitude, longitude) * gravityFormula(m, M, r),
+                                        -generateMultiplierZ(latitude) * gravityFormula(m, M, r)});
 }
 
-long double orbitSpeedFormula(long double M, long double r){
+long double orbitSpeedFormula(long double M, long double r)
+{
     return modSqrt((G * M) / r);
 }
 
