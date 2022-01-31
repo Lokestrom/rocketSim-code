@@ -232,36 +232,29 @@ vector3d generateAccselerasionVector(long double massKG, vector3d gravityN)
     return gravityN;
 }
 
-long double generateAirDensity(long double h, int n)
+long double generateAirDensity(long double h, std::string fileName)
 {
+    std::vector<double> altitude = {}, kgm = {};
     int i = 0;
-    switch (n)
-    {
-    case 0:
-        long double altitude[34] = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000, 11000, 13000, 15000, 17000, 20000, 25000, 30000, 32000, 35000, 40000, 45000, 47000, 50000, 51000, 60000, 70000, 71000, 80000, 85000, 90000, 100000, 105000, 110000};
-        long double kgm[34] = {1.225, 1.1116, 1.0065, 0.9091, 0.8191, 0.7361, 0.6597, 0.5895, 0.5252, 0.4664, 0.4127, 0.3639, 0.2655, 0.1937, 0.1423, 0.088, 0.0395, 0.018, 0.0132, 0.0082, 0.0039, 0.0019, 0.0014, 0.001, 0.00086, 0.000288, 0.000074, 0.000064, 0.000015, 0.000007, 0.000003, 0.0000005, 0.0000002, 0.0000001};
-        while (h >= altitude[i])
-        {
-            i++;
-        }
-        return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
-        break;
-    }
-    return 0;
+    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\"fileName);
+    altitude = file.getAllDataFromColumnDouble("altitude");
+    kgm = file.getAllDataFromColumnDouble("kgm");
+    //altitude = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000, 11000, 13000, 15000, 17000, 20000, 25000, 30000, 32000, 35000, 40000, 45000, 47000, 50000, 51000, 60000, 70000, 71000, 80000, 85000, 90000, 100000, 105000, 110000};
+    //kgm = {1.225, 1.1116, 1.0065, 0.9091, 0.8191, 0.7361, 0.6597, 0.5895, 0.5252, 0.4664, 0.4127, 0.3639, 0.2655, 0.1937, 0.1423, 0.088, 0.0395, 0.018, 0.0132, 0.0082, 0.0039, 0.0019, 0.0014, 0.001, 0.00086, 0.000288, 0.000074, 0.000064, 0.000015, 0.000007, 0.000003, 0.0000005, 0.0000002, 0.0000001};
+    for(i = 0; h <= altitude[i]; i++);
+    return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
 }
 
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    return fixAngle(radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x)));
+    return radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x));
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    if (pos.z - otherPos.z == 0)
-        return 90;
-    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))))) + 90;
+    return radToDeg(Acos((pos.z - otherPos.z) / generateDistanse(pos, otherPos);
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
