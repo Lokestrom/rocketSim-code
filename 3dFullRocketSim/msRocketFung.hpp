@@ -245,6 +245,11 @@ long double generateAirDensity(long double h, std::string fileName)
     return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
 }
 
+long double generateDistanse(vector3d pos, vector3d otherPos)
+{
+    return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
+}
+
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
@@ -254,12 +259,7 @@ long double findLongitude(vector3d pos, vector3d otherPos)
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    return radToDeg(Acos((pos.z - otherPos.z) / generateDistanse(pos, otherPos);
-}
-
-long double generateDistanse(vector3d pos, vector3d otherPos)
-{
-    return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
+    return radToDeg(fixSmallValue(Asin((pos.z - otherPos.z) / generateDistanse(pos, otherPos)))) + 90;
 }
 
 long double gravityFormula(long double m, long double M, long double r)
