@@ -10,7 +10,9 @@
 
 typedef std::numeric_limits<long double> dbl;
 
+//newton's gravitational constant https://en.wikipedia.org/wiki/Gravitational_constant
 #define G 6.674E-11
+
 #define earthMass 5.972E24
 #define earthRadius 6.371E6
 #define moonMass 7.34767309E22
@@ -28,21 +30,74 @@ struct vector3d
     long double x, y, z;
 };
 
-struct boxCollider
+namespace vector3dFung{
+void plussEqualVector3d(vector3d &x, vector3d y)
 {
-    long double hight, length, width;
-    vector3d pos;
-};
+    x.x += y.x;
+    x.y += y.y;
+    x.z += y.z;
+}
 
+vector3d plussEqualVector3dReturn(vector3d x, vector3d y){
+    x.x += y.x;
+    x.y += y.y;
+    x.z += y.z;
+    return x;
+}
+
+void minusEqualVector3d(vector3d &x, vector3d y){
+    x.x -= y.x;
+    x.y -= y.y;
+    x.z -= y.z;
+}
+
+vector3d minusEqualVector3dReturn(vector3d x, vector3d y){
+    x.x -= y.x;
+    x.y -= y.y;
+    x.z -= y.z;
+    return x;
+}
+
+void multyplyEqualVector3d(vector3d &x, vector3d y){
+    x.x *= y.x;
+    x.y *= y.y;
+    x.z *= y.z;
+}
+
+vector3d multyplyEqualVector3dReturn(vector3d x, vector3d y){
+    x.x *= y.x;
+    x.y *= y.y;
+    x.z *= y.z;
+    return x;
+}
+
+void devideEqualVector3d(vector3d &x, vector3d y){
+    x.x /= y.x;
+    x.y /= y.y;
+    x.z /= x.z;
+}
+
+vector3d devideEqualVector3dReturn(vector3d x, vector3d y)
+{
+    x.x /= y.x;
+    x.y /= y.y;
+    x.z /= y.z;
+    return x;
+}
+
+void fixSmallValueVector(vector3d &vector)
+{
+    fixSmallValue(vector.x);
+    fixSmallValue(vector.y);
+    fixSmallValue(vector.z);
+}
+
+}
+
+namespace colider{
 struct sphereCollider
 {
     long double radius;
-    vector3d pos;
-};
-
-struct sylinderCollider
-{
-    long double radius, hight;
     vector3d pos;
 };
 
@@ -56,30 +111,7 @@ public:
         colliderP.pos = pos;
     }
 };
-
-struct colliderStats
-{
-    long double hight, length, width;
-    vector3d pos;
-};
-
-class collider
-{
-public:
-    colliderStats colliderDefinision;
-    collider(colliderStats colliderDefinision, int sphereColiderNum, std::vector<sphereCollider> sphereColiders, int boxColideresNum, std::vector<boxCollider> boxColiders, int sylinderCollidersNum, std::vector<sylinderCollider> sylinderColliders)
-    {
-        if (sphereColiderNum != sphereColiders.size())
-        {
-            std::cout << "all sphere colliders not defined";
-        }
-        if (boxColideresNum != boxColiders.size())
-        {
-            std::cout << "all box colliders not defined";
-        }
-        collider::colliderDefinision = colliderDefinision;
-    }
-};
+}
 
 void setSeed(long double costumSeed)
 {
@@ -160,13 +192,6 @@ void fixSmallValue(long double &value)
         value = 0;
 }
 
-void fixSmallValueVector(vector3d &vector)
-{
-    fixSmallValue(vector.x);
-    fixSmallValue(vector.y);
-    fixSmallValue(vector.z);
-}
-
 long double absVal(long double x)
 {
     if (x < 0)
@@ -204,21 +229,6 @@ long double pytagoras3d(vector3d x)
     return modSqrt((x.x * x.x) + (x.y * x.y) + (x.z * x.z));
 }
 
-void plussEqualVector3d(vector3d &x, vector3d y)
-{
-    x.x += y.x;
-    x.y += y.y;
-    x.z += y.z;
-}
-
-vector3d devideEqualVector3d(vector3d x, vector3d y)
-{
-    x.x /= y.x;
-    x.y /= y.y;
-    x.z /= y.z;
-    return x;
-}
-
 long double generateAccselerasion(long double massKG, long double thrustN)
 {
     return thrustN / massKG;
@@ -232,36 +242,17 @@ vector3d generateAccselerasionVector(long double massKG, vector3d gravityN)
     return gravityN;
 }
 
-long double generateAirDensity(long double h, int n)
+long double generateAirDensity(long double h, std::string fileName)
 {
+    std::vector<double> altitude = {}, kgm = {};
     int i = 0;
-    switch (n)
-    {
-    case 0:
-        long double altitude[34] = {0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 1000, 11000, 13000, 15000, 17000, 20000, 25000, 30000, 32000, 35000, 40000, 45000, 47000, 50000, 51000, 60000, 70000, 71000, 80000, 85000, 90000, 100000, 105000, 110000};
-        long double kgm[34] = {1.225, 1.1116, 1.0065, 0.9091, 0.8191, 0.7361, 0.6597, 0.5895, 0.5252, 0.4664, 0.4127, 0.3639, 0.2655, 0.1937, 0.1423, 0.088, 0.0395, 0.018, 0.0132, 0.0082, 0.0039, 0.0019, 0.0014, 0.001, 0.00086, 0.000288, 0.000074, 0.000064, 0.000015, 0.000007, 0.000003, 0.0000005, 0.0000002, 0.0000001};
-        while (h >= altitude[i])
-        {
-            i++;
-        }
-        return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
-        break;
-    }
-    return 0;
-}
 
-//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-long double findLongitude(vector3d pos, vector3d otherPos)
-{
-    return fixAngle(radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x)));
-}
+    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\"fileName);
+    altitude = file.getAllDataFromColumnDouble("altitude");
+    kgm = file.getAllDataFromColumnDouble("kgm");
 
-//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-long double findLatitude(vector3d pos, vector3d otherPos)
-{
-    if (pos.z - otherPos.z == 0)
-        return 90;
-    return fixAngle(radToDeg(atanl((pos.z - otherPos.z) / modSqrt(abs((pos.y - otherPos.y) * (pos.y - otherPos.y) + (pos.x - otherPos.x) * (pos.x - otherPos.x)))))) + 90;
+    for(i = 0; h <= altitude[i]; i++);
+    return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
 }
 
 long double generateDistanse(vector3d pos, vector3d otherPos)
@@ -269,6 +260,19 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
     return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
 }
 
+//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+long double findLongitude(vector3d pos, vector3d otherPos)
+{
+    return radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x));
+}
+
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+long double findLatitude(vector3d pos, vector3d otherPos)
+{
+    return radToDeg(fixSmallValue(Asin((pos.z - otherPos.z) / generateDistanse(pos, otherPos)))) + 90;
+}
+
+//https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
 long double gravityFormula(long double m, long double M, long double r)
 {
     return (G * m * M) / (r * r);
@@ -282,13 +286,22 @@ vector3d generateGravity(long double latitude, long double longitude, long doubl
                                         -generateMultiplierZ(latitude) * gravityFormula(m, M, r)});
 }
 
+//https://en.wikipedia.org/wiki/Circular_orbit#Velocity
 long double orbitSpeedFormula(long double M, long double r)
 {
     return modSqrt((G * M) / r);
 }
 
 /*
-sirkel kordinatsystem fra: https://en.wikipedia.org/wiki/Spherical_coordinate_system
-phi = longitude
-theta = latitude
+kordinatsystem{
+    sirkel kordinatsystem fra: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+    phi = longitude
+    theta = latitude
+}
+
+tyngdekraft{
+    big G: https://en.wikipedia.org/wiki/Gravitational_constant
+    tyngdekraft formel fra: https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
+    orbit speed formula for sirkeler bane fra: https://en.wikipedia.org/wiki/Circular_orbit#Velocity
+}
 */

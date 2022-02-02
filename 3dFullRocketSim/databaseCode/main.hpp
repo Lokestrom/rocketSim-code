@@ -68,10 +68,10 @@ void onErrorTerminateWriteFile(bool x)
 }
 
 //prints error msg to console
-void ErrorMsg(std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
 {
     errorHasBeenThrown = true;
-    std::string error = "Database: Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+    std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
     for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
         error += "\"" + ErrorFungtionInput[i] + "\", ";
     error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
@@ -110,7 +110,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("Not a column name", "getAllDataFromColumnDouble", {columnName});
+            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnDouble", {columnName});
             return {};
         }
         std::vector<double> x;
@@ -128,7 +128,7 @@ public:
                 {
                     if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
                     {
-                        ErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        ErrorMsg("databaseReadFile","The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                         return {};
                     }
                 }
@@ -145,7 +145,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("Not a column name", "getAllDataFromColumnString", {columnName});
+            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnString", {columnName});
             return {};
         }
         std::vector<std::string> x;
@@ -167,7 +167,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
+            ErrorMsg("databaseReadFile","Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
             return {{}};
         }
         file->open(filename);
@@ -224,7 +224,7 @@ public:
             file->close();
             deleteFile();
         }
-        ErrorMsg(ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
+        ErrorMsg("databaseWriteFile", ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
     }
 
     void closeFile()
@@ -236,6 +236,7 @@ public:
 
     void deleteFile()
     {
+        if(file->is_open()) file->close();
         remove(filename.c_str());
     }
 
@@ -258,7 +259,7 @@ public:
     }
 
     //add's an array of column's to the file
-    void addColumnArray(std::vector<std::string> columnNames)
+    void addColumnArray(std::vector<std::string>& columnNames)
     {
         if (addedData)
         {
@@ -277,7 +278,7 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    void addData(std::vector<std::string> data)
+    void addData(std::vector<std::string>& data)
     {
         *file << std::endl;
         addedData = true;
