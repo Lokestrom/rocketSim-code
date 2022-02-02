@@ -39,7 +39,10 @@ public:
             return;
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
             if (i != it->i)
+            {
                 plussEqualVector3d(g, generateGravity(findLatitude(p, it->p), findLongitude(p, it->p), m, it->m, generateDistanse(p, it->p)));
+                std::cout << findLatitude(p, it->p) << "\t" << findLongitude(p, it->p) << "\n";
+            }
     }
 };
 
@@ -58,7 +61,7 @@ int main()
     }
     planetInfoFile->closeFile();
 
-    for (int t = 1; t < 10000; t++)
+    for (int t = 1; t < 30; t++)
     {
         for (std::list<planet>::iterator it = pl.begin(); it != pl.end(); it++)
             it->grav(pl);

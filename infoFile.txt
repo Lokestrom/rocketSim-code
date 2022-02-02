@@ -1,0 +1,3 @@
+fileName|id|mass|radius|posX|posY|posZ
+D:\code\codeProsjekt\flightControler\planet 1.txt|1|100000000000000|40|0|0|0
+D:\code\codeProsjekt\flightControler\planet 2.txt|2|1|15|100|0|0
