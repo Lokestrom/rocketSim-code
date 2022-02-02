@@ -32,7 +32,7 @@ public:
         addData({toS(t), toS(p.x), toS(p.y), toS(p.z), toS(pytagoras3d(v)), toS(v.x), toS(v.y), toS(v.z)});
     }
 
-    void grav(std::list<planet> pl)
+    void grav(std::list<planet>& pl)
     {
         g = {0, 0, 0};
         if (f)

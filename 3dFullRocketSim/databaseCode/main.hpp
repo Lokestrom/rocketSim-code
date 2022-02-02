@@ -236,6 +236,7 @@ public:
 
     void deleteFile()
     {
+        if(file->is_open()) file->close();
         remove(filename.c_str());
     }
 
@@ -258,7 +259,7 @@ public:
     }
 
     //add's an array of column's to the file
-    void addColumnArray(std::vector<std::string> columnNames)
+    void addColumnArray(std::vector<std::string>& columnNames)
     {
         if (addedData)
         {
@@ -277,7 +278,7 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    void addData(std::vector<std::string> data)
+    void addData(std::vector<std::string>& data)
     {
         *file << std::endl;
         addedData = true;

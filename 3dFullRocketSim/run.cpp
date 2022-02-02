@@ -1,8 +1,8 @@
 #include "rocketsimObj.hpp"
 
-std::list<rocketStage> rocketStageList;
-std::list<planet> planetList;
-std::list<fixedPlanet> fixedPlanetList;
+std::list<rocketStage> rocketStageList = {};
+std::list<planet> planetList = {};
+std::list<fixedPlanet> fixedPlanetList = {};
 int runID = 0;
 
 void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)

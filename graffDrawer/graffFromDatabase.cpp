@@ -7,7 +7,7 @@ int main()
 
     onErrorTerminateProgram(true);
     //filePath til filen
-    std::string fileName = "D:\\code\\codeProsjekt\\flightControler\\2.000000.txt";
+    std::string fileName = "D:\\code\\codeProsjekt\\flightControler\\2.txt";
     databaseReadFile file(fileName);
 
     //put in column navnene
