@@ -8,6 +8,14 @@
 #include <fstream>
 #include "databaseCode/main.hpp"
 
+class planet;
+class fixedPlanet;
+class rocketStage;
+
+std::list<planet> planetList = {};
+std::list<fixedPlanet> fixedPlanetList = {};
+std::list<rocketStage> rocketStageList = {};
+
 typedef std::numeric_limits<long double> dbl;
 
 //newton's gravitational constant https://en.wikipedia.org/wiki/Gravitational_constant
@@ -242,22 +250,53 @@ vector3d generateAccselerasionVector(long double massKG, vector3d gravityN)
     return gravityN;
 }
 
+long double generateDistanse(vector3d pos, vector3d otherPos)
+{
+    using namespace vector3dFung;
+    minusEqualVector3d(pos, otherPos);
+    return pytagoras3d(pos);
+}
+
+std::unordered_map<std::string, int> airDensitySpeed = {};
+
+void makeAirDensitySpeedFung(vector3d rocketpos, vector3d planetPos, std::string fileName){
+    long double h = generateDistanse(rocketpos, planetPos);
+    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\" + fileName);
+    std::vector<double> altitude = file.getAllDataFromColumnDouble("altitude");
+    int start = 0, end = altitude.size()-1, mid;
+    while(end > start){
+        mid = (end - start)/2 + start;
+        if(altitude[mid] < h){
+            start = mid;
+        }
+        else if(altitude > h){
+            end = mid;
+        }
+        else break;
+    }
+    airDensitySpeed[fileName] = mid;
+}
+
+void makeAirDensitySpeed(){
+    rocketStage *activeRocket = new rocketStage();
+    for(std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++) if(it->active) activeRocket = it;
+    for(std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+    for(std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+}
+
 long double generateAirDensity(long double h, std::string fileName)
 {
     std::vector<double> altitude = {}, kgm = {};
-    int i = 0;
+    int i = airDensitySpeed[fileName];
 
-    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\"fileName);
+    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\" + fileName);
     altitude = file.getAllDataFromColumnDouble("altitude");
     kgm = file.getAllDataFromColumnDouble("kgm");
 
+    for(i = 0; h >= altitude[i]; i--);
     for(i = 0; h <= altitude[i]; i++);
+    airDensitySpeed[fileName] = i;
     return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
-}
-
-long double generateDistanse(vector3d pos, vector3d otherPos)
-{
-    return modSqrt(absVal((pos.x - otherPos.x) * (pos.x - otherPos.x)) + absVal((pos.y - otherPos.y) * (pos.y - otherPos.y)) + absVal((pos.z - otherPos.z) * (pos.z - otherPos.z)));
 }
 
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates

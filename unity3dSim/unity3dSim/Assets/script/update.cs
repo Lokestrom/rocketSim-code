@@ -62,7 +62,7 @@ namespace unity3dRocketSim
         // Update is called once per frame
         void Update()
         {
-            t += Time.deltaTime * 25;
+            t += Time.deltaTime * tMultiplier;
             timeout.GetComponent<Text>().text = planetDataFile.toS((int)t);
             foreach (planet i in planetList)
             {
