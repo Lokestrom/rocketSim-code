@@ -1,10 +1,12 @@
 #pragma once
 
 #include <fstream>
-#include <map>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <limits>
 
 const std::string splitElement = "|";
 std::string token, text;
@@ -12,14 +14,16 @@ std::string token, text;
 //alias for std::to_string
 std::string toS(long double x)
 {
-    std::string str{std::to_string(x)};
-    int offset{1};
-    if (str.find_last_not_of('0') == str.find('.'))
-    {
-        offset = 0;
-    }
-    str.erase(str.find_last_not_of('0') + offset, std::string::npos);
-    return str;
+    // Create an output string stream
+    std::ostringstream streamObj3;
+    // Set Fixed -Point Notation
+    streamObj3 << std::fixed;
+    // Set precision to 2 digits
+    streamObj3 << std::setprecision(12);
+    //Add double to stream
+    streamObj3 << x;
+    // Get string from output string stream
+    return streamObj3.str();
 }
 
 std::vector<std::string> split(std::string s, std::string x)
@@ -128,7 +132,7 @@ public:
                 {
                     if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
                     {
-                        ErrorMsg("databaseReadFile","The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        ErrorMsg("databaseReadFile", "The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                         return {};
                     }
                 }
@@ -167,7 +171,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("databaseReadFile","Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
+            ErrorMsg("databaseReadFile", "Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
             return {{}};
         }
         file->open(filename);
@@ -215,6 +219,7 @@ public:
     {
         databaseWriteFile::filename = fileName;
         file->open(filename);
+        std::cout << std::fixed;
     }
 
     void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
@@ -236,7 +241,8 @@ public:
 
     void deleteFile()
     {
-        if(file->is_open()) file->close();
+        if (file->is_open())
+            file->close();
         remove(filename.c_str());
     }
 
@@ -259,7 +265,7 @@ public:
     }
 
     //add's an array of column's to the file
-    void addColumnArray(std::vector<std::string>& columnNames)
+    void addColumnArray(std::vector<std::string> &columnNames)
     {
         if (addedData)
         {
@@ -278,7 +284,7 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    void addData(std::vector<std::string>& data)
+    void addData(std::vector<std::string> &data)
     {
         *file << std::endl;
         addedData = true;

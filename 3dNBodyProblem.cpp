@@ -2,6 +2,8 @@
 #include "3dFullRocketSim\msRocketFung.hpp"
 #include <list>
 
+using namespace vector3dFung;
+
 class planet : public databaseWriteFile
 {
 public:
