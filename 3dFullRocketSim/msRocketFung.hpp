@@ -32,6 +32,8 @@ typedef std::numeric_limits<long double> dbl;
 
 long double seed = unsigned(time(nullptr));
 
+void fixSmallValue(long double &value)
+
 //struct holding x,y,z directions
 struct vector3d
 {
@@ -171,23 +173,32 @@ long double degCos(long double x)
     return cosl(degToRad(x));
 }
 
-long double findRest(long double x, long double y)
-{
-    while (x >= y)
-        x -= y;
-    return x;
-}
-
 long double fixAngle(long double angle)
 {
     if (angle >= 360)
-        return findRest(angle, 360);
+        return angle%360;
 
     if (angle < 0)
     {
         while (angle < 0)
         {
             angle += 360;
+        }
+        return angle;
+    }
+    return angle;
+}
+
+long double fixAngle2(long double angle)
+{
+    if (angle >= 180)
+        return angle%180;
+
+    if else (angle < 0)
+    {
+        while (angle < 0)
+        {
+            angle += 180;
         }
         return angle;
     }
@@ -234,7 +245,7 @@ long double generateMultiplierZ(long double latitude)
 
 long double pytagoras3d(vector3d x)
 {
-    return modSqrt((x.x * x.x) + (x.y * x.y) + (x.z * x.z));
+    return sqrtl((x.x * x.x) + (x.y * x.y) + (x.z * x.z));
 }
 
 long double generateAccselerasion(long double massKG, long double thrustN)
@@ -263,6 +274,7 @@ void makeAirDensitySpeedFung(vector3d rocketpos, vector3d planetPos, std::string
     long double h = generateDistanse(rocketpos, planetPos);
     databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\" + fileName);
     std::vector<double> altitude = file.getAllDataFromColumnDouble("altitude");
+
     int start = 0, end = altitude.size()-1, mid;
     while(end > start){
         mid = (end - start)/2 + start;
@@ -302,7 +314,7 @@ long double generateAirDensity(long double h, std::string fileName)
 //https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLongitude(vector3d pos, vector3d otherPos)
 {
-    return radToDeg(atan2(pos.y - otherPos.y, pos.x - otherPos.x));
+    return radToDeg(fixSmallValue(atan2(pos.y - otherPos.y, pos.x - otherPos.x)));
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
@@ -328,7 +340,7 @@ vector3d generateGravity(long double latitude, long double longitude, long doubl
 //https://en.wikipedia.org/wiki/Circular_orbit#Velocity
 long double orbitSpeedFormula(long double M, long double r)
 {
-    return modSqrt((G * M) / r);
+    return sqrtl((G * M) / r);
 }
 
 /*
