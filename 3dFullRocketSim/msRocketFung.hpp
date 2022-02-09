@@ -33,6 +33,10 @@ typedef std::numeric_limits<long double> dbl;
 long double seed = unsigned(time(nullptr));
 
 void fixSmallValue(long double &value)
+{
+    if (value < 1E-12 && value > -1E-12)
+        value = 0;
+}
 
 //struct holding x,y,z directions
 struct vector3d
@@ -165,12 +169,12 @@ long double radToDeg(long double x)
 
 long double degSin(long double x)
 {
-    return sinl(degToRad(x));
+    return fixSmallValue(sinl(degToRad(x)));
 }
 
 long double degCos(long double x)
 {
-    return cosl(degToRad(x));
+    return fixSmallValue(cosl(degToRad(x)));
 }
 
 long double fixAngle(long double angle)
@@ -203,12 +207,6 @@ long double fixAngle2(long double angle)
         return angle;
     }
     return angle;
-}
-
-void fixSmallValue(long double &value)
-{
-    if (value < 1E-9 && value > -1E-9)
-        value = 0;
 }
 
 long double absVal(long double x)
@@ -320,7 +318,7 @@ long double findLongitude(vector3d pos, vector3d otherPos)
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    return radToDeg(fixSmallValue(Asin((pos.z - otherPos.z) / generateDistanse(pos, otherPos)))) + 90;
+    return radToDeg(fixSmallValue(Acos((pos.z - otherPos.z) / generateDistanse(pos, otherPos))));
 }
 
 //https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation
