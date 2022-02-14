@@ -12,9 +12,9 @@ class planet;
 class fixedPlanet;
 class rocketStage;
 
-std::list<planet> planetList = {};
-std::list<fixedPlanet> fixedPlanetList = {};
-std::list<rocketStage> rocketStageList = {};
+//std::list<planet> planetList = {};
+//std::list<fixedPlanet> fixedPlanetList = {};
+//std::list<rocketStage> rocketStageList = {};
 
 typedef std::numeric_limits<long double> dbl;
 
@@ -32,10 +32,11 @@ typedef std::numeric_limits<long double> dbl;
 
 long double seed = unsigned(time(nullptr));
 
-void fixSmallValue(long double &value)
+long double fixSmallValue(long double value)
 {
     if (value < 1E-12 && value > -1E-12)
-        value = 0;
+        return 0;
+    return value;
 }
 
 //struct holding x,y,z directions
@@ -44,87 +45,95 @@ struct vector3d
     long double x, y, z;
 };
 
-namespace vector3dFung{
-void plussEqualVector3d(vector3d &x, vector3d y)
+namespace vector3dFung
 {
-    x.x += y.x;
-    x.y += y.y;
-    x.z += y.z;
-}
-
-vector3d plussEqualVector3dReturn(vector3d x, vector3d y){
-    x.x += y.x;
-    x.y += y.y;
-    x.z += y.z;
-    return x;
-}
-
-void minusEqualVector3d(vector3d &x, vector3d y){
-    x.x -= y.x;
-    x.y -= y.y;
-    x.z -= y.z;
-}
-
-vector3d minusEqualVector3dReturn(vector3d x, vector3d y){
-    x.x -= y.x;
-    x.y -= y.y;
-    x.z -= y.z;
-    return x;
-}
-
-void multyplyEqualVector3d(vector3d &x, vector3d y){
-    x.x *= y.x;
-    x.y *= y.y;
-    x.z *= y.z;
-}
-
-vector3d multyplyEqualVector3dReturn(vector3d x, vector3d y){
-    x.x *= y.x;
-    x.y *= y.y;
-    x.z *= y.z;
-    return x;
-}
-
-void devideEqualVector3d(vector3d &x, vector3d y){
-    x.x /= y.x;
-    x.y /= y.y;
-    x.z /= x.z;
-}
-
-vector3d devideEqualVector3dReturn(vector3d x, vector3d y)
-{
-    x.x /= y.x;
-    x.y /= y.y;
-    x.z /= y.z;
-    return x;
-}
-
-void fixSmallValueVector(vector3d &vector)
-{
-    fixSmallValue(vector.x);
-    fixSmallValue(vector.y);
-    fixSmallValue(vector.z);
-}
-
-}
-
-namespace colider{
-struct sphereCollider
-{
-    long double radius;
-    vector3d pos;
-};
-
-class planetCollider
-{
-public:
-    sphereCollider colliderP;
-    planetCollider(long double radius, vector3d pos)
+    void plussEqualVector3d(vector3d &x, vector3d y)
     {
-        colliderP.radius = radius;
-        colliderP.pos = pos;
+        x.x += y.x;
+        x.y += y.y;
+        x.z += y.z;
     }
-};
+
+    vector3d plussEqualVector3dReturn(vector3d x, vector3d y)
+    {
+        x.x += y.x;
+        x.y += y.y;
+        x.z += y.z;
+        return x;
+    }
+
+    void minusEqualVector3d(vector3d &x, vector3d y)
+    {
+        x.x -= y.x;
+        x.y -= y.y;
+        x.z -= y.z;
+    }
+
+    vector3d minusEqualVector3dReturn(vector3d x, vector3d y)
+    {
+        x.x -= y.x;
+        x.y -= y.y;
+        x.z -= y.z;
+        return x;
+    }
+
+    void multyplyEqualVector3d(vector3d &x, vector3d y)
+    {
+        x.x *= y.x;
+        x.y *= y.y;
+        x.z *= y.z;
+    }
+
+    vector3d multyplyEqualVector3dReturn(vector3d x, vector3d y)
+    {
+        x.x *= y.x;
+        x.y *= y.y;
+        x.z *= y.z;
+        return x;
+    }
+
+    void devideEqualVector3d(vector3d &x, vector3d y)
+    {
+        x.x /= y.x;
+        x.y /= y.y;
+        x.z /= x.z;
+    }
+
+    vector3d devideEqualVector3dReturn(vector3d x, vector3d y)
+    {
+        x.x /= y.x;
+        x.y /= y.y;
+        x.z /= y.z;
+        return x;
+    }
+
+    void fixSmallValueVector(vector3d &vector)
+    {
+        fixSmallValue(vector.x);
+        fixSmallValue(vector.y);
+        fixSmallValue(vector.z);
+    }
+
+}
+
+namespace colider
+{
+    struct sphereCollider
+    {
+        long double radius;
+        vector3d pos;
+    };
+
+    class planetCollider
+    {
+    public:
+        sphereCollider colliderP;
+        planetCollider(long double radius, vector3d pos)
+        {
+            colliderP.radius = radius;
+            colliderP.pos = pos;
+        }
+    };
 }
 
 void setSeed(long double costumSeed)
@@ -169,6 +178,7 @@ long double radToDeg(long double x)
 
 long double degSin(long double x)
 {
+
     return fixSmallValue(sinl(degToRad(x)));
 }
 
@@ -177,10 +187,19 @@ long double degCos(long double x)
     return fixSmallValue(cosl(degToRad(x)));
 }
 
+long double findRest(long double x, long double y)
+{
+    while (x >= y)
+    {
+        x -= y;
+    }
+    return x;
+}
+
 long double fixAngle(long double angle)
 {
     if (angle >= 360)
-        return angle%360;
+        return findRest(angle, 360);
 
     if (angle < 0)
     {
@@ -196,9 +215,9 @@ long double fixAngle(long double angle)
 long double fixAngle2(long double angle)
 {
     if (angle >= 180)
-        return angle%180;
+        return findRest(angle, 180);
 
-    if else (angle < 0)
+    if (angle < 0)
     {
         while (angle < 0)
         {
@@ -266,46 +285,51 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
     return pytagoras3d(pos);
 }
 
-std::unordered_map<std::string, int> airDensitySpeed = {};
+std::unordered_map<std::string, int> *airDensitySpeed = new std::unordered_map<std::string, int>();
 
-void makeAirDensitySpeedFung(vector3d rocketpos, vector3d planetPos, std::string fileName){
-    long double h = generateDistanse(rocketpos, planetPos);
-    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\" + fileName);
-    std::vector<double> altitude = file.getAllDataFromColumnDouble("altitude");
-
-    int start = 0, end = altitude.size()-1, mid;
-    while(end > start){
-        mid = (end - start)/2 + start;
-        if(altitude[mid] < h){
-            start = mid;
-        }
-        else if(altitude > h){
-            end = mid;
-        }
-        else break;
-    }
-    airDensitySpeed[fileName] = mid;
+void airDensitySpeedPtr(std::unordered_map<std::string, int> *x)
+{
+    airDensitySpeed = x;
 }
 
-void makeAirDensitySpeed(){
-    rocketStage *activeRocket = new rocketStage();
-    for(std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++) if(it->active) activeRocket = it;
-    for(std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
-    for(std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+void makeAirDensitySpeedFung(vector3d rocketpos, vector3d planetPos, std::string fileName)
+{
+    long double h = generateDistanse(rocketpos, planetPos);
+    databaseReadFile *file = new databaseReadFile("\\airDensityfiles\\" + fileName);
+    std::vector<double> altitude = file->getAllDataFromColumnDouble("altitude");
+
+    int start = 0, end = altitude.size() - 1, mid;
+    while (end > start)
+    {
+        mid = (end - start) / 2 + start;
+        if (altitude[mid] < h)
+        {
+            start = mid;
+        }
+        else if (altitude[mid] > h)
+        {
+            end = mid;
+        }
+        else
+            break;
+    }
+    (*airDensitySpeed)[fileName] = mid;
 }
 
 long double generateAirDensity(long double h, std::string fileName)
 {
     std::vector<double> altitude = {}, kgm = {};
-    int i = airDensitySpeed[fileName];
+    int i = (*airDensitySpeed)[fileName];
 
-    databaseReadFile* file = new databaseReadFile("\\airDensityfiles\\" + fileName);
-    altitude = file.getAllDataFromColumnDouble("altitude");
-    kgm = file.getAllDataFromColumnDouble("kgm");
+    databaseReadFile *file = new databaseReadFile("\\airDensityfiles\\" + fileName);
+    altitude = file->getAllDataFromColumnDouble("altitude");
+    kgm = file->getAllDataFromColumnDouble("kgm");
 
-    for(i = 0; h >= altitude[i]; i--);
-    for(i = 0; h <= altitude[i]; i++);
-    airDensitySpeed[fileName] = i;
+    for (i = 0; h >= altitude[i]; i--)
+        ;
+    for (i = 0; h <= altitude[i]; i++)
+        ;
+    (*airDensitySpeed)[fileName] = i;
     return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
 }
 
@@ -318,7 +342,7 @@ long double findLongitude(vector3d pos, vector3d otherPos)
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 long double findLatitude(vector3d pos, vector3d otherPos)
 {
-    return radToDeg(fixSmallValue(Acos((pos.z - otherPos.z) / generateDistanse(pos, otherPos))));
+    return radToDeg(fixSmallValue(acos((pos.z - otherPos.z) / generateDistanse(pos, otherPos))));
 }
 
 //https://en.wikipedia.org/wiki/Newton%27s_law_of_universal_gravitation

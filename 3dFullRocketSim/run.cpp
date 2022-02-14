@@ -5,6 +5,13 @@ std::list<planet> planetList = {};
 std::list<fixedPlanet> fixedPlanetList = {};
 int runID = 0;
 
+void makeAirDensitySpeed(){
+    rocketStage *activeRocket = &(*rocketStageList.begin());
+    for(std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++) if(it->active) activeRocket = &(*it);
+    for(std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+    for(std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+}
+
 void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 {
     asigneListsFixedPlanet(fixedPlanetList);
