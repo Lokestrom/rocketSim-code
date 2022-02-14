@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <sstream>
 #include <limits>
+#include "algorithm.hpp"
 
 const std::string splitElement = "|";
 std::string token, text;
@@ -308,3 +309,34 @@ public:
         }
     }
 };
+
+class databaseReWriteFile{
+    using namespace arraySorting;
+    std::string fileName;
+    databaseWriteFile wFileTemp("temp.txt");
+    databaseReadFile rFileTemp("temp.txt");
+    databaseWriteFile *wFile = &wFileTemp;
+    databaseReadFile *rFile = &rFileTemp;
+    databaseReWriteFile(std::string filename){
+        fileName = filename;
+    }
+
+    void mergeSortFileNum(std::string columnName){
+        std::unordered_map<long double, int> x = {};
+        std::vector<std::vector<std::string>> data = {};
+        std::vector<long double> columnData = {};
+        std::vector<std::vector<std::stirng>> sortedData = {};
+        rFile = new databaseReadFile(fileName);
+        data = rFile.getAllData();
+        columnData = rFile.getAllDataFromColumnDouble(columnName);
+        mergeSortReverse(columnData);
+        for(int i = 0; i < columnData; i++) if (!x.count(columnData[i])) x[columnData[i]] = i;
+        for(std::vector<std::string> i : data) sortedData.insert(x[i[rfile->mapOfColumns[columnName]]], i);
+        wFile = new databaseWriteFile(fileName);
+        wFile->addColumnArray({rFile->getLine(0)});
+        for(std::vector<std::string> i : sortedData) wFile->addData(i);
+        wFile->closeFile();
+        rFile = &rFileTemp;
+        wFile = &wFileTemp;
+    }
+}
