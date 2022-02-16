@@ -11,6 +11,7 @@
 
 const std::string splitElement = "|";
 std::string token, text;
+size_t pos;
 
 //alias for std::to_string
 std::string toS(long double x)
@@ -30,7 +31,6 @@ std::string toS(long double x)
 std::vector<std::string> split(std::string s, std::string x)
 {
     std::vector<std::string> splitarr = {};
-    size_t pos;
 
     //findes all the colomn names in the file
     while ((pos = s.find(x)) != std::string::npos)
@@ -45,7 +45,6 @@ std::vector<std::string> split(std::string s, std::string x)
 std::string splitIndex(std::string s, std::string x, int index)
 {
     std::string produkt = "";
-    size_t pos;
     int i = 0;
     //findes all the colomn names in the file
     while ((pos = s.find(x)) != std::string::npos && i <= index)
@@ -120,8 +119,6 @@ public:
         }
         std::vector<double> x;
         file->open(filename);
-        long long int j = 0;
-        size_t pos;
         bool firstline = true;
         int l = 1;
         while (getline(*file, text))
@@ -179,7 +176,6 @@ public:
         std::vector<std::vector<std::string>> x = {};
         bool firstline = true;
         int j = 0, i = 0;
-        size_t pos;
         while (getline(*file, text))
         {
             if (!firstline)
@@ -202,6 +198,16 @@ public:
         }
         file->close();
         return x;
+    }
+
+    std::vector<std::string> getLine(int line){
+        std::string text;
+        file->open(filename);
+        for(int i = 0; i < line+1; i++){
+            getline(*file, text);
+        }
+        file->close();
+        return split(text);
     }
 };
 

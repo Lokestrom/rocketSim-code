@@ -64,6 +64,44 @@ namespace arraySorting
         }
         return array;
     }
+
+    std::vector<long double> mergeSortReverse(std::vector<long double> &array)
+    {
+        if (array.size() == 1)
+            return array;
+        std::vector<long double>::const_iterator splitPoint = array.begin() + array.size() / 2;
+        std::vector<long double>::const_iterator begin = array.begin();
+        std::vector<long double>::const_iterator end = array.end();
+        std::vector<long double> x(begin, splitPoint), y(splitPoint++, end);
+        x = mergeSort(x);
+        y = mergeSort(y);
+
+        array = {};
+        int xp = 0, yp = 0;
+        while (x.size() != xp && y.size() != yp)
+        {
+            if (x[xp] > y[yp])
+            {
+                array.push_back(x[xp]);
+                xp++;
+            }
+            else
+            {
+                array.push_back(y[yp]);
+                yp++;
+            }
+        }
+
+        for (int i = xp; i < x.size(); i++)
+        {
+            array.push_back(x[i]);
+        }
+        for (int i = yp; i < y.size(); i++)
+        {
+            array.push_back(y[i]);
+        }
+        return array;
+    }
 }
 namespace search
 {
