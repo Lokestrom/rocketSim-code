@@ -31,6 +31,11 @@ typedef std::numeric_limits<long double> dbl;
 #define sunRadius 6.9634E8
 
 long double seed = unsigned(time(nullptr));
+std::vector<std::vector<int>> *planetColisionTracker = new std::vector<std::vector<int>>();
+
+void asignPlanetColisionTrackerMemAddres(std::vector<std::vector<int>> &x){
+    planetColisionTracker = x;
+}
 
 long double fixSmallValue(long double value)
 {
@@ -287,7 +292,7 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
 
 std::unordered_map<std::string, int> *airDensitySpeed = new std::unordered_map<std::string, int>();
 
-void airDensitySpeedPtr(std::unordered_map<std::string, int> *x)
+void asignAirDensitySpeedMemAddres(std::unordered_map<std::string, int> &x)
 {
     airDensitySpeed = x;
 }

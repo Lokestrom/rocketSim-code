@@ -237,8 +237,7 @@ public:
         return x;
     }
 
-    std::vector<std::string> getLine(int line)
-    {
+    std::vector<std::string> getRow(int Row){
         std::string text;
         file->open(filename);
         for (int i = 0; i < line + 1; i++)
@@ -402,7 +401,7 @@ class databaseReWriteFile
             sortedData.insert(sortedData.begin() + x[stold(i[rFile->mapOfColumns[columnName]])], i);
 
         wFile = new databaseWriteFile(fileName);
-        wFile->addColumnArray(rFile->getLine(0));
+        wFile->addColumnArray(rFile->getRow(0));
         for (std::vector<std::string> i : sortedData)
             wFile->addData(i);
         wFile->closeFile();
