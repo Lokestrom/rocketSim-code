@@ -7,11 +7,14 @@
 #include <iomanip>
 #include <sstream>
 #include <limits>
-#include "algorithm.hpp"
+#include "D:\code\codeProsjekt\flightControler\algorithm.hpp"
+
+using namespace arraySorting;
 
 const std::string splitElement = "|";
 std::string token, text;
 size_t pos;
+bool firstLine;
 
 //alias for std::to_string
 std::string toS(long double x)
@@ -109,7 +112,7 @@ public:
         }
         file->close();
     }
-
+    //double version for graff thing
     std::vector<double> getAllDataFromColumnDouble(std::string columnName)
     {
         if (!mapOfColumns.count(columnName))
@@ -119,11 +122,11 @@ public:
         }
         std::vector<double> x;
         file->open(filename);
-        bool firstline = true;
+        firstLine = true;
         int l = 1;
         while (getline(*file, text))
         {
-            if (!firstline)
+            if (!firstLine)
             {
                 token = splitIndex(text, splitElement, mapOfColumns[columnName]);
                 for (char i : token)
@@ -136,7 +139,41 @@ public:
                 }
                 x.push_back(std::stold(token));
             }
-            firstline = false;
+            firstLine = false;
+            l++;
+        }
+        file->close();
+        return x;
+    }
+
+    //long double version for all other stuff
+    std::vector<long double> getAllDataFromColumnLongDouble(std::string columnName)
+    {
+        if (!mapOfColumns.count(columnName))
+        {
+            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnDouble", {columnName});
+            return {};
+        }
+        std::vector<long double> x;
+        file->open(filename);
+        firstLine = true;
+        int l = 1;
+        while (getline(*file, text))
+        {
+            if (!firstLine)
+            {
+                token = splitIndex(text, splitElement, mapOfColumns[columnName]);
+                for (char i : token)
+                {
+                    if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
+                    {
+                        ErrorMsg("databaseReadFile", "The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        return {};
+                    }
+                }
+                x.push_back(std::stold(token));
+            }
+            firstLine = false;
             l++;
         }
         file->close();
@@ -152,14 +189,14 @@ public:
         }
         std::vector<std::string> x;
         file->open(filename);
-        bool firstline = true;
+        firstLine = true;
         while (getline(*file, text))
         {
-            if (!firstline)
+            if (!firstLine)
             {
                 x.push_back(splitIndex(text, splitElement, mapOfColumns[columnName]));
             }
-            firstline = false;
+            firstLine = false;
         }
         file->close();
         return x;
@@ -174,11 +211,11 @@ public:
         }
         file->open(filename);
         std::vector<std::vector<std::string>> x = {};
-        bool firstline = true;
+        firstLine = true;
         int j = 0, i = 0;
         while (getline(*file, text))
         {
-            if (!firstline)
+            if (!firstLine)
             {
                 j = 0;
                 while (text != "")
@@ -194,20 +231,39 @@ public:
                     i++;
                 }
             }
-            firstline = false;
+            firstLine = false;
         }
         file->close();
         return x;
     }
 
-    std::vector<std::string> getLine(int line){
+    std::vector<std::string> getLine(int line)
+    {
         std::string text;
         file->open(filename);
-        for(int i = 0; i < line+1; i++){
+        for (int i = 0; i < line + 1; i++)
+        {
             getline(*file, text);
         }
         file->close();
-        return split(text);
+        return split(text, splitElement);
+    }
+
+    std::vector<std::vector<std::string>> getAllData()
+    {
+        file->open(filename);
+        std::vector<std::vector<std::string>> x = {};
+        firstLine = true;
+        while (getline(*file, text))
+        {
+            if (!firstLine)
+            {
+                x.push_back(split(text, splitElement));
+            }
+            firstLine = false;
+        }
+        file->close();
+        return x;
     }
 };
 
@@ -272,7 +328,7 @@ public:
     }
 
     //add's an array of column's to the file
-    void addColumnArray(std::vector<std::string> &columnNames)
+    void addColumnArray(std::vector<std::string> columnNames)
     {
         if (addedData)
         {
@@ -316,33 +372,41 @@ public:
     }
 };
 
-class databaseReWriteFile{
-    using namespace arraySorting;
+class databaseReWriteFile
+{
     std::string fileName;
-    databaseWriteFile wFileTemp("temp.txt");
-    databaseReadFile rFileTemp("temp.txt");
-    databaseWriteFile *wFile = &wFileTemp;
-    databaseReadFile *rFile = &rFileTemp;
-    databaseReWriteFile(std::string filename){
+    databaseWriteFile *wFileTemp = new databaseWriteFile("temp.txt");
+    databaseReadFile *rFileTemp = new databaseReadFile("temp.txt");
+    databaseWriteFile *wFile = wFileTemp;
+    databaseReadFile *rFile = rFileTemp;
+    databaseReWriteFile(std::string filename)
+    {
         fileName = filename;
     }
 
-    void mergeSortFileNum(std::string columnName){
+    void mergeSortFileNum(std::string columnName)
+    {
         std::unordered_map<long double, int> x = {};
         std::vector<std::vector<std::string>> data = {};
         std::vector<long double> columnData = {};
-        std::vector<std::vector<std::stirng>> sortedData = {};
+        std::vector<std::vector<std::string>> sortedData = {};
         rFile = new databaseReadFile(fileName);
-        data = rFile.getAllData();
-        columnData = rFile.getAllDataFromColumnDouble(columnName);
+        data = rFile->getAllData();
+        columnData = rFile->getAllDataFromColumnLongDouble(columnName);
         mergeSortReverse(columnData);
-        for(int i = 0; i < columnData; i++) if (!x.count(columnData[i])) x[columnData[i]] = i;
-        for(std::vector<std::string> i : data) sortedData.insert(x[i[rfile->mapOfColumns[columnName]]], i);
+        for (int i = 0; i < columnData.size(); i++)
+            if (!x.count(columnData[i]))
+                x[columnData[i]] = i;
+
+        for (std::vector<std::string> i : data)
+            sortedData.insert(sortedData.begin() + x[stold(i[rFile->mapOfColumns[columnName]])], i);
+
         wFile = new databaseWriteFile(fileName);
-        wFile->addColumnArray({rFile->getLine(0)});
-        for(std::vector<std::string> i : sortedData) wFile->addData(i);
+        wFile->addColumnArray(rFile->getLine(0));
+        for (std::vector<std::string> i : sortedData)
+            wFile->addData(i);
         wFile->closeFile();
-        rFile = &rFileTemp;
-        wFile = &wFileTemp;
+        rFile = rFileTemp;
+        wFile = wFileTemp;
     }
-}
+};
