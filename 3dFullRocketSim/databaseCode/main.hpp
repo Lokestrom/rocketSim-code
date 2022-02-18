@@ -237,10 +237,10 @@ public:
         return x;
     }
 
-    std::vector<std::string> getRow(int Row){
+    std::vector<std::string> getRow(int row){
         std::string text;
         file->open(filename);
-        for (int i = 0; i < line + 1; i++)
+        for (int i = 0; i < row + 1; i++)
         {
             getline(*file, text);
         }
@@ -373,6 +373,7 @@ public:
 
 class databaseReWriteFile
 {
+public:
     std::string fileName;
     databaseWriteFile *wFileTemp = new databaseWriteFile("temp.txt");
     databaseReadFile *rFileTemp = new databaseReadFile("temp.txt");
