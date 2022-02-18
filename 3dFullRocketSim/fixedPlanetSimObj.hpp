@@ -17,17 +17,20 @@ public:
     long double mass, radius;
     int ID;
     vector3d pos, vel;
-    fixedPlanet(int fixedPlanetID, long double mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile(""), planetCollider(radius, pos)
+    fixedPlanet(int ID, long double mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile("fixedPlanet: " + toS(ID)), planetCollider(radius, pos)
     {
         fixedPlanet::ID = fixedPlanetID;
         fixedPlanet::mass = mass;
         fixedPlanet::radius = radius;
         fixedPlanet::pos = pos;
         fixedPlanet::vel = vel;
+        addColumnArray({"posX", "posY", "posZ", "vel", "velX", "velY", "velZ", "colision"})
     }
 
     void update()
     {
+        checkColision()
+        addData(pos.x, pos.y, pos.z, pytagoras3d(vel), vel.x, vel.y, vel.z, )
         //planetCollider::colliderx.pos = pos;
     }
 
@@ -35,7 +38,7 @@ public:
         
     }
 
-    void checkColisionFixedPlanet()
+    bool checkColision()
     {
         for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
         {

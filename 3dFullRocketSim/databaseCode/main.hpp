@@ -200,7 +200,7 @@ public:
         return x;
     }
 
-    std::vector<std::string> getLine(int line){
+    std::vector<std::string> getRow(int Row){
         std::string text;
         file->open(filename);
         for(int i = 0; i < line+1; i++){
@@ -335,14 +335,15 @@ class databaseReWriteFile{
         rFile = new databaseReadFile(fileName);
         data = rFile.getAllData();
         columnData = rFile.getAllDataFromColumnDouble(columnName);
+        rFile = &rFileTemp;
+
         mergeSortReverse(columnData);
         for(int i = 0; i < columnData; i++) if (!x.count(columnData[i])) x[columnData[i]] = i;
         for(std::vector<std::string> i : data) sortedData.insert(x[i[rfile->mapOfColumns[columnName]]], i);
         wFile = new databaseWriteFile(fileName);
-        wFile->addColumnArray({rFile->getLine(0)});
+        wFile->addColumnArray({rFile->getRow(0)});
         for(std::vector<std::string> i : sortedData) wFile->addData(i);
         wFile->closeFile();
-        rFile = &rFileTemp;
         wFile = &wFileTemp;
     }
 }
