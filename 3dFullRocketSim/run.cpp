@@ -1,3 +1,8 @@
+/*
+Athor: Loke Strøm
+Created: 28 ‎oct ‎2021
+*/
+
 #include "rocketsimObj.hpp"
 
 std::list<rocketStage> rocketStageList = {};
@@ -5,18 +10,39 @@ std::list<planet> planetList = {};
 std::list<fixedPlanet> fixedPlanetList = {};
 int runID = 0;
 
-void makeAirDensitySpeed(){
+void assignIDToPlanets()
+{
+    int i = 1;
+    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
+    {
+        it->ID = i;
+        i++;
+    }
+    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
+    {
+        it->ID = i;
+        i++;
+    }
+}
+
+void makeAirDensitySpeed()
+{
     rocketStage *activeRocket = &(*rocketStageList.begin());
-    for(std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++) if(it->active) activeRocket = &(*it);
-    for(std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
-    for(std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+    for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
+        if (it->active)
+            activeRocket = &(*it);
+    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
+        makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
+    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
+        makeAirDensitySpeedFung(activeRocket->pos, it->pos, it->airDensityfileName);
 }
 
 void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 {
-    asigneListsFixedPlanet(fixedPlanetList);
-    asigneListsPlanet(planetList);
-    asigneListsRocket(rocketStageList);
+    assignIDToPlanets();
+    assigneListsFixedPlanet(fixedPlanetList);
+    assigneListsPlanet(planetList);
+    assigneListsRocket(rocketStageList);
     for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
     {
         if (it->active == true)
@@ -44,12 +70,7 @@ void startup(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)
 
 void end()
 {
-    for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
-        it->closeFile();
-    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-        it->closeFile();
-    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-        it->closeFile();
+    
 }
 
 void rocketInstructions()
@@ -60,43 +81,24 @@ void Update()
 {
     for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
     {
-        it->gravity = {0, 0, 0};
-        it->gravity = it->generateGravityPlanet();
+        it->update();
+    }
+    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
+    {
+        it->update();
     }
     for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
     {
         if (it->active == true)
         {
-            it->gravity = {0, 0, 0};
-            it->drag = {0, 0, 0};
-            it->generateGravityRocket();
-            //it->generateDragRocket();
+            it->update();
         }
-    }
-    for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
-    {
-        rocketInstructions();
-        it->checkColisionPlanet();
-        it->vel.x += generateVelosity(it->mass, it->gravity.x);
-        it->vel.x += generateVelosity(it->mass, it->gravity.y);
-        it->vel.x += generateVelosity(it->mass, it->gravity.z);
-        plussEqualVector3d(it->pos, it->vel);
-        it->update();
-    }
-    for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-    {
-        it->checkColisionFixedPlanet();
-        it->update();
-    }
-    for (std::list<rocketStage>::iterator it = rocketStageList.begin(); it != rocketStageList.end(); it++)
-    {
-        it->update();
     }
 }
 
 int main()
 {
-    
+
     std::cout << std::fixed;
 
     runID = 0;
@@ -138,3 +140,5 @@ int main()
 
     return 0;
 }
+
+//TODO https://stackoverflow.com/questions/32205981/reading-json-files-in-c

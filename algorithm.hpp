@@ -1,3 +1,8 @@
+/*
+Athor: Loke Strøm
+Created: 8 feb 2022
+*/
+
 #ifndef algorithm_hpp
 #define algorithm_hpp
 
@@ -77,26 +82,26 @@ namespace arraySorting
         y = mergeSort(y);
 
         array = {};
-        int xp = 0, yp = 0;
-        while (x.size() != xp && y.size() != yp)
+        int xp = x.size()-1, yp = y.size()-1;
+        while (-1 != xp && -1 != yp)
         {
             if (x[xp] > y[yp])
             {
                 array.push_back(x[xp]);
-                xp++;
+                xp--;
             }
             else
             {
                 array.push_back(y[yp]);
-                yp++;
+                yp--;
             }
         }
 
-        for (int i = xp; i < x.size(); i++)
+        for (int i = xp; i > -1; i--)
         {
             array.push_back(x[i]);
         }
-        for (int i = yp; i < y.size(); i++)
+        for (int i = yp; i > -1; i--)
         {
             array.push_back(y[i]);
         }
@@ -125,15 +130,4 @@ namespace search
         return -1;
     }
 }
-
-long double generateRand(long double min, long double max)
-{
-    using namespace std;
-
-    static default_random_engine generator(123123);
-    uniform_real_distribution<long double> distribution(min, max);
-
-    return distribution(generator);
-}
-
 #endif

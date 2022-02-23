@@ -1,14 +1,19 @@
+/*
+Athor: Loke Strøm
+Created: 28 ‎oct ‎2021
+*/
+
 #pragma once
 
 #include "planetSimObj.hpp"
 
 class rocketStage;
 
-std::list<rocketStage>& rocketStageList;
+std::list<rocketStage> *rocketStageList;
 
-void asigneListsRocket(std::list<rocketStage> listOfAllRocketStages)
+void assigneListsRocket(std::list<rocketStage> *listOfAllRocketStages)
 {
-    rocketStageList = listOfAllRocketStages
+    rocketStageList = listOfAllRocketStages;
 }
 
 class rocketStage : public databaseWriteFile // : collider
@@ -38,20 +43,46 @@ public:
         rocketStage::vel = Velosity;
         rocketStage::pos = posision;
 
-        addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust" "rotasionX", "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag"});
+        addColumnArray({"time", "posX", "posY", "posZ", "velX", "velY", "velZ", "vel", "mass", "thrust"
+                                                                                               "rotasionX",
+                        "rotasionY", "rotasionZ", "gravityX", "gravityY", "gravityZ", "gravity", "dragX", "dragY", "dragZ", "drag"});
         std::vector<std::string> planetIDs;
-        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
-        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++) planetIDs.push_back((char)it->ID + " distanse");
+        for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
+            planetIDs.push_back((char)it->ID + " distanse");
+        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
+            planetIDs.push_back((char)it->ID + " distanse");
         addColumnArray(planetIDs);
     }
 
     void update()
     {
-        
+
         t++;
         thrust = exitVelosityOfPropelent * fuleUsePerMiliSecond * generateRand(1 - thrustUnsertentyProsnet, 1 + thrustUnsertentyProsnet);
         //collider::clliderDefinision.pos = pos;
-        addData({toS(t), toS(pos.x), toS(pos.y), toS(pos.z), toS(vel.x), toS(vel.y), toS(vel.z), toS(modSqrt((vel.x*vel.x)+(vel.y*vel.y)+(vel.z*vel.z))), toS(mass), toS(thrust), toS(rotasion.x), toS(rotasion.y), toS(rotasion.z), toS(gravity.x), toS(gravity.y), toS(gravity.z), toS(modSqrt((gravity.x * gravity.x)+(gravity.y * gravity.y)+(gravity.z * gravity.z))), toS(drag.x), toS(drag.y), toS(drag.z), toS(modSqrt((drag.x * drag.x)+(drag.y * drag.y)+(drag.z * drag.z))), });
+        addData({
+            toS(t),
+            toS(pos.x),
+            toS(pos.y),
+            toS(pos.z),
+            toS(vel.x),
+            toS(vel.y),
+            toS(vel.z),
+            toS(modSqrt((vel.x * vel.x) + (vel.y * vel.y) + (vel.z * vel.z))),
+            toS(mass),
+            toS(thrust),
+            toS(rotasion.x),
+            toS(rotasion.y),
+            toS(rotasion.z),
+            toS(gravity.x),
+            toS(gravity.y),
+            toS(gravity.z),
+            toS(modSqrt((gravity.x * gravity.x) + (gravity.y * gravity.y) + (gravity.z * gravity.z))),
+            toS(drag.x),
+            toS(drag.y),
+            toS(drag.z),
+            toS(modSqrt((drag.x * drag.x) + (drag.y * drag.y) + (drag.z * drag.z))),
+        });
     }
 
     void startupRocket(bool planetTypeFlaseIsPlanetTrueIsFixedPlanet, int startPlanetID)

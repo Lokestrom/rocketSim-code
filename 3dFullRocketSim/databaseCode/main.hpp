@@ -1,3 +1,9 @@
+/*
+Athor: Loke Strøm
+Created: 31 Dec 2021
+*/
+//can't use databaseReadFile and databaseWriteFile on same file at same time.
+
 #pragma once
 
 #include <fstream>
@@ -15,49 +21,6 @@ const std::string splitElement = "|";
 std::string token, text;
 size_t pos;
 bool firstLine;
-
-//alias for std::to_string
-std::string toS(long double x)
-{
-    // Create an output string stream
-    std::ostringstream streamObj3;
-    // Set Fixed -Point Notation
-    streamObj3 << std::fixed;
-    // Set precision to 2 digits
-    streamObj3 << std::setprecision(12);
-    //Add double to stream
-    streamObj3 << x;
-    // Get string from output string stream
-    return streamObj3.str();
-}
-
-std::vector<std::string> split(std::string s, std::string x)
-{
-    std::vector<std::string> splitarr = {};
-
-    //findes all the colomn names in the file
-    while ((pos = s.find(x)) != std::string::npos)
-    {
-        splitarr.push_back(s.substr(0, pos));
-        s.erase(0, pos + x.length());
-    }
-    splitarr.push_back(s);
-    return splitarr;
-}
-
-std::string splitIndex(std::string s, std::string x, int index)
-{
-    std::string produkt = "";
-    int i = 0;
-    //findes all the colomn names in the file
-    while ((pos = s.find(x)) != std::string::npos && i <= index)
-    {
-        produkt = (s.substr(0, pos));
-        s.erase(0, pos + x.length());
-        i++;
-    }
-    return produkt;
-}
 
 bool terminateProgram = false;
 bool terminateWriteFile = false;
@@ -89,6 +52,65 @@ void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion
     }
 }
 
+//alias for std::to_string
+std::string toS(long double x)
+{
+    // Create an output string stream
+    std::ostringstream streamObj3;
+    // Set Fixed -Point Notation
+    streamObj3 << std::fixed;
+    // Set precision to 2 digits
+    streamObj3 << std::setprecision(12);
+    //Add double to stream
+    streamObj3 << x;
+    // Get string from output string stream
+    return streamObj3.str();
+}
+
+std::vector<std::string> toSVector(std::vector<long double> x)
+{
+    std::vector<std::string> y = {};
+    for (long double i : x)
+        y.push_back(toS(i));
+    return y;
+}
+
+std::vector<std::string> split(std::string s, std::string x)
+{
+    std::vector<std::string> splitarr = {};
+
+    //findes all the colomn names in the file
+    while ((pos = s.find(x)) != std::string::npos)
+    {
+        splitarr.push_back(s.substr(0, pos));
+        s.erase(0, pos + x.length());
+    }
+    splitarr.push_back(s);
+    return splitarr;
+}
+
+std::string splitIndex(std::string s, std::string x, int index)
+{
+
+    std::string produkt = "", startString = s;
+    int i = 0;
+    s += splitElement;
+    //findes all the colomn names in the file
+    while (i <= index)
+    {
+        pos = s.find(x);
+        if (pos == -1)
+        {
+            ErrorMsg("main.hpp", "Index out of range", "splitIndex", {startString, splitElement, toS(index)});
+            return "";
+        }
+        produkt = (s.substr(0, pos));
+        s.erase(0, pos + x.length());
+        i++;
+    }
+    return produkt;
+}
+
 //used to read a file in the database
 class databaseReadFile
 {
@@ -112,12 +134,23 @@ public:
         }
         file->close();
     }
+
+    ~databaseReadFile()
+    {
+        delete file;
+    }
+
+    void databaseReadFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+    {
+        ErrorMsg("databaseReadWriteFile", ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
+    }
+
     //double version for graff thing
     std::vector<double> getAllDataFromColumnDouble(std::string columnName)
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnDouble", {columnName});
+            databaseReadFileErrorMsg("Not a column name", "getAllDataFromColumnDouble", {columnName});
             return {};
         }
         std::vector<double> x;
@@ -133,7 +166,7 @@ public:
                 {
                     if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
                     {
-                        ErrorMsg("databaseReadFile", "The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                         return {};
                     }
                 }
@@ -151,7 +184,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnDouble", {columnName});
+            databaseReadFileErrorMsg("Not a column name", "getAllDataFromColumnDouble", {columnName});
             return {};
         }
         std::vector<long double> x;
@@ -167,7 +200,7 @@ public:
                 {
                     if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
                     {
-                        ErrorMsg("databaseReadFile", "The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                        databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                         return {};
                     }
                 }
@@ -184,7 +217,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("databaseReadFile", "Not a column name", "getAllDataFromColumnString", {columnName});
+            databaseReadFileErrorMsg("Not a column name", "getAllDataFromColumnString", {columnName});
             return {};
         }
         std::vector<std::string> x;
@@ -206,7 +239,7 @@ public:
     {
         if (!mapOfColumns.count(columnName))
         {
-            ErrorMsg("databaseReadFile", "Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
+            databaseReadFileErrorMsg("Not a column name", "getAllRowsWhereColumnIsEqualeToAValue", {columnName, value});
             return {{}};
         }
         file->open(filename);
@@ -237,7 +270,8 @@ public:
         return x;
     }
 
-    std::vector<std::string> getRow(int row){
+    std::vector<std::string> getRow(int row)
+    {
         std::string text;
         file->open(filename);
         for (int i = 0; i < row + 1; i++)
@@ -267,7 +301,6 @@ public:
 };
 
 //writes a file to the database
-//remember to close file
 class databaseWriteFile
 {
 public:
@@ -276,41 +309,48 @@ public:
     int nextColumnNumber = 0;
     std::ofstream *file = new std::ofstream;
     bool addedData = false;
-    //constructor opens file
-    databaseWriteFile(std::string fileName)
+    //defalt constructor
+    databaseWriteFile()
     {
-        databaseWriteFile::filename = fileName;
+        std::cout << std::fixed;
+    }
+
+    //constructor opens file
+    databaseWriteFile(std::string filename)
+    {
+        databaseWriteFile::filename = filename;
         file->open(filename);
         std::cout << std::fixed;
     }
 
-    void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
-    {
-        if (terminateWriteFile == true && terminateProgram == true)
-        {
-            file->close();
-            deleteFile();
-        }
-        ErrorMsg("databaseWriteFile", ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
-    }
-
-    void closeFile()
-    {
-        file->close();
-        if (errorHasBeenThrown == true && terminateWriteFile == true)
-            deleteFile();
-    }
-
-    void deleteFile()
+    ~databaseWriteFile()
     {
         if (file->is_open())
             file->close();
-        remove(filename.c_str());
+        delete file;
+        if (errorHasBeenThrown && terminateWriteFile)
+            remove(filename.c_str());
+    }
+
+    void openFile(std::string filename)
+    {
+        databaseWriteFile::filename = filename;
+        file->open(filename);
+    }
+
+    void databaseWriteFileErrorMsg(std::string ErrorMsg_, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+    {
+        ErrorMsg("databaseWriteFile", ErrorMsg_, ErrorFungtion, ErrorFungtionInput);
     }
 
     //add's a column to the file
     void addColumn(std::string columnName)
     {
+        if (!file->is_open())
+        {
+            databaseWriteFileErrorMsg("No file is open", "addColumn", {columnName});
+            return;
+        }
         if (addedData)
         {
             databaseWriteFileErrorMsg("Can't add column data has been added", "addColumn", {columnName});
@@ -329,6 +369,11 @@ public:
     //add's an array of column's to the file
     void addColumnArray(std::vector<std::string> columnNames)
     {
+        if (!file->is_open())
+        {
+            databaseWriteFileErrorMsg("No file is open", "addColumnArray", columnNames);
+            return;
+        }
         if (addedData)
         {
             databaseWriteFileErrorMsg("Can't add column data has been added", "addColumnArray", columnNames);
@@ -346,10 +391,13 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    void addData(std::vector<std::string> &data)
+    void addData(std::vector<std::string> data)
     {
-        *file << std::endl;
-        addedData = true;
+        if (!file->is_open())
+        {
+            databaseWriteFileErrorMsg("No file is open", "addData", data);
+            return;
+        }
         if (mapOfColumns.size() > data.size())
         {
             databaseWriteFileErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
@@ -360,6 +408,8 @@ public:
             databaseWriteFileErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
             return;
         }
+        *file << std::endl;
+        addedData = true;
         bool first = true;
         for (std::string i : data)
         {
@@ -369,44 +419,72 @@ public:
             first = false;
         }
     }
+
+    void addDataLongDouble(std::vector<long double> data)
+    {
+        if (!file->is_open())
+        {
+            databaseWriteFileErrorMsg("No file is open", "addData", toSVector(data));
+            return;
+        }
+        if (mapOfColumns.size() > data.size())
+        {
+            databaseWriteFileErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", toSVector(data));
+            return;
+        }
+        if (mapOfColumns.size() < data.size())
+        {
+            databaseWriteFileErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", toSVector(data));
+            return;
+        }
+        *file << std::endl;
+        std::cout << "hello";
+
+        addedData = true;
+        bool first = true;
+        for (long double i : data)
+        {
+            if (!first)
+                *file << "|";
+            *file << toS(i);
+            first = false;
+        }
+    }
 };
 
-class databaseReWriteFile
+class databaseEditFile
 {
 public:
-    std::string fileName;
-    databaseWriteFile *wFileTemp = new databaseWriteFile("temp.txt");
-    databaseReadFile *rFileTemp = new databaseReadFile("temp.txt");
-    databaseWriteFile *wFile = wFileTemp;
-    databaseReadFile *rFile = rFileTemp;
-    databaseReWriteFile(std::string filename)
-    {
-        fileName = filename;
-    }
-
-    void mergeSortFileNum(std::string columnName)
+    void mergeSortFileNum(std::string fileName, std::string columnName)
     {
         std::unordered_map<long double, int> x = {};
-        std::vector<std::vector<std::string>> data = {};
         std::vector<long double> columnData = {};
-        std::vector<std::vector<std::string>> sortedData = {};
-        rFile = new databaseReadFile(fileName);
-        data = rFile->getAllData();
+        databaseReadFile *rFile = new databaseReadFile(fileName);
         columnData = rFile->getAllDataFromColumnLongDouble(columnName);
-        mergeSortReverse(columnData);
+        mergeSort(columnData);
         for (int i = 0; i < columnData.size(); i++)
             if (!x.count(columnData[i]))
                 x[columnData[i]] = i;
 
+        std::vector<std::vector<std::string>> data = rFile->getAllData();
+        std::vector<std::vector<std::string>> sortedData(data.size(), {{""}});
+
         for (std::vector<std::string> i : data)
             sortedData.insert(sortedData.begin() + x[stold(i[rFile->mapOfColumns[columnName]])], i);
 
-        wFile = new databaseWriteFile(fileName);
-        wFile->addColumnArray(rFile->getRow(0));
+        int j = 0;
+        while (j < sortedData.size())
+            if (sortedData[j][0] == "")
+                sortedData.erase(sortedData.begin() + j);
+            else
+                j++;
+
+        std::vector<std::string> columnNames = rFile->getRow(0);
+
+        delete rFile;
+        databaseWriteFile wFile(fileName);
+        wFile.addColumnArray(columnNames);
         for (std::vector<std::string> i : sortedData)
-            wFile->addData(i);
-        wFile->closeFile();
-        rFile = rFileTemp;
-        wFile = wFileTemp;
+            wFile.addData(i);
     }
 };

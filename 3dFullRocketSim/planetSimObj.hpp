@@ -1,3 +1,8 @@
+/*
+Athor: Loke Strøm
+Created: 28 ‎oct ‎2021
+*/
+
 #pragma once
 
 #include "fixedPlanetSimObj.hpp"
@@ -7,7 +12,7 @@ class planet;
 
 std::list<planet> planetList;
 
-void asigneListsPlanet(std::list<planet> listOfAllPlanets)
+void assigneListsPlanet(std::list<planet> listOfAllPlanets)
 {
     planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
 }
@@ -19,9 +24,8 @@ public:
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile(""),planetCollider(radius, pos)
+    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile("planet: " + toS(planetID)), planetCollider(radius, pos)
     {
-        planet::ID = planetID;
         planet::mass = mass;
         planet::radius = radius;
         planet::pos = pos;
@@ -54,6 +58,7 @@ public:
         }
         return gravity;
     }
+    
     void checkColisionPlanet()
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)

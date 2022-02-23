@@ -1,3 +1,8 @@
+/*
+Athor: Loke Strøm
+Created: 28 ‎oct ‎2021
+*/
+
 #pragma once
 
 #include <cmath>
@@ -7,14 +12,6 @@
 #include <list>
 #include <fstream>
 #include "databaseCode\main.hpp"
-
-class planet;
-class fixedPlanet;
-class rocketStage;
-
-//std::list<planet> planetList = {};
-//std::list<fixedPlanet> fixedPlanetList = {};
-//std::list<rocketStage> rocketStageList = {};
 
 typedef std::numeric_limits<long double> dbl;
 
@@ -31,10 +28,25 @@ typedef std::numeric_limits<long double> dbl;
 #define sunRadius 6.9634E8
 
 long double seed = unsigned(time(nullptr));
-std::vector<std::vector<int>> *planetColisionTracker = new std::vector<std::vector<int>>();
 
-void asignPlanetColisionTrackerMemAddres(std::vector<std::vector<int>> &x){
-    planetColisionTracker = x;
+long double generateRand(long double min, long double max)
+{
+    using namespace std;
+
+    static default_random_engine generator(seed);
+    uniform_real_distribution<long double> distribution(min, max);
+
+    return distribution(generator);
+}
+
+int generateRandInt(int min, int max)
+{
+    using namespace std;
+
+    static default_random_engine generator(seed);
+    uniform_real_distribution<long double> distribution(min, max);
+
+    return (int)distribution(generator);
 }
 
 long double fixSmallValue(long double value)
@@ -149,26 +161,6 @@ void setSeed(long double costumSeed)
 long double returnSeed()
 {
     return seed;
-}
-
-long double generateRand(long double min, long double max)
-{
-    using namespace std;
-
-    static default_random_engine generator(seed);
-    uniform_real_distribution<long double> distribution(min, max);
-
-    return distribution(generator);
-}
-
-int generateRandInt(int min, int max)
-{
-    using namespace std;
-
-    static default_random_engine generator(seed);
-    uniform_real_distribution<long double> distribution(min, max);
-
-    return (int)distribution(generator);
 }
 
 long double degToRad(long double x)
@@ -292,7 +284,7 @@ long double generateDistanse(vector3d pos, vector3d otherPos)
 
 std::unordered_map<std::string, int> *airDensitySpeed = new std::unordered_map<std::string, int>();
 
-void asignAirDensitySpeedMemAddres(std::unordered_map<std::string, int> &x)
+void assignAirDensitySpeedMemAddres(std::unordered_map<std::string, int> *x)
 {
     airDensitySpeed = x;
 }
@@ -331,9 +323,7 @@ long double generateAirDensity(long double h, std::string fileName)
     kgm = file->getAllDataFromColumnDouble("kgm");
 
     for (i = 0; h >= altitude[i]; i--)
-        ;
     for (i = 0; h <= altitude[i]; i++)
-        ;
     (*airDensitySpeed)[fileName] = i;
     return (kgm[i] * (h - altitude[i - 1]) + kgm[i - 1] * (altitude[i] - h)) / (altitude[i] - altitude[i - 1]);
 }
