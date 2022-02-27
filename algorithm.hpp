@@ -32,19 +32,20 @@ namespace arraySorting
         return array;
     }
 
-    std::vector<long double> mergeSort(std::vector<long double> &array)
+    template <typename T>
+    std::vector<T> mergeSort(std::vector<T> &array)
     {
         if (array.size() == 1)
             return array;
-        std::vector<long double>::const_iterator splitPoint = array.begin() + array.size() / 2;
-        std::vector<long double>::const_iterator begin = array.begin();
-        std::vector<long double>::const_iterator end = array.end();
-        std::vector<long double> x(begin, splitPoint), y(splitPoint++, end);
+        auto splitPoint = array.begin() + array.size() / 2;
+        auto begin = array.begin();
+        auto end = array.end();
+        typename std::vector<T> x(begin, splitPoint), y(splitPoint++, end);
         x = mergeSort(x);
         y = mergeSort(y);
 
         array = {};
-        int xp = 0, yp = 0;
+        auto xp = 0, yp = 0;
         while (x.size() != xp && y.size() != yp)
         {
             if (x[xp] < y[yp])
@@ -59,30 +60,31 @@ namespace arraySorting
             }
         }
 
-        for (int i = xp; i < x.size(); i++)
+        for (auto i = xp; i < x.size(); i++)
         {
             array.push_back(x[i]);
         }
-        for (int i = yp; i < y.size(); i++)
+        for (auto i = yp; i < y.size(); i++)
         {
             array.push_back(y[i]);
         }
         return array;
     }
 
-    std::vector<long double> mergeSortReverse(std::vector<long double> &array)
+    template <typename T>
+    std::vector<T> mergeSortReverse(std::vector<T> &array)
     {
         if (array.size() == 1)
             return array;
-        std::vector<long double>::const_iterator splitPoint = array.begin() + array.size() / 2;
-        std::vector<long double>::const_iterator begin = array.begin();
-        std::vector<long double>::const_iterator end = array.end();
-        std::vector<long double> x(begin, splitPoint), y(splitPoint++, end);
+        auto splitPoint = array.begin() + array.size() / 2;
+        auto begin = array.begin();
+        auto end = array.end();
+        typename std::vector<T> x(begin, splitPoint), y(splitPoint++, end);
         x = mergeSort(x);
         y = mergeSort(y);
 
         array = {};
-        int xp = x.size()-1, yp = y.size()-1;
+        int xp = x.size() - 1, yp = y.size() - 1;
         while (-1 != xp && -1 != yp)
         {
             if (x[xp] > y[yp])
@@ -97,11 +99,11 @@ namespace arraySorting
             }
         }
 
-        for (int i = xp; i > -1; i--)
+        for (auto i = xp; i > -1; i--)
         {
             array.push_back(x[i]);
         }
-        for (int i = yp; i > -1; i--)
+        for (auto i = yp; i > -1; i--)
         {
             array.push_back(y[i]);
         }
@@ -110,7 +112,8 @@ namespace arraySorting
 }
 namespace search
 {
-    int binarySearch(std::vector<double> arr, double target)
+    template <typename T>
+    int binarySearch(std::vector<T> arr, T target)
     {
         int low = 0;
         int high = arr.size() - 1;
@@ -129,5 +132,17 @@ namespace search
         }
         return -1;
     }
+}
+
+template <typename T>
+bool sorted(T arr)
+{
+    auto last = arr[0];
+    for (auto i : arr)
+    {
+        if (last > i) return false;
+        last = i;
+    }
+    return true;
 }
 #endif

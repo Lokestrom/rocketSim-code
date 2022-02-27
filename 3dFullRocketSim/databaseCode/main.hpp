@@ -53,7 +53,8 @@ void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion
 }
 
 //alias for std::to_string
-std::string toS(long double x)
+template<typename T>
+std::string toS(T x)
 {
     // Create an output string stream
     std::ostringstream streamObj3;
@@ -67,10 +68,11 @@ std::string toS(long double x)
     return streamObj3.str();
 }
 
-std::vector<std::string> toSVector(std::vector<long double> x)
+template<typename T>
+std::vector<std::string> toSVector(std::vector<T> x)
 {
     std::vector<std::string> y = {};
-    for (long double i : x)
+    for (T i : x)
         y.push_back(toS(i));
     return y;
 }
