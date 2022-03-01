@@ -15,6 +15,15 @@ Created: 31 Dec 2021
 #include <limits>
 #include "D:\code\codeProsjekt\flightControler\algorithm.hpp"
 
+#include <type_traits>
+#include <typeinfo>
+#ifndef _MSC_VER
+#   include <cxxabi.h>
+#endif
+#include <memory>
+#include <string>
+#include <cstdlib>
+
 using namespace arraySorting;
 
 const std::string splitElement = "|";
@@ -37,22 +46,44 @@ void onErrorTerminateWriteFile(bool x)
     terminateWriteFile = x;
 }
 
-//prints error msg to console
-void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
+template <class T>
+std::string type_name()
 {
-    errorHasBeenThrown = true;
-    std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
-    for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
-        error += "\"" + ErrorFungtionInput[i] + "\", ";
-    error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
-    std::cout << error;
-    if (terminateProgram)
-    {
-        std::exit;
-    }
+    typedef typename std::remove_reference<T>::type TR;
+    std::unique_ptr<char, void(*)(void*)> own
+           (
+#ifndef _MSC_VER
+                abi::__cxa_demangle(typeid(TR).name(), nullptr,
+                                           nullptr, nullptr),
+#else
+                nullptr,
+#endif
+                std::free
+           );
+    std::string r = own != nullptr ? own.get() : typeid(TR).name();
+    if (std::is_const<TR>::value)
+        r += " const";
+    if (std::is_volatile<TR>::value)
+        r += " volatile";
+    if (std::is_lvalue_reference<T>::value)
+        r += "&";
+    else if (std::is_rvalue_reference<T>::value)
+        r += "&&";
+    return r;
 }
 
-//alias for std::to_string
+template<typename T>
+bool isString(T x){
+    return type_name(x) == "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >";
+}
+
+bool canStringConvertToNumber(std::string x){
+    for (char i : x)
+        if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
+            return false;
+    return true;
+}
+
 template<typename T>
 std::string toS(T x)
 {
@@ -66,6 +97,26 @@ std::string toS(T x)
     streamObj3 << x;
     // Get string from output string stream
     return streamObj3.str();
+}
+
+//prints error msg to console
+template<typename T>
+void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
+{
+    errorHasBeenThrown = true;
+    std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+    if(ErrorFungtionInput.size() != 0)
+    {
+        if(std::is_same<T, std::string>::value))
+            for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
+                error += "\"" + ErrorFungtionInput[i] + "\", ";
+        error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
+    }
+    std::cout << error;
+    if (terminateProgram)
+    {
+        std::exit;
+    }
 }
 
 template<typename T>
@@ -164,14 +215,8 @@ public:
             if (!firstLine)
             {
                 token = splitIndex(text, splitElement, mapOfColumns[columnName]);
-                for (char i : token)
-                {
-                    if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
-                    {
-                        databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
-                        return {};
-                    }
-                }
+                if (!canStringConvertToNumber(token))
+                    databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
                 x.push_back(std::stold(token));
             }
             firstLine = false;
@@ -393,7 +438,8 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    void addData(std::vector<std::string> data)
+    template<typename T>
+    void addData(std::vector<T> data)
     {
         if (!file->is_open())
         {
@@ -413,7 +459,7 @@ public:
         *file << std::endl;
         addedData = true;
         bool first = true;
-        for (std::string i : data)
+        for (T i : data)
         {
             if (!first)
                 *file << "|";

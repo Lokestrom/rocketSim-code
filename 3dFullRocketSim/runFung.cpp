@@ -5,9 +5,9 @@ Created: 28 ‎oct ‎2021
 
 #include "rocketsimObj.hpp"
 
-std::list<rocketStage> rocketStageList = {};
-std::list<planet> planetList = {};
-std::list<fixedPlanet> fixedPlanetList = {};
+std::vector<rocketStage> rocketStageList = {};
+std::vector<planet> planetList = {};
+std::vector<fixedPlanet> fixedPlanetList = {};
 int runID = 0;
 
 void assignIDToPlanets()
@@ -96,49 +96,20 @@ void Update()
     }
 }
 
-int main()
-{
-
-    std::cout << std::fixed;
-
-    runID = 0;
-
-    long double
-        wetMass = 1,
-        dryMass = 0,
-        fuleUsePerMiliSecond = 0.1,
-        exitVelosityOfPropelent = 3000;
-
-    vector3d
-        pos = {0, 0, 0},
-        vel = {0, 0, 0},
-        engineGimblePoint = {0, 0, 0},
-        centeOfGravityPoint = {0, 0, 0},
-        centerOfPresurePoint = {0, 0, 0};
-
-    rocketStage stage1(3, wetMass, dryMass, vel, pos, fuleUsePerMiliSecond, exitVelosityOfPropelent, 0, engineGimblePoint, centeOfGravityPoint, centerOfPresurePoint);
-
-    planet planet1(1, 1E+14, 1, {0, 0, 0}, {0, 0, 0});
-    planet planet2(1, 1000, 1, {100, 0, 0}, {0, sqrt((G * 1E+14) / 100), 0});
-
-    rocketStageList = {stage1};
-    planetList = {planet1, planet2};
-    fixedPlanetList = {};
-
-    int startPlanetID = 0;
-    bool planetTypeFlaseIsPlanetTrueIsFixedPlanet;
-    startup(planetTypeFlaseIsPlanetTrueIsFixedPlanet, startPlanetID);
-
-    int t = 0;
-
-    while (true)
-    {
-        Update();
-        t++;
+void getRocket(std::string filename){
+    std::vector<std::vector<std::sting>> data;
+    databaseReadFile file(fileName);
+    data = file.getAllData();
+    for(std::vector<std::string> i : data){
+        rocketStageList.push_back(rocketStage(data))
     }
-    end();
-
-    return 0;
 }
 
-//TODO https://stackoverflow.com/questions/32205981/reading-json-files-in-c
+void getPlanets(std::string fileName){
+    std::vector<std::vector<std::sting>> data;
+    databaseReadFile file(fileName);
+    data = file.getAllData();
+    for(std::vector<std::string> i : data){
+        planetList.push_back(planet(data))
+    }
+}
