@@ -101,17 +101,24 @@ std::string toS(T x)
 
 //prints error msg to console
 template<typename T>
-void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
+void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput){
+    if(ErrorFungtionInput.size() != 0)
+        ErrorMsg("ErrorMsg", "can't cout the type of vector", "ErrorMsg", {typename(ErrorFungtionInput[0])})
+    else ErrorMsg
+}
+
+template<>
+void ErrorMsg<std::string>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
 {
     errorHasBeenThrown = true;
     std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
     if(ErrorFungtionInput.size() != 0)
     {
-        if(std::is_same<T, std::string>::value))
-            for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
-                error += "\"" + ErrorFungtionInput[i] + "\", ";
+        for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
+            error += "\"" + ErrorFungtionInput[i] + "\", ";
         error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     }
+    else error += "();";
     std::cout << error;
     if (terminateProgram)
     {
