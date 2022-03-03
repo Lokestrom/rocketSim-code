@@ -1,6 +1,6 @@
 /*
 Athor: Loke Strøm
-Created: 28 ‎oct ‎2021
+Created: 28 Oct 2021
 */
 
 #include "rocketsimObj.hpp"

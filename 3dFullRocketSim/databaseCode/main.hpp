@@ -103,12 +103,12 @@ std::string toS(T x)
 template<typename T>
 void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput){
     if(ErrorFungtionInput.size() != 0)
-        ErrorMsg("ErrorMsg", "can't cout the type of vector", "ErrorMsg", {typename(ErrorFungtionInput[0])})
-    else ErrorMsg
+        ErrorMsg("ErrorMsg", "can't cout the type of vector", "ErrorMsg", {typename(ErrorFungtionInput[0])});
+    else ErrorMsg<std::string>(where, ErrorMsg, ErrorFungtion, ErrorFungtionInput);
 }
 
 template<>
-void ErrorMsg<std::string>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
+void ErrorMsg<std::string, char*, char[], char>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
 {
     errorHasBeenThrown = true;
     std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
@@ -117,6 +117,25 @@ void ErrorMsg<std::string>(std::string where, std::string ErrorMsg, std::string 
         for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
             error += "\"" + ErrorFungtionInput[i] + "\", ";
         error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
+    }
+    else error += "();";
+    std::cout << error;
+    if (terminateProgram)
+    {
+        std::exit;
+    }
+}
+
+template<>
+void ErrorMsg<short int, unsigned short int, unsigned int, int, long int, unsigned long int, long long int, unsigned long long int, float, double, long double>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
+{
+    errorHasBeenThrown = true;
+    std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
+    if(ErrorFungtionInput.size() != 0)
+    {
+        for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
+            error += "\"" + toS(ErrorFungtionInput[i]) + "\", ";
+        error += "\"" + toS(ErrorFungtionInput[ErrorFungtionInput.size() - 1]) + "\");\n";
     }
     else error += "();";
     std::cout << error;

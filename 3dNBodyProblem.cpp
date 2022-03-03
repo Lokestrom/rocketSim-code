@@ -1,6 +1,6 @@
 /*
 Athor: Loke Strøm
-Created: 15 jan ‎2022
+Created: 15 Jan 2022
 */
 
 #include "3dFullRocketSim\databaseCode\main.hpp"
