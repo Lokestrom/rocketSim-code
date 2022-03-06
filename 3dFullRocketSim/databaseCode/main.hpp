@@ -18,7 +18,7 @@ Created: 31 Dec 2021
 #include <type_traits>
 #include <typeinfo>
 #ifndef _MSC_VER
-#   include <cxxabi.h>
+#include <cxxabi.h>
 #endif
 #include <memory>
 #include <string>
@@ -50,16 +50,14 @@ template <class T>
 std::string type_name()
 {
     typedef typename std::remove_reference<T>::type TR;
-    std::unique_ptr<char, void(*)(void*)> own
-           (
+    std::unique_ptr<char, void (*)(void *)> own(
 #ifndef _MSC_VER
-                abi::__cxa_demangle(typeid(TR).name(), nullptr,
-                                           nullptr, nullptr),
+        abi::__cxa_demangle(typeid(TR).name(), nullptr,
+                            nullptr, nullptr),
 #else
-                nullptr,
+        nullptr,
 #endif
-                std::free
-           );
+        std::free);
     std::string r = own != nullptr ? own.get() : typeid(TR).name();
     if (std::is_const<TR>::value)
         r += " const";
@@ -72,19 +70,21 @@ std::string type_name()
     return r;
 }
 
-template<typename T>
-bool isString(T x){
+template <typename T>
+bool isString(T x)
+{
     return type_name(x) == "std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >";
 }
 
-bool canStringConvertToNumber(std::string x){
+bool canStringConvertToNumber(std::string x)
+{
     for (char i : x)
         if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
             return false;
     return true;
 }
 
-template<typename T>
+template <typename T>
 std::string toS(T x)
 {
     // Create an output string stream
@@ -100,25 +100,18 @@ std::string toS(T x)
 }
 
 //prints error msg to console
-template<typename T>
-void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput){
-    if(ErrorFungtionInput.size() != 0)
-        ErrorMsg("ErrorMsg", "can't cout the type of vector", "ErrorMsg", {typename(ErrorFungtionInput[0])});
-    else ErrorMsg<std::string>(where, ErrorMsg, ErrorFungtion, ErrorFungtionInput);
-}
-
-template<>
-void ErrorMsg<std::string, char*, char[], char>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
+void ErrorMsg(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<std::string> ErrorFungtionInput)
 {
     errorHasBeenThrown = true;
     std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
-    if(ErrorFungtionInput.size() != 0)
+    if (ErrorFungtionInput.size() != 0)
     {
         for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
             error += "\"" + ErrorFungtionInput[i] + "\", ";
         error += "\"" + ErrorFungtionInput[ErrorFungtionInput.size() - 1] + "\");\n";
     }
-    else error += "();";
+    else
+        error += "();";
     std::cout << error;
     if (terminateProgram)
     {
@@ -126,32 +119,19 @@ void ErrorMsg<std::string, char*, char[], char>(std::string where, std::string E
     }
 }
 
-template<>
-void ErrorMsg<short int, unsigned short int, unsigned int, int, long int, unsigned long int, long long int, unsigned long long int, float, double, long double>(std::string where, std::string ErrorMsg, std::string ErrorFungtion, std::vector<T> ErrorFungtionInput)
-{
-    errorHasBeenThrown = true;
-    std::string error = where + ": Error: " + ErrorMsg + ". Error was thrown at " + ErrorFungtion + "(";
-    if(ErrorFungtionInput.size() != 0)
-    {
-        for (int i = 0; i < ErrorFungtionInput.size() - 1; i++)
-            error += "\"" + toS(ErrorFungtionInput[i]) + "\", ";
-        error += "\"" + toS(ErrorFungtionInput[ErrorFungtionInput.size() - 1]) + "\");\n";
-    }
-    else error += "();";
-    std::cout << error;
-    if (terminateProgram)
-    {
-        std::exit;
-    }
-}
-
-template<typename T>
+template <typename T>
 std::vector<std::string> toSVector(std::vector<T> x)
 {
     std::vector<std::string> y = {};
     for (T i : x)
         y.push_back(toS(i));
     return y;
+}
+
+template <>
+std::vector<std::string> toSVector<std::string>(std::vector<std::string> x)
+{
+    return x;
 }
 
 std::vector<std::string> split(std::string s, std::string x)
@@ -242,7 +222,10 @@ public:
             {
                 token = splitIndex(text, splitElement, mapOfColumns[columnName]);
                 if (!canStringConvertToNumber(token))
+                {
                     databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                    return {};
+                }
                 x.push_back(std::stold(token));
             }
             firstLine = false;
@@ -269,13 +252,10 @@ public:
             if (!firstLine)
             {
                 token = splitIndex(text, splitElement, mapOfColumns[columnName]);
-                for (char i : token)
+                if (!canStringConvertToNumber(token))
                 {
-                    if (i != '0' && i != '1' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6' && i != '7' && i != '8' && i != '9' && i != '.' && i != '-')
-                    {
-                        databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
-                        return {};
-                    }
+                    databaseReadFileErrorMsg("The column has a caracter at line: " + l, "getAllDataFromColumnLongDouble", {columnName});
+                    return {};
                 }
                 x.push_back(std::stold(token));
             }
@@ -464,37 +444,8 @@ public:
     }
 
     //add's an array of data to the file. adding data[0] to the first column defined and data[1] to the second...
-    template<typename T>
+    template <typename T>
     void addData(std::vector<T> data)
-    {
-        if (!file->is_open())
-        {
-            databaseWriteFileErrorMsg("No file is open", "addData", data);
-            return;
-        }
-        if (mapOfColumns.size() > data.size())
-        {
-            databaseWriteFileErrorMsg("More columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
-            return;
-        }
-        if (mapOfColumns.size() < data.size())
-        {
-            databaseWriteFileErrorMsg("Less columns then data, Column count: " + toS(mapOfColumns.size()) + " Data count: " + toS(data.size()), "addData", data);
-            return;
-        }
-        *file << std::endl;
-        addedData = true;
-        bool first = true;
-        for (T i : data)
-        {
-            if (!first)
-                *file << "|";
-            *file << i;
-            first = false;
-        }
-    }
-
-    void addDataLongDouble(std::vector<long double> data)
     {
         if (!file->is_open())
         {
@@ -512,15 +463,13 @@ public:
             return;
         }
         *file << std::endl;
-        std::cout << "hello";
-
         addedData = true;
         bool first = true;
-        for (long double i : data)
+        for (T i : data)
         {
             if (!first)
                 *file << "|";
-            *file << toS(i);
+            *file << i;
             first = false;
         }
     }
@@ -533,18 +482,18 @@ public:
     {
         std::unordered_map<long double, int> x = {};
         std::vector<long double> columnData = {};
-        databaseReadFile *rFile = new databaseReadFile(fileName);
-        columnData = rFile->getAllDataFromColumnLongDouble(columnName);
+        databaseReadFile rFile(fileName);
+        columnData = rFile.getAllDataFromColumnLongDouble(columnName);
         mergeSort(columnData);
         for (int i = 0; i < columnData.size(); i++)
             if (!x.count(columnData[i]))
                 x[columnData[i]] = i;
 
-        std::vector<std::vector<std::string>> data = rFile->getAllData();
+        std::vector<std::vector<std::string>> data = rFile.getAllData();
         std::vector<std::vector<std::string>> sortedData(data.size(), {{""}});
 
         for (std::vector<std::string> i : data)
-            sortedData.insert(sortedData.begin() + x[stold(i[rFile->mapOfColumns[columnName]])], i);
+            sortedData.insert(sortedData.begin() + x[stold(i[rFile.mapOfColumns[columnName]])], i);
 
         int j = 0;
         while (j < sortedData.size())
@@ -553,9 +502,10 @@ public:
             else
                 j++;
 
-        std::vector<std::string> columnNames = rFile->getRow(0);
+        std::vector<std::string> columnNames = rFile.getRow(0);
 
-        delete rFile;
+        rFile.~databaseReadFile();
+
         databaseWriteFile wFile(fileName);
         wFile.addColumnArray(columnNames);
         for (std::vector<std::string> i : sortedData)
