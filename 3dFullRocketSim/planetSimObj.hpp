@@ -37,7 +37,7 @@ public:
         //planetCollider::colliderx.pos = pos;
     }
 
-    vector3d generateGravityPlanet()
+    generateGravityPlanet()
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
         {
@@ -56,7 +56,6 @@ public:
 
             plussEqualVector3d(gravity, generateGravity(latitude, longitude, mass, it->mass, distanse));
         }
-        return gravity;
     }
     
     void checkColisionPlanet()
