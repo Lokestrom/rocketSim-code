@@ -32,29 +32,6 @@ public:
     }
 
     void update()
-    {
-        addDataLongDouble({pos.x, pos.y, pos.z, pytagoras3d(vel), vel.x, vel.y, vel.z});
-        checkColision();
-        //planetCollider::colliderx.pos = pos;
-    }
-
     void posUpdate()
-    {
-    }
-
     bool checkColision()
-    {
-        for (std::list<fixedPlanet>::iterator it = fixedPlanetList.begin(); it != fixedPlanetList.end(); it++)
-        {
-            if (ID != it->ID)
-            {
-                long double distanse = generateDistanse(this->pos, it->pos);
-
-                if (distanse <= radius + it->radius)
-                {
-                    std::cout << "fixedPlanet: " << ID << " colided with fixedPlanet:" << it->ID << std::endl;
-                }
-            }
-        }
-    }
 };
