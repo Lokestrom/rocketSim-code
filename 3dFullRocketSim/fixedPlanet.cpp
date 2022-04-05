@@ -1,5 +1,12 @@
 #include "headers\fixedPlanetSimObj.hpp"
 
+using class fixedPlanet;
+
+void assigneListsFixedPlanet(std::list<fixedPlanet> listOfAllFixedPlanets)
+{
+    fixedPlanetList.assign(listOfAllFixedPlanets.begin(), listOfAllFixedPlanets.end());
+}
+
 fixedplanet::fixedPlanet(long double mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile("fixedPlanet: " + toS(ID)), planetCollider(radius, pos)
 {
     fixedPlanet::mass = mass;

@@ -12,11 +12,6 @@ class planet;
 
 std::list<planet> planetList;
 
-void assigneListsPlanet(std::list<planet> listOfAllPlanets)
-{
-    planetList.assign(listOfAllPlanets.begin(), listOfAllPlanets.end());
-}
-
 class planet : public databaseWriteFile, planetCollider
 {
 public:
@@ -24,20 +19,13 @@ public:
     int ID;
     vector3d pos, vel, gravity;
     bool colided;
-    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel) : databaseWriteFile("planet: " + toS(planetID)), planetCollider(radius, pos)
-    {
-        planet::mass = mass;
-        planet::radius = radius;
-        planet::pos = pos;
-        planet::vel = vel;
-    }
+    planet(int planetID, long long int mass, long double radius, vector3d pos, vector3d vel)
+     : databaseWriteFile("planet: " + toS(planetID)),
+    planetCollider(radius, pos);
 
-    void update()
-    {
-        //planetCollider::colliderx.pos = pos;
-    }
+    void update();
 
-    generateGravityPlanet()
+    void generateGravityPlanet()
     {
         for (std::list<planet>::iterator it = planetList.begin(); it != planetList.end(); it++)
         {
