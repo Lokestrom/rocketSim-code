@@ -1,15 +1,9 @@
-/.vscode
 /trash
-/2dFlightSim
-/3dFullRocketSim/bin
-/.vs
-/unity3dSim/unity3dSim/Assets/Scenes
-/unity3dSim/unity3dSim/Library
-/unity3dSim/unity3dSim/ProjectSettings
-/unity3dSim/unity3dSim/Packages
-/unity3dSim/unity3dSim/Logs
-/unity3dSim/unity3dSim/Temp
-/unity3dSim/unity3dSim/Assets/Scenes.meta
-/unity3dSim/unity3dSim/Assets/script.meta
 /graffDrawer/pbPlotsFiles
-3dFullRocketSim/runs
+
+#vs files
+/.vs
+/Simulation/.vs/Simulation
+/Simulation/x64/Debug
+
+/externalLibs
