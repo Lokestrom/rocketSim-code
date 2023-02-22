@@ -1,0 +1,127 @@
+﻿  DragSim.cpp
+D:\code\codeProsjekt\rocketSimulation\Simulation\Engine.hpp(8,1): error C2143: syntax error: missing ';' before 'using'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2568: '[': unable to resolve function overload
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2568: '[': unable to resolve function overload
+D:\code\codeProsjekt\rocketSimulation\Simulation\DragSim.cpp(16,223): error C2440: '<function-style-cast>': cannot convert from 'initializer list' to 'Sphere'
+D:\code\codeProsjekt\rocketSimulation\Simulation\DragSim.cpp(16,223): message : No constructor could take the source type, or constructor overload resolution was ambiguous
+  main.cpp
+D:\code\codeProsjekt\rocketSimulation\Simulation\Engine.hpp(8,1): error C2143: syntax error: missing ';' before 'using'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2568: '[': unable to resolve function overload
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2568: '[': unable to resolve function overload
+  Mesh.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.30.30705\include\algorithm(21,1): error C2144: syntax error: 'int' should be preceded by ';'
+  Quaternion.cpp
+  Rocket.cpp
+D:\code\codeProsjekt\rocketSimulation\Simulation\Engine.hpp(8,1): error C2143: syntax error: missing ';' before 'using'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,120): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(35,60): error C2568: '[': unable to resolve function overload
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): error C2440: 'default argument': cannot convert from 'unknown' to 'size_t'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,107): message : There is no context in which this conversion is possible
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::rocketStages': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(13): message : see declaration of 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2648: 'Rocket::currentRocketStage': use of member as default parameter requires static member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(24): message : see declaration of 'Rocket::currentRocketStage'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2597: illegal reference to non-static member 'Rocket::rocketStages'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::rocketStages': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C3867: 'Rocket::currentRocketStage': non-standard syntax; use '&' to create a pointer to member
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.hpp(37,46): error C2568: '[': unable to resolve function overload
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.cpp(4,6): error C2065: 'planet': undeclared identifier
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.cpp(4,13): error C2143: syntax error: missing ';' before ':'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.cpp(4,15): error C2065: 'V': undeclared identifier
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.cpp(4,16): error C2143: syntax error: missing ';' before ')'
+D:\code\codeProsjekt\rocketSimulation\Simulation\Rocket.cpp(5,1): error C2059: syntax error: '}'
+  Source.cpp
+  Vector3.cpp
+  Generating Code...
