@@ -30,8 +30,6 @@ ld fixAngle180(ld angle){
     return angle;
 }
 
-Vector3 generateGravity(geographicCoordinate geoCord, ld m, ld M, ld r) {
-    return { -generateMultiplierX(geoCord) * gravityFormula(m, M, r),
-         -generateMultiplierY(geoCord) * gravityFormula(m, M, r),
-         -generateMultiplierZ(geoCord) * gravityFormula(m, M, r) };
+Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos) {
+    return gravityFormula(m, M, distanse(pos, otherPos)) * (otherPos - pos).normal();
 }

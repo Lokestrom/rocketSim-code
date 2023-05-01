@@ -26,3 +26,21 @@ Vector3 Quaternion::operator*(const Vector3& other){
 Quaternion Quaternion::operator/(double scalar) const {
     return Quaternion(w / scalar, x / scalar, y / scalar, z / scalar);
 }
+
+Quaternion ToQuaternion(Vector3 rotation)
+{
+    ld cr = cosl(rotation.x * 0.5);
+    ld sr = sinl(rotation.x * 0.5);
+    ld cp = cosl(rotation.y * 0.5);
+    ld sp = sinl(rotation.y * 0.5);
+    ld cy = cosl(rotation.z * 0.5);
+    ld sy = sinl(rotation.z * 0.5);
+
+    Quaternion q;
+    q.w = cr * cp * cy + sr * sp * sy;
+    q.x = sr * cp * cy - cr * sp * sy;
+    q.y = cr * sp * cy + sr * cp * sy;
+    q.z = cr * cp * sy - sr * sp * cy;
+
+    return q;
+}

@@ -15,11 +15,25 @@ const ld PI = 3.141592653589793l;
 const ld e = 2.718281828459045l;
 const ld G = 6.6743E-11l;
 
-//Joule * Kelvin^-1 * mol^-1
+//Joule / (Kelvin * mol)
 const ld R = 8.31446261815324l;
 
-//mm/ms
+//m/s
 const ld C = 299792458;
+
+struct minMaxVal {
+	ld min, max;
+
+	minMaxVal(ld min, ld max)
+		: min(min), max(max){}
+};
+
+struct geographicCoordinate {
+	ld latitude, longitude;
+
+	geographicCoordinate(ld latitude, ld longitude)
+		: latitude(latitude), longitude(longitude) {}
+};
 
 inline ld radToDeg(ld x) {
 	return x * PI / 180;
@@ -27,14 +41,6 @@ inline ld radToDeg(ld x) {
 
 inline ld degToRad(ld x) {
 	return x * 180 / PI;
-}
-
-inline ld degSin(ld x) {
-	return fixSmallValue(sinl(degToRad(x)));
-}
-
-inline ld degCos(ld x) {
-	return fixSmallValue(cosl(degToRad(x)));
 }
 
 inline ld findRest(ld x, ld y){
@@ -69,33 +75,32 @@ inline ld distanse(Vector3 pos, Vector3 otherPos) {
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 inline ld generateMultiplierX(geographicCoordinate cord) {
-	return degSin(cord.latitude) * degCos(cord.longitude);
+	return sinl(cord.latitude) * cosl(cord.longitude);
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 inline ld generateMultiplierY(geographicCoordinate cord) {
-	return degSin(cord.latitude) * degSin(cord.longitude);
+	return sinl(cord.latitude) * sinl(cord.longitude);
 }
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 inline ld generateMultiplierZ(geographicCoordinate cord) {
-	return degCos(cord.latitude);
+	return cosl(cord.latitude);
+}
+
+//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+inline ld findLatitude(Vector3 pos, Vector3 otherPos) {
+	return fixSmallValue(acosl((pos.z - otherPos.z) / distanse(pos, otherPos)));
+}
+
+//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
+inline ld findLongitude(Vector3 pos, Vector3 otherPos) {
+	return fixSmallValue(atan2l(pos.y - otherPos.y, pos.x - otherPos.x));
 }
 
 inline geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos) {
 	return { findLatitude(pos, otherPos), findLongitude(pos, otherPos) };
 }
-
-//https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-inline ld findLatitude(Vector3 pos, Vector3 otherPos) {
-	return radToDeg(fixSmallValue(acos((pos.z - otherPos.z) / distanse(pos, otherPos))));
-}
-
-//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-inline ld findLongitude(Vector3 pos, Vector3 otherPos) {
-	return radToDeg(fixSmallValue(atan2(pos.y - otherPos.y, pos.x - otherPos.x)));
-}
-
 
 inline ld gravityFormula(ld m, ld M, ld r){
 	return (G * m * M) / (r * r);
@@ -104,17 +109,9 @@ inline ld gravityFormula(ld m, ld M, ld r){
 namespace objects {
 	extern Vector<Planet>* planets;
 	extern Vector<Rocket>* rockets;
-	//ms
+	//s
 	extern sizeT time;
+	extern sizeT dt = 0.001;
 }
 
-struct geographicCoordinate {
-	ld latitude, longitude;
-
-	geographicCoordinate() {}
-
-	geographicCoordinate(ld latitude, ld longitude)
-		: latitude(latitude), longitude(longitude){}
-};
-
-Vector3 generateGravity(geographicCoordinate geoCord, ld m, ld M, ld r);
+Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);

@@ -19,6 +19,7 @@ struct Quaternion {
     Vector3 operator*(const Vector3& other);
     Quaternion operator/(double scalar) const;
     inline Vector3 rotate(Vector3 v) const;
+    inline Vector3 rotate(ld length) const;
 };
 
 inline Quaternion Quaternion::conjugate() const {
@@ -39,3 +40,11 @@ inline Vector3 Quaternion::rotate(Vector3 v) const {
     Quaternion rq = *this * vq * inverse();
     return Vector3(rq.x, rq.y, rq.z);
 }
+
+inline Vector3 Quaternion::rotate(ld length) const {
+    Quaternion vq(0, length, 0,0);
+    Quaternion rq = *this * vq * inverse();
+    return Vector3(rq.x, rq.y, rq.z);
+}
+
+Quaternion ToQuaternion(Vector3 rotation);

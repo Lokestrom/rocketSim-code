@@ -30,18 +30,22 @@ struct Box : public Mesh {
 };
 
 struct Sylinder : public Mesh {
-	ld radius, h;
+	ld radius, height;
 	Quaternion orientation;
-	Sylinder(Vector3* pos, ld restitution, sizeT radius, sizeT h, bool solid = 1) : Mesh(pos, restitution, solid), radius(radius), h(h) {}
+	Sylinder(Vector3* pos, ld restitution, sizeT radius, sizeT height, bool solid = 1) : Mesh(pos, restitution, solid), radius(radius), height(height) {}
+
+	inline ld volum() {
+		return radius * radius * PI * height;
+	}
 };
 
 struct NoseCone : public Mesh {
-	ld radius, h;
+	ld radius, height;
 	Quaternion orientation;
-	NoseCone(Vector3* pos, ld restitution, ld radius, ld height, bool solid = 1) : Mesh(pos, restitution, solid), radius(radius), h(height) {}
+	NoseCone(Vector3* pos, ld restitution, ld radius, ld height, bool solid = 1) : Mesh(pos, restitution, solid), radius(radius), height(height) {}
 
 	ld f(ld x, ld y) {
-		return h * sqrtl(1 - (((x * x) + (y * y)) / (radius * radius)));
+		return height * sqrtl(1 - (((x * x) + (y * y)) / (radius * radius)));
 	}
 };
 

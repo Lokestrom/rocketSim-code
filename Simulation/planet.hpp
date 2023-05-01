@@ -3,14 +3,24 @@
 #include "Vector3.hpp"
 #include "Mesh.hpp"
 
-struct Planet {
+struct obstruction {
+	Mesh mesh;
+	geographicCoordinate geoCord;
+
+	obstruction(Mesh mesh, geographicCoordinate geoCord)
+		: mesh(mesh), geoCord(geoCord) {};
+};
+
+class Planet {
 private:
 	ld _mass;
 	Sphere collider;
-	Vector3 _pos;
-	Vector3 _vel;
-	Vector<Mesh> obstructions;
+	Vector<obstruction> obstructions;
+	ld spin;
+	
 public:
+	Vector3 _pos, _vel;
+
 	Planet(ld mass, ld radius, Vector3 pos, Vector3 vel);
 
 	inline Vector3 pos() const noexcept;
@@ -18,16 +28,26 @@ public:
 	inline ld mass() const noexcept;
 	inline ld radius() const noexcept;
 
-	void addObstruction(Mesh obstruction, ld latitude, ld longitude)
+	void addObstruction(obstruction obj);
 
+	
+	void virtual earlyUpdate()  = 0;
+	void virtual update() = 0;
+};
 
-	virtual void update();
+class PhysicPlanet : Planet {
+	Vector3 gravity;
+	Vector3 acc;
+	PhysicPlanet(ld mass, ld radius, ld spin, Vector3 pos);
+	void earlyUpdate();
+	void update();
 };
 
 class FixedOrbitPlanet : Planet {
 	ld inclination, currentT;
-	FixedOrbitPlanet(ld mass, ld radius, ld inclination, );
+	FixedOrbitPlanet(ld mass, ld radius, ld startingt, ld inclination);
 
+	void earlyUpdate();
 	void update();
 };
 
@@ -35,7 +55,7 @@ inline Vector3 Planet::pos() const noexcept {
 	return this->_pos;
 }
 
-inline Vector3 Planet::vel() const noexcept {
+inline Vector3 Planet::pos() const noexcept {
 	return this->_vel;
 }
 
