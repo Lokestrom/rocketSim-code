@@ -1,6 +1,6 @@
 #include "RocketStage.hpp"
 
-Vector3 RocketStage::thrust(Quaternion& rotationalAcc, Vector3 centerOfMass) {
+Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass) {
 	Vector3 thrust;
 	Fuelmap usedfuel;
 	for (auto& i : _engines)
@@ -9,6 +9,10 @@ Vector3 RocketStage::thrust(Quaternion& rotationalAcc, Vector3 centerOfMass) {
 	for (auto& i : _fuelTanks)
 		i.removeFuel(usedfuel);
 	return thrust;
+}
+
+bool RocketStage::pointInside(Vector3& point) {
+	return pointInsideShape(point, _mesh);
 }
 
 void RocketStage::rotate(Quaternion angle) {

@@ -30,7 +30,7 @@ public:
 	inline ld exitVel() const;
 	inline bool gimbleable() const;
 
-	Vector3 thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation);
+	Vector3 thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass);
 
 	void gimble(Quaternion newGimble);
 	void gimble(sizeT t, Quaternion newGimble);

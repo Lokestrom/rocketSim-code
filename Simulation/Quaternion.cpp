@@ -27,7 +27,7 @@ Quaternion Quaternion::operator/(double scalar) const {
     return Quaternion(w / scalar, x / scalar, y / scalar, z / scalar);
 }
 
-Quaternion ToQuaternion(Vector3 rotation)
+Quaternion toQuaternion(Vector3 rotation)
 {
     ld cr = cosl(rotation.x * 0.5);
     ld sr = sinl(rotation.x * 0.5);

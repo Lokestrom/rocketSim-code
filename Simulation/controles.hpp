@@ -110,8 +110,8 @@ namespace objects {
 	extern Vector<Planet>* planets;
 	extern Vector<Rocket>* rockets;
 	//s
-	extern sizeT time;
-	extern sizeT dt = 0.001;
+	extern ld time;
+	extern ld dt = 0.001l;
 }
 
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);

@@ -11,12 +11,16 @@ struct Vector3 {
 	Vector3 operator=(Vector3 v);
 	inline friend Vector3 operator+(Vector3 l, const Vector3& r);
 	inline friend Vector3 operator-(Vector3 l, const Vector3& r);
+	inline friend Vector3 operator-(Vector3 l);
 	inline friend Vector3 operator*(const Vector3 l, ld r);
 	inline friend Vector3 operator*(const ld l, Vector3 r);
+	inline friend Vector3 operator*(Vector3 l, Vector3& r);
 	inline friend Vector3 operator/(const Vector3 l, ld r);
 
 	inline Vector3& operator+=(const Vector3& v);
 	inline Vector3& operator-=(const Vector3& v);
+	inline Vector3 operator*=(const Vector3& v);
+
 
 	inline ld length();
 
@@ -42,11 +46,19 @@ inline Vector3 operator-(Vector3 l, const Vector3& r) {
 	l -= r;
 	return l;
 }
+inline Vector3 operator-(Vector3 l) {
+	l = { -l.x, -l.y, -l.z };
+	return l;
+}
 inline Vector3 operator*(const Vector3 l, ld r) {
 	return Vector3(l.x * r, l.y * r, l.z * r);
 }
 inline Vector3 operator*(const ld l, Vector3 r) {
 	return r * l;
+}
+inline Vector3 operator*(Vector3 l, Vector3& r) {
+	l *= r;
+	return l;
 }
 inline Vector3 operator/(const Vector3 l, ld r) {
 	return Vector3(l.x / r, l.y / r, l.z / r);
@@ -61,6 +73,12 @@ inline Vector3& Vector3::operator-=(const Vector3& v) {
 	this->x -= v.x;
 	this->y -= v.y;
 	this->z -= v.z;
+	return *this;
+}
+inline Vector3 Vector3::operator*=(const Vector3& v) {
+	this->x *= v.x;
+	this->y *= v.y;
+	this->z *= v.z;
 	return *this;
 }
 
@@ -82,4 +100,8 @@ inline Vector3 Vector3::cross(const Vector3& v) {
 }
 inline ld Vector3::dot(const Vector3& v) {
 	return x * v.x + y * v.y + z * v.z;
+}
+
+inline Vector3 abs(const Vector3& v) {
+	return {abs(v.x), abs(v.y), abs(v.z)};
 }

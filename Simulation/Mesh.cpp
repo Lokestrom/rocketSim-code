@@ -65,33 +65,39 @@ bool collision(const Sphere& sphere, const NoseCone& noseCone) {
     
 }
 
-void applyCollisionForce(Sphere& sphere1, Sphere& sphere2)
-{
-    // Calculate the distance between the two sphere's centers
-    Vector3 diff = sphere1.pos - sphere2.pos;
-    ld distance = diff.length();
-
-    // Check if the spheres are colliding
-    if (distance < sphere1.radius + sphere2.radius)
-    {
-        // Calculate the collision normal vector (the direction in which the force will be applied)
-        Vector3 normal = diff.normal();
-
-        // Calculate the relative velocity of the spheres
-        Vector3 rv = sphere1.vel - sphere2.vel;
-
-        // Calculate the coefficient of restitution (how much energy is lost in the collision)
-        ld COR = std::min(sphere1.restitution, sphere2.restitution);
-
-        // Calculate the impulse scalar (the magnitude of the force to apply)
-        ld j = -(1 + COR) * rv.dot(normal) / (normal.dot(normal) * (1 / sphere1.mass + 1 / sphere2.mass));
-
-        // Calculate the collision impulse (the force to apply)
-        Vector3 impulse = j * normal;
-
-        // Apply the impulse to each sphere
-        sphere1.vel += impulse / sphere1.mass;
-        sphere2.vel -= impulse / sphere2.mass;
-    }
+bool pointInsideMesh(const Vector3& point, const Sphere& sphere) {
+    Vector3 relative = point - sphere.pos;
+    return relative.length() < sphere.radius;
 }
 
+bool pointInsideMesh(const Vector3& point, Box& noseCone) {
+    return false;
+}
+
+bool pointInsideMesh(const Vector3& point, const Sylinder& sylinder) {
+    Vector3 relative = point - sylinder.pos;
+    relative = sylinder.orientation.rotate(relative);
+    return (relative.x > -sylinder.height * 0.5 || relative.x < sylinder.height * 0.5) && relative.y * relative.y + relative.z * relative.z < sylider.radius;
+}
+
+bool pointInsideMesh(const Vector3& point, NoseCone& noseCone) {
+    Vector3 relative = point - noseCone.pos;
+    relative = noseCone.orientation.rotate(relative);
+    return (noseCone.f(relative.y, relative.z) > relative.x && relative.x > 0);
+}
+
+bool pointInsideShape(const Vector3& point, Shape& shape) {
+    for (auto i : shape.spheres)
+        if (pointInsideMesh(point, i))
+            return true;
+    for (auto i : shape.boxes)
+        if (pointInsideMesh(point, i))
+            return true;
+    for (auto i : shape.sylinders)
+        if (pointInsideMesh(point, i))
+            return true;
+    for (auto i : shape.nosecones)
+        if (pointInsideMesh(point, i))
+            return true;
+
+}

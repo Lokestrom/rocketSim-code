@@ -14,8 +14,8 @@ class Rocket {
 	String _ID;
 
 	Vector<RocketStage> _rocketStages;
-	void drag(Vector3& drag);
-	void thrust(Vector3& thrust, Quaternion& rotationalAcc);
+	//void drag(Vector3& drag);
+	void thrust(Vector3& thrust, Vector3& rotationalAcc);
 	void gravity(Vector3& gravity);
 	Vector3 _pos, _vel, _acc;
 	Quaternion _orientation, _rotationVel, _rotationAcc;
@@ -28,7 +28,7 @@ public:
 	inline Vector3 pos();
 	inline Vector3 vel();
 	inline Vector3 acc();
-	inline Quaternion rotation();
+	inline Quaternion orientation();
 	inline ld mass();
 	inline String ID();
 
@@ -49,6 +49,8 @@ public:
 
 	void rotate(Quaternion angle);
 	void rotate(ld t, Quaternion angle);
+
+	bool pointInside(Vector3& point);
 };
 
 inline Vector3 Rocket::pos() {
@@ -63,7 +65,7 @@ inline Vector3 Rocket::acc() {
 	return _acc;
 }
 
-inline Quaternion Rocket::rotation() {
+inline Quaternion Rocket::orientation() {
 	return  _orientation;
 }
 

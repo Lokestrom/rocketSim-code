@@ -15,7 +15,7 @@ private:
 	//ID = "<parent Rocket ID> StageNum"
 	String _ID;
 	Vector<Engine> _engines;
-	Vector<Mesh> _mesh;
+	Shape _mesh;
 	Vector<FuelTank> _fuelTanks;
 	ld _dryMass;
 
@@ -26,7 +26,7 @@ public:
 	inline String ID() const;
 	inline Vector<Engine> engines() const;
 	inline Vector<String> engineIDs() const;
-	inline Vector<Mesh> mesh() const;
+	inline Shape mesh() const;
 	inline ld dryMass() const;
 	inline ld mass() const;
 	inline Vector3 centerOfGravity() const;
@@ -34,11 +34,13 @@ public:
 
 	RocketStage();
 
-	Vector3 thrust(Quaternion& rotationalAcc, Vector3 centerOfMass);
+	Vector3 thrust(Vector3& rotationalAcc, Vector3 centerOfMass);
 
 	inline ld deltaV();
 
 	void rotate(Quaternion angle);
+
+	bool pointInside(Vector3& point);
 };
 
 inline String RocketStage::ID() const {
@@ -56,7 +58,7 @@ inline Vector<String> RocketStage::engineIDs() const {
 	return eID;
 }
 
-inline Vector<Mesh> RocketStage::mesh() const {
+inline Shape RocketStage::mesh() const {
     return _mesh;
 }
 

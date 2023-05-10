@@ -8,6 +8,7 @@
 #include <math.h>
 
 void update() {
+	objects::time += objects::dt;
 	for (auto& i : *planets) {
 		i.earlyUpdate();
 	}

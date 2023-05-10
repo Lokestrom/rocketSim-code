@@ -15,9 +15,14 @@ struct Quaternion {
     inline ld norm() const;
     Quaternion inverse() const;
     inline Quaternion normalized() const;
+
+    inline Quaternion operator+(const Quaternion other) const;
+    inline Quaternion& operator+=(const Quaternion& v);
+    inline Quaternion operator*(const ld other) const;
     Quaternion operator*(const Quaternion& other) const;
     Vector3 operator*(const Vector3& other);
     Quaternion operator/(double scalar) const;
+
     inline Vector3 rotate(Vector3 v) const;
     inline Vector3 rotate(ld length) const;
 };
@@ -35,6 +40,22 @@ inline Quaternion Quaternion::normalized() const {
     return Quaternion(w / n, x / n, y / n, z / n);
 }
 
+inline Quaternion Quaternion::operator+(const Quaternion other) const {
+    return Quaternion(w + other.w, x + other.x, y + other.y, z + other.z);
+}
+
+inline Quaternion& Quaternion::operator+=(const Quaternion& q) {
+    this->w += q.w;
+    this->x += q.x;
+    this->y += q.y;
+    this->z += q.z;
+    return *this;
+}
+
+inline Quaternion Quaternion::operator*(const ld other) const {
+    return Quaternion(w * other, x * other, y * other, z * other);
+}
+
 inline Vector3 Quaternion::rotate(Vector3 v) const {
     Quaternion vq(0, v);
     Quaternion rq = *this * vq * inverse();
@@ -47,4 +68,4 @@ inline Vector3 Quaternion::rotate(ld length) const {
     return Vector3(rq.x, rq.y, rq.z);
 }
 
-Quaternion ToQuaternion(Vector3 rotation);
+Quaternion toQuaternion(Vector3 rotation);
