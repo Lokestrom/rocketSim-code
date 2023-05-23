@@ -9,12 +9,14 @@ Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion ro
 }
 
 void Rocket::update() {
+	updateCenterOfGravity();
+	engineShutdownChecker();
 	Vector3 g, d, t, rt, newAcc;
 	Quaternion newRotationAcc;
 	ld currmMass = mass();
 
 	gravity(g);
-	thrust(t, rt);
+	thrust(t, rt, currmMass);
 	//drag(d);
 
 	newAcc = t / currmMass;
@@ -32,10 +34,20 @@ void Rocket::update() {
 
 	_acc = newAcc;
 	_rotationAcc = newRotationAcc;
+
+	if (isColliding())
+		objects::rockets->pop(rocketSearchIndex(ID()));
 }
 
-void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc) {
-	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass + _rocketStages[0].pos());
+bool Rocket::isColliding() {
+	for (auto& i : _rocketStages)
+		if (i.isColliding())
+			return true;
+	return false;
+}
+
+void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) {
+	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass + _rocketStages[0].pos(), orientation(), mass, ID());
 }
 
 void Rocket::gravity(Vector3& gravity) {
@@ -43,6 +55,12 @@ void Rocket::gravity(Vector3& gravity) {
 	for (Planet& i : *(objects::planets)) {
 		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
+}
+
+void Rocket::engineShutdownChecker() {
+	for (auto i : _rocketStages[0].engineIDs())
+		if (engineShutDownTime[i] <= objects::time)
+			_rocketStages[0].engineSearch(i)->toggle(false);
 }
 
 void Rocket::updateCenterOfGravity() {
@@ -53,8 +71,26 @@ void Rocket::updateCenterOfGravity() {
 }
 
 void Rocket::stage() {
-	objects::rockets->pushBack(Rocket(_rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->rotation(), { _rocketStages[0] }));
+	objects::rockets->pushBack(Rocket(_rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), { _rocketStages[0] }));
 	_rocketStages.pop(0);
+}
+
+void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) {
+	if (!engines.size())
+		engines = _rocketStages[0].engineIDs();
+	for (auto& i : engines) {
+		engineShutDownTime[i] = burnTime + objects::time;
+		_rocketStages[0].engineSearch(i)->toggle(true);
+	}
+}
+
+void Rocket::shutdown(Vector<int> engines = {}) {
+	if (!engines.size())
+		engines = _rocketStages[0].engineIDs();
+	for (auto& i : engines) {
+		engineShutDownTime[i] = objects::time;
+		_rocketStages[0].engineSearch(i)->toggle(false);
+	}
 }
 
 ld Rocket::altitude(const Planet& p) {
@@ -88,12 +124,43 @@ void Rocket::rotate(Quaternion angle) {
 	_rocketStages[0].rotate(angle);
 }
 
-bool Rocket::pointInside(Vector3& point) {
+bool Rocket::pointInside(Vector3 point) {
 	for (RocketStage i : _rocketStages)
 		if (i.pointInside(point))
 			return true;
 }
 
-ld determenRadius(Vector3& edgePoint, Vector3& edgeToCm) {
+ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) {
+	Vector3 diametreVec = edgeToCm;
+	while (pointInside(diametreVec + edgePoint))
+		diametreVec *= 2;
+	for (int i = 0; i < options::edgeDetectionIterations; i++) {
+		if(pointInside(diametreVec + edgePoint))
+			diametreVec += edgeToCm;
+		else {
+			edgeToCm *= 0.5;
+			diametreVec -= edgeToCm;
+		}
+	}
+	return diametreVec.length();
+}
 
+void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographicCoordinate cord) {
+	Vector3 pos = planet.point(cord);
+	Vector3 vel = planet.velosityAtPoint(cord);
+	Quaternion orientation = planet.getUpAtpoint(cord);
+
+	rocket.setPos(pos);
+	rocket.setVel(vel);
+	rocket.setOrientation(orientation);
+}
+
+void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geographicCoordinate cord) {
+	Vector3 pos = planet.point(cord);
+	Vector3 vel = planet.velosityAtPoint(cord);
+	Quaternion orientation = planet.getUpAtpoint(cord);
+
+	rocket.setPos(pos);
+	rocket.setVel(vel);
+	rocket.setOrientation(orientation);
 }

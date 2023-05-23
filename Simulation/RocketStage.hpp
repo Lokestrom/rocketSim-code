@@ -8,42 +8,53 @@
 #include "Engine.hpp"
 
 using namespace Database;
-using ld = long double;
 
 class RocketStage {
 private:
-	//ID = "<parent Rocket ID> StageNum"
-	String _ID;
+	int _ID;
+
 	Vector<Engine> _engines;
-	Shape _mesh;
+	Vector<ReactionThruster> _reactionThrusters;
 	Vector<FuelTank> _fuelTanks;
+
+	Shape _mesh;
 	ld _dryMass;
 
-	Vector3 _centerOfMass;
-	Vector3 _pos;
+	Vector3 _pos, _centerOfMass;
 	
 public:
-	inline String ID() const;
+
+	RocketStage();
+	RocketStage(int ID, ld dryMass, Vector3 pos, Vector3 centerOfMass, Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, Vector<FuelTank> fuelTanks, Shape mesh);
+
+	inline int ID() const;
 	inline Vector<Engine> engines() const;
-	inline Vector<String> engineIDs() const;
+	inline Vector<int> engineIDs() const;
 	inline Shape mesh() const;
 	inline ld dryMass() const;
 	inline ld mass() const;
 	inline Vector3 centerOfGravity() const;
 	inline Vector3 pos() const;
 
-	RocketStage();
+	void setPos(Vector3 newPos);
+	void setID(int ID);
 
-	Vector3 thrust(Vector3& rotationalAcc, Vector3 centerOfMass);
+	
+	void update();
 
-	inline ld deltaV();
+	Vector3 thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass, String ID);
+
+	inline ld deltaV() const;
 
 	void rotate(Quaternion angle);
 
 	bool pointInside(Vector3& point);
+	bool isColliding();
+
+	inline Engine* engineSearch(int ID) const;
 };
 
-inline String RocketStage::ID() const {
+inline int RocketStage::ID() const {
     return _ID;
 }
 
@@ -51,8 +62,8 @@ inline Vector<Engine> RocketStage::engines() const {
     return _engines;
 }
 
-inline Vector<String> RocketStage::engineIDs() const {
-	Vector<String> eID;
+inline Vector<int> RocketStage::engineIDs() const {
+	Vector<int> eID;
 	for (auto& i : _engines)
 		eID.pushBack(i.ID());
 	return eID;
@@ -86,11 +97,18 @@ inline Vector3 RocketStage::pos() const {
     return _pos;
 }
 
-inline ld RocketStage::deltaV() {
+inline ld RocketStage::deltaV() const {
 	ld averageExitVel = 0;
 	for (auto& i : _engines)
 		averageExitVel += i.exitVel();
 	averageExitVel /= _engines.size();
 
 	return averageExitVel * log(dryMass() / mass());
+}
+
+inline Engine* RocketStage::engineSearch(int ID) const {
+	for (auto& i : _engines)
+		if (i.ID() == ID)
+			return &i;
+	return nullptr;
 }

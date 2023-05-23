@@ -3,48 +3,67 @@
 #include "Vector3.hpp"
 #include "Mesh.hpp"
 
-struct obstruction {
-	Mesh mesh;
-	geographicCoordinate geoCord;
+struct Obstruction {
+	Shape mesh;
+	Vector3 pos;
+	Quaternion orientation;
 
-	obstruction(Mesh mesh, geographicCoordinate geoCord)
-		: mesh(mesh), geoCord(geoCord) {};
+	Obstruction(Shape mesh, geographicCoordinate geoCord)
+		: mesh(mesh) {}
+	Obstruction(Vector3 pos, Quaternion orientation, Shape mesh)
+		:pos(pos), orientation(orientation), mesh(mesh) {}
+
+	bool pointInside(const Vector3& point);
 };
 
 class Planet {
 private:
 	ld _mass;
-	Sphere collider;
-	Vector<obstruction> obstructions;
-	ld spin;
-	
-public:
+	//kansje bare ha en mesh som e planet
+	Sphere _mesh;
+	Vector<Obstruction> _obstructions;
+	Quaternion spin;
 	Vector3 _pos, _vel;
 
+public:
+
+	Planet();
 	Planet(ld mass, ld radius, Vector3 pos, Vector3 vel);
 
 	inline Vector3 pos() const noexcept;
 	inline Vector3 vel() const noexcept;
 	inline ld mass() const noexcept;
 	inline ld radius() const noexcept;
+	Vector<Obstruction> obstructions() const noexcept;
+	Sphere mesh() const noexcept;
 
-	void addObstruction(obstruction obj);
+	void addObstruction(Obstruction obj);
+	void addObstruction(Vector<Obstruction> obj);
 
+	bool checkIfPointInside(const Vector3& point);
+
+	Vector3 point(geographicCoordinate cord) const;
+	Vector3 velosityAtPoint(geographicCoordinate cord) const;
+	Quaternion getUpAtpoint(geographicCoordinate cord) const;
 	
-	void virtual earlyUpdate()  = 0;
+	void virtual earlyUpdate() = 0;
 	void virtual update() = 0;
 };
 
-class PhysicPlanet : Planet {
+class PhysicsPlanet : public Planet {
 	Vector3 gravity;
 	Vector3 acc;
-	PhysicPlanet(ld mass, ld radius, ld spin, Vector3 pos);
+public:
+	PhysicsPlanet();
+	PhysicsPlanet(ld mass, ld radius, ld spin, Vector3 pos);
 	void earlyUpdate();
 	void update();
 };
 
-class FixedOrbitPlanet : Planet {
+class FixedOrbitPlanet : public Planet {
 	ld inclination, currentT;
+public:
+	FixedOrbitPlanet();
 	FixedOrbitPlanet(ld mass, ld radius, ld startingt, ld inclination);
 
 	void earlyUpdate();
@@ -64,5 +83,13 @@ inline ld Planet::mass() const noexcept {
 }
 
 inline ld Planet::radius() const noexcept {
-	return this->collider.radius;
+	return this->_mesh.radius;
+}
+
+Vector<Obstruction> Planet::obstructions() const noexcept {
+	return _obstructions;
+}
+
+Sphere Planet::mesh() const noexcept {
+	return _mesh;
 }

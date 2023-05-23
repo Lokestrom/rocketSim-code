@@ -130,6 +130,7 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Fuelmap.cpp" />
     <ClCompile Include="FuelTank.cpp" />
+    <ClCompile Include="LoadManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Planet.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="flags.hpp" />
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="Fuelmap.hpp" />
+    <ClInclude Include="LoadManager.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="planet.hpp" />
     <ClInclude Include="Quaternion.hpp" />

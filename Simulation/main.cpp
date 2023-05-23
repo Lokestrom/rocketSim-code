@@ -8,7 +8,6 @@
 #include <math.h>
 
 void update() {
-	objects::time += objects::dt;
 	for (auto& i : *planets) {
 		i.earlyUpdate();
 	}
@@ -20,6 +19,7 @@ void update() {
 	}
 
 	logState();
+	objects::time += objects::dt;
 }
 
 using namespace objects;
@@ -28,6 +28,8 @@ int main() {
 	planets = new Vector<Planet>();
 	rockets = new Vector<Rocket>();
 	objects::time = 0;
+
+	loadInObjects();
 
 
 

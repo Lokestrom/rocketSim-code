@@ -1,20 +1,34 @@
 #include "planet.hpp"
 
-Planet::Planet(ld mass, ld radius, Vector3 pos, Vector3 vel)
-	: _mass(mass), _pos(pos), _vel(vel), collider(&_pos, 0, radius) {}
-
-void Planet::addObstruction(obstruction obj) {
-	obstructions.pushBack(obj);
+bool Obstruction::pointInside(const Vector3& point) {
+	return pointInsideShape(point, mesh);
 }
 
-void PhysicPlanet::earlyUpdate() {
+Planet::Planet(ld mass, ld radius, Vector3 pos, Vector3 vel)
+	: _mass(mass), _pos(pos), _vel(vel), _mesh({0,0,0}, 0, radius) {}
+
+void Planet::addObstruction(Obstruction obj) {
+	_obstructions.pushBack(obj);
+}
+
+bool Planet::checkIfPointInside(const Vector3& point) {
+	if (pointInsideMesh(point - pos(), _mesh))
+		return true;
+	for (auto& i : _obstructions)
+		if (i.pointInside(point - pos()))
+			return true;
+	return false;
+}
+
+
+void PhysicsPlanet::earlyUpdate() {
 	this->gravity = Vector3::null();
 	for (Planet& i : *(objects::planets)) {
 		this->gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
 }
 
-void PhysicPlanet::update() {
+void PhysicsPlanet::update() {
 	Vector3 new_acc = gravity / this->mass();
 
 	_pos = pos() + vel() * objects::dt + acc * (objects::dt * objects::dt * 0.5);

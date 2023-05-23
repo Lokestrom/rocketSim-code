@@ -21,7 +21,15 @@ public:
 	Fuelmap operator*(ld other) const;
 
 	ld totalMass();
+	Vector<String> fuelTypes() const;
 };
+
+Vector<String> Fuelmap::fuelTypes() const {
+	Vector<String> fuelTypes;
+	for (auto& [key, val] : _fuelmap)
+		fuelTypes.pushBack(key);
+	return fuelTypes;
+}
 
 inline Fuelmap operator+(Fuelmap l, const Fuelmap& r) {
 	l += r;

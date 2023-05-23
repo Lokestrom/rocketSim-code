@@ -19,7 +19,8 @@ struct Vector3 {
 
 	inline Vector3& operator+=(const Vector3& v);
 	inline Vector3& operator-=(const Vector3& v);
-	inline Vector3 operator*=(const Vector3& v);
+	inline Vector3& operator*=(const Vector3& v);
+	inline Vector3& operator*=(const ld& r);
 
 
 	inline ld length();
@@ -75,10 +76,16 @@ inline Vector3& Vector3::operator-=(const Vector3& v) {
 	this->z -= v.z;
 	return *this;
 }
-inline Vector3 Vector3::operator*=(const Vector3& v) {
+inline Vector3& Vector3::operator*=(const Vector3& v) {
 	this->x *= v.x;
 	this->y *= v.y;
 	this->z *= v.z;
+	return *this;
+}
+inline Vector3& Vector3::operator*=(const ld& r) {
+	this->x *= r;
+	this->y *= r;
+	this->z *= r;
 	return *this;
 }
 

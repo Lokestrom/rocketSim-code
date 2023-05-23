@@ -15,7 +15,7 @@ Quaternion Quaternion::operator*(const Quaternion& other) const {
     );
 }
 
-Vector3 Quaternion::operator*(const Vector3& other){
+Vector3 Quaternion::operator*(const Vector3& other) const {
     return Vector3(w * w * other.x + 2 * y * w * other.z - 2 * z * w * other.y + x * x * other.x + 2 * y * x * other.y + 2 * z * x * other.z - z * z * other.x - y * y * other.x,
     2 * x * y * other.x + y * y * other.y + 2 * z * y * other.z + 2 * w * z * other.x - z * z * other.y + w * w * other.y - 2 * x * w * other.z - x * x * other.y,
     2 * x * z * other.x + 2 * y * z * other.y + z * z * other.z - 2 * w * y * other.x - y * y * other.z + 2 * w * x * other.y - x * x * other.z + w * w * other.z
@@ -23,7 +23,7 @@ Vector3 Quaternion::operator*(const Vector3& other){
 }
 
 
-Quaternion Quaternion::operator/(double scalar) const {
+Quaternion Quaternion::operator/(ld scalar) const {
     return Quaternion(w / scalar, x / scalar, y / scalar, z / scalar);
 }
 

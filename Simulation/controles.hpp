@@ -1,6 +1,7 @@
 #pragma once
 #include <Vector.hpp>
 #include "Vector3.hpp"
+#include <unordered_map>
 
 using namespace Database;
 
@@ -114,4 +115,8 @@ namespace objects {
 	extern ld dt = 0.001l;
 }
 
+namespace options {
+	sizeT edgeDetectionIterations = 100;
+	unsigned seed;
+}
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <Vector.hpp>
+#include <unordered_map>
 
 #include "rocketStage.hpp"
 #include "Vector3.hpp"
 #include "Quaternion.hpp"
 
-using ld = long double;
 using namespace Database;
 
 class Rocket {
@@ -15,11 +15,17 @@ class Rocket {
 
 	Vector<RocketStage> _rocketStages;
 	//void drag(Vector3& drag);
-	void thrust(Vector3& thrust, Vector3& rotationalAcc);
+	void thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass);
 	void gravity(Vector3& gravity);
+	void engineShutdownChecker();
+
 	Vector3 _pos, _vel, _acc;
 	Quaternion _orientation, _rotationVel, _rotationAcc;
 	Vector3 _centerOfMass;
+
+	bool rcs;
+
+	std::unordered_map<int, ld> engineShutDownTime;
 
 public:
 
@@ -32,8 +38,11 @@ public:
 	inline ld mass();
 	inline String ID();
 
-	void update();
+	void setPos(Vector3 newPos);
+	void setVel(Vector3 newVel);
+	void setOrientation(Quaternion newOrientation);
 
+	void update();
 
 	void updateCenterOfGravity();
 
@@ -41,16 +50,19 @@ public:
 	ld deltaV(String stageID);
 	ld altitude(const Planet& p);
 
+	bool isColliding();
+
 	void stage();
 
-	void burn(size_t t, ld burnTime = -1, const Vector<String> engines = {});
+	void burn(ld burnTime = -1, Vector<int> engines = {});
 
-	void shutdown(size_t t, const Vector<String> engines = {});
+	void shutdown(Vector<int> engines = {});
 
 	void rotate(Quaternion angle);
 	void rotate(ld t, Quaternion angle);
 
-	bool pointInside(Vector3& point);
+	bool pointInside(Vector3 point);
+	ld determenRadius(Vector3 edgePoint, Vector3 edgeToCm);
 };
 
 inline Vector3 Rocket::pos() {
@@ -78,4 +90,20 @@ inline ld Rocket::mass() {
 
 inline String Rocket::ID() {
 	return _ID;
+}
+
+Rocket* rocketSearch(String ID) {
+	for (auto& i : *objects::rockets)
+		if (i.ID() == ID)
+			return &i;
+	return nullptr;
+}
+
+int rocketSearchIndex(String ID) {
+	int index = 0;
+	for (auto& i : *objects::rockets) {
+		if (i.ID() == ID)
+			return index;
+	}
+	return -1;
 }
