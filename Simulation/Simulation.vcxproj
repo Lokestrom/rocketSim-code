@@ -94,6 +94,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -122,6 +123,7 @@
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -131,13 +133,13 @@
     <ClCompile Include="Fuelmap.cpp" />
     <ClCompile Include="FuelTank.cpp" />
     <ClCompile Include="LoadManager.cpp" />
+    <ClCompile Include="logging.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Rocket.cpp" />
     <ClCompile Include="RocketStage.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -148,15 +150,13 @@
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="Fuelmap.hpp" />
     <ClInclude Include="LoadManager.hpp" />
+    <ClInclude Include="logging.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="planet.hpp" />
     <ClInclude Include="Quaternion.hpp" />
     <ClInclude Include="Rocket.hpp" />
     <ClInclude Include="RocketStage.hpp" />
     <ClInclude Include="Vector3.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fuelTypes.db" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

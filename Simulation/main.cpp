@@ -1,36 +1,56 @@
-#include "Vector3.hpp"
-#include "DragSim.hpp"
-#include "Quaternion.hpp"
-#include "controles.hpp"
-#include "planet.hpp"
-
 #include <iostream>
 #include <math.h>
 
-void update() {
-	for (auto& i : *planets) {
+#include "Vector3.hpp"
+#include "Quaternion.hpp"
+#include "controles.hpp"
+#include "planet.hpp"
+#include "DragSim.hpp"
+#include "LoadManager.cpp"
+#include "logging.hpp"
+
+bool update() 
+{
+	for (auto& i : *objects::physicsPlanets) {
 		i.earlyUpdate();
 	}
-	for (auto& i : *rockets) {
+	for (auto& i : *objects::rockets) {
 		i.update();
 	}
-	for (auto& i : *planets) {
+	for (auto& i : *objects::physicsPlanets) {
+		i.update();
+	}
+	for (auto& i : *objects::fixedOrbitPlanets) {
 		i.update();
 	}
 
-	logState();
-	objects::time += objects::dt;
+	if (objects::dtSinceLastLogging == options::dtPerLogging) {
+		loggCurrentState();
+		objects::dtSinceLastLogging = 0;
+	}
+	objects::updateDT();
+	objects::dtSinceLastLogging++;
+
+	return true;
 }
 
-using namespace objects;
 using namespace Database;
-int main() {
-	planets = new Vector<Planet>();
-	rockets = new Vector<Rocket>();
-	objects::time = 0;
+int main(int argc, const char* argv[])
+{
+	fileSystem::simulationFolder = argv[1] + '/';
+	fileSystem::runFolder = fileSystem::simulationFolder + "run data/" + argv[2] + "/";
+	objects::physicsPlanets = new Vector<PhysicsPlanet>();
+	objects::fixedOrbitPlanets = new Vector<FixedOrbitPlanet>();
+	objects::rockets = new Vector<Rocket>();
 
 	loadInObjects();
+	loggingStartup();
 
+	bool continueSimulation = true;
+	while (continueSimulation) {
+		continueSimulation = update();
+	}
 
+	loggingEnd();
 
 }

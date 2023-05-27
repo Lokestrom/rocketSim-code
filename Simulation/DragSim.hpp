@@ -2,10 +2,10 @@
 
 #include "Rocket.hpp"
 
-class Drag {
-public:
-	Drag(){}
-	
-	Vector3 evaluateDrag(Sphere stage);
+class SimpleAeroForcesCalculation {
+
+};
+
+class FluidSimulation {
 
 };

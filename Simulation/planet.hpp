@@ -1,9 +1,13 @@
 #pragma once
 
+#include <String.hpp>
+#include <ReadFile.hpp>
+
 #include "Vector3.hpp"
 #include "Mesh.hpp"
 
-struct Obstruction {
+struct Obstruction 
+{
 	Shape mesh;
 	Vector3 pos;
 	Quaternion orientation;
@@ -13,83 +17,77 @@ struct Obstruction {
 	Obstruction(Vector3 pos, Quaternion orientation, Shape mesh)
 		:pos(pos), orientation(orientation), mesh(mesh) {}
 
-	bool pointInside(const Vector3& point);
+	bool pointInside(const Vector3& point) noexcept;
 };
 
-class Planet {
+class Planet 
+{
 private:
+	String _ID;
 	ld _mass;
-	//kansje bare ha en mesh som e planet
-	Sphere _mesh;
-	Vector<Obstruction> _obstructions;
-	Quaternion spin;
+	Sphere _mesh; //kansje bare ha en mesh som e planet
 	Vector3 _pos, _vel;
+	Quaternion _spin;
+	Vector<Obstruction> _obstructions;
+	ReadFile<ld> atmosphereCondisions;
 
 public:
 
 	Planet();
 	Planet(ld mass, ld radius, Vector3 pos, Vector3 vel);
+	
+	constexpr String ID() const noexcept;
+	constexpr Vector3 pos() const noexcept;
+	constexpr Vector3 vel() const noexcept;
+	constexpr ld mass() const noexcept;
+	constexpr ld radius() const noexcept;
+	constexpr Sphere mesh() const noexcept;
+	constexpr Vector<Obstruction> obstructions() const noexcept;
 
-	inline Vector3 pos() const noexcept;
-	inline Vector3 vel() const noexcept;
-	inline ld mass() const noexcept;
-	inline ld radius() const noexcept;
-	Vector<Obstruction> obstructions() const noexcept;
-	Sphere mesh() const noexcept;
+	void setPos(Vector3 newPos) noexcept;
+	void setVel(Vector3 newVel) noexcept;
 
-	void addObstruction(Obstruction obj);
-	void addObstruction(Vector<Obstruction> obj);
+	ld atmosphreDensity(ld altitude);
+	Vector3 atmosphreWind(ld altitude);
 
-	bool checkIfPointInside(const Vector3& point);
+	void addObstruction(Obstruction obj) noexcept;
+	void addObstruction(Vector<Obstruction> obj) noexcept;
 
-	Vector3 point(geographicCoordinate cord) const;
-	Vector3 velosityAtPoint(geographicCoordinate cord) const;
-	Quaternion getUpAtpoint(geographicCoordinate cord) const;
+	bool checkIfPointInside(const Vector3& point) const noexcept;
+
+	Vector3 point(geographicCoordinate cord) const noexcept;
+	Vector3 velosityAtPoint(geographicCoordinate cord) const noexcept;
+	Quaternion getUpAtpoint(geographicCoordinate cord) const noexcept;
 	
 	void virtual earlyUpdate() = 0;
 	void virtual update() = 0;
 };
 
-class PhysicsPlanet : public Planet {
-	Vector3 gravity;
-	Vector3 acc;
+class PhysicsPlanet : public Planet 
+{
 public:
 	PhysicsPlanet();
 	PhysicsPlanet(ld mass, ld radius, ld spin, Vector3 pos);
 	void earlyUpdate();
 	void update();
+
+private:
+	Vector3 gravity;
+	Vector3 acc;
 };
 
-class FixedOrbitPlanet : public Planet {
-	ld inclination, currentT;
+class FixedOrbitPlanet : public Planet 
+{
 public:
 	FixedOrbitPlanet();
 	FixedOrbitPlanet(ld mass, ld radius, ld startingt, ld inclination);
 
 	void earlyUpdate();
 	void update();
+
+private:
+	ld inclination, currentT;
 };
 
-inline Vector3 Planet::pos() const noexcept {
-	return this->_pos;
-}
-
-inline Vector3 Planet::pos() const noexcept {
-	return this->_vel;
-}
-
-inline ld Planet::mass() const noexcept {
-	return this->_mass;
-}
-
-inline ld Planet::radius() const noexcept {
-	return this->_mesh.radius;
-}
-
-Vector<Obstruction> Planet::obstructions() const noexcept {
-	return _obstructions;
-}
-
-Sphere Planet::mesh() const noexcept {
-	return _mesh;
-}
+const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept;
+const FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept;

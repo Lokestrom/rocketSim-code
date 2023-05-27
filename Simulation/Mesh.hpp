@@ -1,67 +1,97 @@
 #pragma once
 
-#include "controles.hpp"
 #include "Vector3.hpp"
 #include "Quaternion.hpp"
+#include "controles.hpp"
 
-struct Mesh {
+struct Mesh 
+{
 	bool solid;
 	Vector3 pos;
 	Mesh(Vector3 pos, bool solid) : pos(pos), solid(solid) {}
+
+	virtual ld surfaceArea() const noexcept = 0;
+	virtual ld volum() const noexcept = 0;
+
+	virtual Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept = 0;
+	virtual bool pointInside(const Vector3& point) const noexcept = 0;
 };
 
-struct Sphere : public Mesh{
+struct Sphere : public Mesh
+{
 	ld radius;
+	Sphere() : Mesh({ 0,0,0 }, 0), radius(0) {}
 	Sphere(Vector3 pos, ld radius, bool solid = 1) : Mesh(pos, solid), radius(radius) {}
+	
+	ld surfaceArea() const noexcept;
+	ld volum() const noexcept;
+
+	Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept;
+	bool pointInside(const Vector3& point) const noexcept;
 };
 
-struct Box : public Mesh {
+struct Box : public Mesh 
+{
 	Vector3 dimensions;
 	Quaternion orientation;
+	Box() : Mesh({0,0,0}, 0) {}
 	Box(Vector3 pos, Vector3 dimensions, Quaternion orientation, bool solid = 1) : Mesh(pos, solid), dimensions(dimensions), orientation(orientation) {}
+	
+	ld surfaceArea() const noexcept;
+	ld volum() const noexcept;
+	
+	Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept;
+	bool pointInside(const Vector3& point) const noexcept;
 };
 
-struct Sylinder : public Mesh {
+struct Cylinder : public Mesh 
+{
 	ld radius, height;
 	Quaternion orientation;
-	Sylinder(Vector3 pos, sizeT radius, sizeT height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
+	Cylinder() : Mesh({ 0,0,0 }, 0), radius(0), height(0) {}
+	Cylinder(Vector3 pos, sizeT radius, sizeT height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
 
-	inline ld volum() {
+	ld surfaceArea() const noexcept;
+	ld volum() const noexcept{
 		return radius * radius * PI * height;
 	}
+
+	Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept;
+	bool pointInside(const Vector3& point) const noexcept;
 };
 
-struct NoseCone : public Mesh {
+struct NoseCone : public Mesh 
+{
 	ld radius, height;
 	Quaternion orientation;
+	NoseCone() : Mesh({0,0,0}, 0) {}
 	NoseCone(Vector3 pos, ld radius, ld height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
 
-	inline ld f(ld y, ld z) const {
+	ld f(ld y, ld z) const noexcept{
 		return height * sqrtl(1 - (((z * z) + (y * y)) / (radius * radius)));
 	}
+
+	ld surfaceArea() const noexcept;
+	ld volum() const noexcept;
+
+	Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept;
+	bool pointInside(const Vector3& point) const noexcept;
 };
 
-struct ShapeNode {
-	int meshType;
+enum class MeshType { Sphere, Box, Cylinder, NoseCone };
 
+struct ShapeNode {
+	MeshType meshType;
 	Sphere sphere;
 	Box box;
-	Sylinder sylinder;
+	Cylinder cylinder;
 	NoseCone noseCone;
 };
 
 struct Shape {
 	Vector<ShapeNode> meshes;
+
+	bool pointInside(const Vector3& point) const noexcept;
+	bool pointsInside(const Vector<Vector3>& point) const noexcept;
 };
-
-bool collision(Sphere& s1, Sphere s2);
-bool collision(Sphere& sphere, Box& box);
-bool collision(Box& box1, Box& box2);
-bool collision(const Sphere& sphere, const NoseCone& noseCone);
-
-bool pointInsideMesh(const Vector3& point, const Sphere& sphere);
-bool pointInsideMesh(const Vector3& point, const Box& noseCone);
-bool pointInsideMesh(const Vector3 & point, const Sylinder & sylinder);
-bool pointInsideMesh(const Vector3 & point, const NoseCone & noseCone);
-bool pointInsideShape(const Vector3 & point, Shape & shape);
 

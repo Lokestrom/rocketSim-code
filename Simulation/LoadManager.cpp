@@ -1,33 +1,33 @@
 #include "LoadManager.hpp"
 
-#include "controles.hpp"
-#include "String.hpp"
-#include "RocketStage.hpp"
-#include "Rocket.hpp"
-#include "planet.hpp"
-#include "flags.hpp"
-#include "Engine.hpp"
-
 #include <fstream>
 #include <filesystem>
 
-namespace fs = std::filesystem;
+#include <String.hpp>
 
-void loadInObjects(String SimulationFolder) {
-	SimulationFolder += "/Config";
-	for (const auto& entry : fs::directory_iterator(toSTD(SimulationFolder + "/Mesh")))
-		LoadManagerObjects::meshMap[String(entry.path().filename().string())] = loadMeshes(entry.path().string());
-	for (const auto& entry : fs::directory_iterator(toSTD(SimulationFolder + "/Engine"))) {
+#include "controles.hpp"
+#include "flags.hpp"
+#include "Rocket.hpp"
+#include "planet.hpp"
+
+namespace fs = std::filesystem;
+using namespace fileSystem;
+
+void loadInObjects() {
+	simulationFolder += "/Config";
+	for (const auto& entry : fs::directory_iterator(toSTD(simulationFolder + "/Mesh")))
+		LoadManagerObjects::meshMap[String(entry.path().filename().string())] = loadMesh(entry.path().string());
+	for (const auto& entry : fs::directory_iterator(toSTD(simulationFolder + "/Engine"))) {
 		bool isReactionThruster;
-		Engine engine = loadEngines(entry.path().string(), isReactionThruster);
+		Engine engine = loadEngine(entry.path().string(), isReactionThruster);
 		if (isReactionThruster)
 			LoadManagerObjects::reactionThrusterMap[String(entry.path().filename().string())] = engine;
 		else
 			LoadManagerObjects::engineMap[String(entry.path().filename().string())] = engine;
 	}
-	for (const auto& entry : fs::directory_iterator(toSTD(SimulationFolder + "/FuelTank")))
+	for (const auto& entry : fs::directory_iterator(toSTD(simulationFolder + "/FuelTank")))
 		LoadManagerObjects::fuelTankMap[String(entry.path().filename().string())] = loadFuelTank(entry.path().string());
-	for (const auto& entry : fs::directory_iterator(toSTD(SimulationFolder + "/Planet"))) {
+	for (const auto& entry : fs::directory_iterator(toSTD(simulationFolder + "/Planet"))) {
 		PhysicsPlanet physicsPlanet;
 		FixedOrbitPlanet fixedOrbitPlanet;
 		bool isPhysicsPlanet = loadPlanet(entry.path().string(), physicsPlanet, fixedOrbitPlanet);
@@ -37,7 +37,7 @@ void loadInObjects(String SimulationFolder) {
 		else
 			LoadManagerObjects::fixedOrbitPlanetMap[String(entry.path().filename().string())] = fixedOrbitPlanet;
 	}
-	for (const auto& entry : fs::directory_iterator(toSTD(SimulationFolder + "/RocketStage")))
+	for (const auto& entry : fs::directory_iterator(toSTD(simulationFolder + "/RocketStage")))
 		LoadManagerObjects::rocketStageMap[String(entry.path().filename().string())] = loadRocketStage(entry.path().string());
 }
 
@@ -59,7 +59,7 @@ bool validateAllLoadedObjects(std::unordered_map<String, String> settings) {
 	}
 }
 
-Shape loadMeshes(String meshFile) {
+Shape loadMesh(String meshFile) {
 	std::ifstream file(meshFile.cstr());
 	String line;
 	Shape shape;
@@ -81,9 +81,11 @@ Shape loadMeshes(String meshFile) {
 			shape.meshes.pushBack(ShapeNode(3, );
 		}
 		else {
+			file.close();
 			throw InvalidArgument(("The mesh type: " + type + ". Is not a valid mesh").cstr());
 		}
 	}
+	file.close();
 	return shape;
 }
 
@@ -120,7 +122,7 @@ void validateEngineVariables(std::unordered_map<String, String> map) {
 
 }
 
-Engine loadEngines(String engineFile, bool reactionThruster) {
+Engine loadEngine(String engineFile, bool reactionThruster) {
 	std::ifstream file(engineFile.cstr());
 	String line;
 	std::unordered_map<String, String> map = loadVariablesAndValuesInToMap(file);
@@ -132,7 +134,7 @@ Engine loadEngines(String engineFile, bool reactionThruster) {
 		Vector<String> fuel = i.split(':');
 		fuelPerSecond += Fuelmap(fuel[0], STold(fuel[1]));
 	}
-
+	file.close();
 	Shape mesh = LoadManagerObjects::meshMap[map["mesh"]];
 	if (!map.count("maxgimblepersecond") && !map.count("maxgimble"))
 		return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), returnVector3(map["pos"]), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, mesh);
@@ -143,8 +145,8 @@ FuelTank loadFuelTank(String FuelTankFile) {
 	std::ifstream file(FuelTankFile.cstr());
 	String line;
 	std::unordered_map<String, String> map = loadVariablesAndValuesInToMap(file);
+	file.close();
 	validateFuelTankVariables(map);
-	
 	return FuelTank(0, map["fueltype"], STold(map["fuelload"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
 }
 
@@ -218,7 +220,7 @@ void loadSettings(String settingsFile) {
 		flags::gravitySimulation = flags::CFD;
 	
 	flags::random = (settings["random"] == "true") ? true : false;
-	options::seed = STou(settings["seed"]);
+	options::randomSeed = STou(settings["seed"]);
 	objects::dt = STold(settings["deltatime"]);
 	options::edgeDetectionIterations = STold(settings["edgedetection"]);
 

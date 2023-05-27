@@ -31,5 +31,5 @@ ld fixAngle180(ld angle){
 }
 
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos) {
-    return gravityFormula(m, M, distanse(pos, otherPos)) * (otherPos - pos).normal();
+    return gravityFormulaNewton(m, M, distanse(pos, otherPos)) * (otherPos - pos).normal();
 }

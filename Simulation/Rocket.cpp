@@ -1,6 +1,7 @@
 #include "Rocket.hpp"
-#include "planet.hpp"
+
 #include "controles.hpp"
+#include "planet.hpp"
 
 Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages) 
 	: _pos(pos), _vel(vel), _acc(acc), _orientation(rotation), _rocketStages(rocketStages)
@@ -8,7 +9,67 @@ Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion ro
 	updateCenterOfGravity();
 }
 
-void Rocket::update() {
+constexpr String Rocket::ID() const noexcept 
+{
+	return _ID;
+}
+constexpr Vector3 Rocket::pos() const noexcept 
+{
+	return _pos;
+}
+constexpr Vector3 Rocket::vel() const noexcept 
+{
+	return _vel;
+}
+constexpr Vector3 Rocket::acc() const noexcept 
+{
+	return _acc;
+}
+constexpr Quaternion Rocket::orientation() const noexcept 
+{
+	return  _orientation;
+}
+constexpr Quaternion Rocket::rotationVel() const noexcept
+{
+	return _rotationVel;
+}
+constexpr Quaternion Rocket::rotationAcc() const noexcept
+{
+	return _rotationAcc;
+}
+constexpr ld Rocket::mass() const noexcept 
+{
+	ld m = 0;
+	for (RocketStage& i : _rocketStages) {
+		m += i.mass();
+	}
+}
+constexpr bool Rocket::RCS() const noexcept
+{
+	return _RCS;
+}
+constexpr Vector<RocketStage> Rocket::stages() const noexcept
+{
+	return _rocketStages;
+}
+
+void Rocket::setPos(Vector3 newPos) noexcept
+{
+	_pos = newPos;
+}
+
+void Rocket::setVel(Vector3 newVel) noexcept
+{
+	_vel = newVel;
+}
+
+void Rocket::setOrientation(Quaternion newOrientation) noexcept
+{
+	_orientation = newOrientation;
+}
+
+void Rocket::update() noexcept 
+{
 	updateCenterOfGravity();
 	engineShutdownChecker();
 	Vector3 g, d, t, rt, newAcc;
@@ -39,43 +100,8 @@ void Rocket::update() {
 		objects::rockets->pop(rocketSearchIndex(ID()));
 }
 
-bool Rocket::isColliding() {
-	for (auto& i : _rocketStages)
-		if (i.isColliding())
-			return true;
-	return false;
-}
-
-void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) {
-	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass + _rocketStages[0].pos(), orientation(), mass, ID());
-}
-
-void Rocket::gravity(Vector3& gravity) {
-	gravity = Vector3::null();
-	for (Planet& i : *(objects::planets)) {
-		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
-	}
-}
-
-void Rocket::engineShutdownChecker() {
-	for (auto i : _rocketStages[0].engineIDs())
-		if (engineShutDownTime[i] <= objects::time)
-			_rocketStages[0].engineSearch(i)->toggle(false);
-}
-
-void Rocket::updateCenterOfGravity() {
-	_centerOfMass = Vector3::null();
-	for (RocketStage i : _rocketStages)
-		_centerOfMass += i.centerOfGravity();
-	_centerOfMass = _centerOfMass / _rocketStages.size();
-}
-
-void Rocket::stage() {
-	objects::rockets->pushBack(Rocket(_rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), { _rocketStages[0] }));
-	_rocketStages.pop(0);
-}
-
-void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) {
+void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept 
+{
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
 	for (auto& i : engines) {
@@ -83,8 +109,8 @@ void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) {
 		_rocketStages[0].engineSearch(i)->toggle(true);
 	}
 }
-
-void Rocket::shutdown(Vector<int> engines = {}) {
+void Rocket::shutdown(Vector<int> engines = {}) noexcept 
+{
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
 	for (auto& i : engines) {
@@ -93,13 +119,33 @@ void Rocket::shutdown(Vector<int> engines = {}) {
 	}
 }
 
-ld Rocket::altitude(const Planet& p) {
-	ld alt = (this->pos() - p.pos()).length();
-	alt = abs(alt) - p.radius();
-	return alt;
+void Rocket::rotate(Quaternion angle) 
+{
+	_rocketStages[0].rotate(angle);
 }
 
-ld Rocket::deltaV() {
+void Rocket::rotate(ld t, Quaternion angle)
+{
+}
+
+void Rocket::stage() noexcept 
+{
+	objects::rockets->pushBack(Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
+	_rocketStages.pop(0);
+	fileSystem::rocketFiles.insert({ (*objects::rockets)[objects::rockets->size() - 1].ID(), WriteFile<ld>(fileSystem::runFolder + "rocket/" + (*objects::rockets)[objects::rockets->size() - 1].ID())})
+
+}
+
+void Rocket::updateCenterOfGravity() noexcept 
+{
+	_centerOfMass = Vector3::null();
+	for (RocketStage i : _rocketStages)
+		_centerOfMass += i.centerOfGravity();
+	_centerOfMass = _centerOfMass / _rocketStages.size();
+}
+
+ld Rocket::deltaV() const noexcept 
+{
 	ld __mass = mass();
 	ld deltaV = 0;
 	for (auto& i : _rocketStages) {
@@ -112,29 +158,54 @@ ld Rocket::deltaV() {
 	}
 	return deltaV;
 }
-
-ld Rocket::deltaV(String stageID) {
+ld Rocket::deltaV(const int& stageID) const 
+{
 	for (auto& i : _rocketStages)
-		if (stageID == i.ID().split(' ')[1])
+		if (stageID == i.ID())
 			return i.deltaV();
 	throw InvalidArgument("Rocket does not have a stage with that ID");
 }
+ld Rocket::altitude(const String& planetID) const 
+{
+	const FixedOrbitPlanet* fp = fixedOrbitPlanetSearch(planetID);
+	if (fp != nullptr) {
+		ld alt = (this->pos() - fp->pos()).length();
+		alt = abs(alt) - fp->radius();
+		return alt;
+	}
 
-void Rocket::rotate(Quaternion angle) {
-	_rocketStages[0].rotate(angle);
+	const PhysicsPlanet* pp = physicsPlanetSearch(planetID);
+	if (pp != nullptr) {
+		ld alt = (this->pos() - pp->pos()).length();
+		alt = abs(alt) - pp->radius();
+		return alt;
+	}
+	throw InvalidArgument(("The planet: " + planetID + " does not excist").cstr());
+
+	return 0;
 }
 
-bool Rocket::pointInside(Vector3 point) {
+bool Rocket::isColliding() noexcept
+{
+	for (auto& i : _rocketStages)
+		if (i.isColliding())
+			return true;
+	return false;
+}
+bool Rocket::pointInside(Vector3 point) noexcept
+{
 	for (RocketStage i : _rocketStages)
 		if (i.pointInside(point))
 			return true;
 }
 
-ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) {
+ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) noexcept
+{
 	Vector3 diametreVec = edgeToCm;
 	while (pointInside(diametreVec + edgePoint))
 		diametreVec *= 2;
-	for (int i = 0; i < options::edgeDetectionIterations; i++) {
+	for (int i = 0; i < options::edgeDetectionIterations; i++) 
+	{
 		if(pointInside(diametreVec + edgePoint))
 			diametreVec += edgeToCm;
 		else {
@@ -145,7 +216,9 @@ ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) {
 	return diametreVec.length();
 }
 
-void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographicCoordinate cord) {
+/*non-member fungtions*/
+void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographicCoordinate cord) 
+{
 	Vector3 pos = planet.point(cord);
 	Vector3 vel = planet.velosityAtPoint(cord);
 	Quaternion orientation = planet.getUpAtpoint(cord);
@@ -155,7 +228,8 @@ void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographic
 	rocket.setOrientation(orientation);
 }
 
-void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geographicCoordinate cord) {
+void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geographicCoordinate cord) 
+{
 	Vector3 pos = planet.point(cord);
 	Vector3 vel = planet.velosityAtPoint(cord);
 	Quaternion orientation = planet.getUpAtpoint(cord);
@@ -163,4 +237,46 @@ void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geograp
 	rocket.setPos(pos);
 	rocket.setVel(vel);
 	rocket.setOrientation(orientation);
+}
+
+Rocket* rocketSearch(String ID) noexcept
+{
+	for (auto& i : *objects::rockets)
+		if (i.ID() == ID)
+			return &i;
+	return nullptr;
+}
+
+int rocketSearchIndex(String ID) noexcept
+{
+	int index = 0;
+	for (auto& i : *objects::rockets) {
+		if (i.ID() == ID)
+			return index;
+	}
+	return -1;
+}
+
+/*private fungtions*/
+void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noexcept
+{
+	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass + _rocketStages[0].pos(), orientation(), mass, ID());
+}
+
+void Rocket::gravity(Vector3& gravity) const noexcept
+{
+	gravity = Vector3::null();
+	for (auto& i : *(objects::fixedOrbitPlanets)) {
+		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
+	}
+	for (auto& i : *(objects::physicsPlanets)) {
+		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
+	}
+}
+
+void Rocket::engineShutdownChecker() noexcept
+{
+	for (auto i : _rocketStages[0].engineIDs())
+		if (engineShutDownTime[i] <= objects::time)
+			_rocketStages[0].engineSearch(i)->toggle(false);
 }

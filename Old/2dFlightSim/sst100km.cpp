@@ -40,7 +40,7 @@ int main()
         std::cout << (int)høyde << "   "
                   << (int)currV << "   " << drag << "   " << currM << "   " << i << std::endl;
     }
-    for (int i = 0; i > -1; i++)
+    for (int i = 0; i < 100; i++)
     {
         atmosfereDensity = airDensity(høyde);
         float vT = sqrt((2 * currM * 9.81) / (dragArea * dragC2 * atmosfereDensity));
@@ -83,9 +83,5 @@ int main()
                   << currV << "   " << drag << "   " << currM << "   " << i << std::endl;
 
         lastV = currV;
-        if (boosterMCurr <= m1)
-        {
-            break;
-        }
     }
 }
