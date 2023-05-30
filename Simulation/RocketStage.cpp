@@ -87,8 +87,7 @@ Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quater
 	Fuelmap usedfuel;
 	for (auto& i : _engines)
 		if (i.active() == true) {
-			ld radius = rocketSearch(ID)->determenRadius(pos() - i.mountPos(), centerOfMass - i.mountPos());
-			thrust += i.thrust(rotationalAcc, usedfuel, centerOfMass - i.mountPos(), rocketOrientation, mass, radius);
+			thrust += i.thrust(rotationalAcc, usedfuel, centerOfMass - i.mountPos(), rocketOrientation, mass);
 		}
 
 	std::unordered_map<String, int> fuelDrain;

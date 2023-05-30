@@ -74,13 +74,14 @@ void Engine::toggle(bool newState) noexcept
 void Engine::update() 
 {
 	if (_orientation != _desierdOrientation &&  canGimble()) {
-		_orientation += getStepQuaternion(_orientation, desierdOrientation, _gimbletime, _maxGimblePerSecond) * objects::dt;
+		_orientation += getStepQuaternion(_orientation, _desierdOrientation, _gimbletime, _maxGimblePerSecond) * objects::dt;
 	}
 }
 
-Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass, ld radius) noexcept
+Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept
 {
 	usedFuel += _fuelPerSecond * _thrustPercent;
+	ld radius = (centerOfMass - _mountPos).length();
 	rotationalAcc += centerOfMass.cross((_orientation * rocketOrientation).rotate(usedFuel.totalMass() * _exitVel))/(0.5 * mass * radius*radius);
 	Vector3 Cmnorm = centerOfMass.normal();
 	Vector3 thrust = abs(Cmnorm.dot((_orientation * rocketOrientation).rotate(1))) * (_orientation * rocketOrientation).rotate(usedFuel.totalMass() * _exitVel);
@@ -94,14 +95,14 @@ void Engine::gimble(Quaternion newGimble = Quaternion())
 	if (abs(getDifferenceRadian(Quaternion(), newGimble)) > _maxGimble)
 		throw InvalidArgument("The new gimble is greater than the maximum alowd gimble");
 
-	desierdOrientation = newGimble;
+	_desierdOrientation = newGimble;
 	_gimbletime = 1;
 }
 void Engine::gimble(sizeT t, Quaternion newGimble = Quaternion()) 
 {
 	if (abs(getDifferenceRadian(Quaternion(), newGimble)) > _maxGimble)
 		throw InvalidArgument("The new gimble is greater than the maximum alowd gimble");
-	desierdOrientation = newGimble;
+	_desierdOrientation = newGimble;
 	_gimbletime = t;
 }
 

@@ -46,7 +46,7 @@ public:
 
 	void update();
 
-	Vector3 thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass, ld radius) noexcept;
+	Vector3 thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept;
 
 	void gimble(Quaternion newGimble);
 	void gimble(sizeT t, Quaternion newGimble);

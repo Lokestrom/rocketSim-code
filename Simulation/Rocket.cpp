@@ -132,7 +132,7 @@ void Rocket::stage() noexcept
 {
 	objects::rockets->pushBack(Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
 	_rocketStages.pop(0);
-	fileSystem::rocketFiles.insert({ (*objects::rockets)[objects::rockets->size() - 1].ID(), WriteFile<ld>(fileSystem::runFolder + "rocket/" + (*objects::rockets)[objects::rockets->size() - 1].ID())})
+	fileSystem::rocketFiles.insert({ (*objects::rockets)[objects::rockets->size() - 1].ID(), WriteFile<ld>(fileSystem::runFolder + "rocket/" + (*objects::rockets)[objects::rockets->size() - 1].ID()) });
 
 }
 
