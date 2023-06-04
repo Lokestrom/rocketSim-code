@@ -41,23 +41,7 @@ void loadInObjects() {
 		LoadManagerObjects::rocketStageMap[String(entry.path().filename().string())] = loadRocketStage(entry.path().string());
 }
 
-bool validateAllLoadedObjects(std::unordered_map<String, String> settings) {
-	Vector<String> validFuelTypes = settings["usedfueltypes"].split(',');
-	for (auto& [key, val] : LoadManagerObjects::engineMap) {
-		for (auto i = 0; i < val.fuelTypes().size(); i++)
-			if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
-				throw InvalidArgument(("Rocket engine: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
-	}
-	for (auto& [key, val] : LoadManagerObjects::reactionThrusterMap) {
-		for (auto i = 0; i < val.fuelTypes().size(); i++)
-			if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
-				throw InvalidArgument(("Rocket reaction thruster: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
-	}
-	for (auto& [key, val] : LoadManagerObjects::fuelTankMap) {
-		if (validFuelTypes.linearSearch(val.fuelType()) == -1)
-			throw InvalidArgument(("Rocket fuel tank: " + key + ". uses a fuel that is not valid( " + val.fuelType() + " ). check the speling").cstr());
-	}
-}
+
 
 Shape loadMesh(String meshFile) {
 	std::ifstream file(meshFile.cstr());
@@ -89,31 +73,23 @@ Shape loadMesh(String meshFile) {
 	return shape;
 }
 
+void validationLayer(const std::unordered_map<String, String>& map, const String& variable, String& msg) {
+	if (!map.count(toSTD(lower(variable).remove(' ')))) {
+		msg += "\t" + variable + "\n";
+	}
+}
+
 void validateEngineVariables(std::unordered_map<String, String> map) {
 	String misingValues;
-	if (!map.count("fuelpersecond")) {
-		misingValues += "fuel per second, ";
-	}
-	if (!map.count("mesh")) {
-		misingValues += "mesh, ";
-	}
-	if (!map.count("mass")) {
-		misingValues += "mass, ";
-	}
-	if (!map.count("exitvelosity")) {
-		misingValues += "exit velosity, ";
-	}
-	if (!map.count("pos")) {
-		misingValues += "pos, ";
-	}
-	if (!map.count("centerofmass")) {
-		misingValues += "center of mass, ";
-	}
-	if (!map.count("mountpos")) {
-		misingValues += "mount pos, ";
-	}
+	validationLayer(map, "fuel per second", misingValues);
+	validationLayer(map, "mesh", misingValues);
+	validationLayer(map, "mass", misingValues);
+	validationLayer(map, "exit velosity", misingValues);
+	validationLayer(map, "pos", misingValues);
+	validationLayer(map, "center of mass", misingValues);
+	validationLayer(map, "mount pos", misingValues);
 	if (misingValues != "")
-		throw InvalidArgument(("There is mising values in the Engine file {" + misingValues + "}").cstr());
+		throw InvalidArgument(("There is mising values in the Engine file:\n" + misingValues + "Check for spelling errors.").cstr());
 
 	if (!map.count("maxgimblepersecond") && map.count("maxgimble"))
 		throw InvalidArgument("there is a value for max gimble but not for max gimble per second. you may have forgoten the max gimble per second variable");
@@ -141,6 +117,10 @@ Engine loadEngine(String engineFile, bool reactionThruster) {
 	return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), returnVector3(map["pos"]), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, mesh, degToRad(STold(map["maxgimblepersecond"])), degToRad(STold(map["maxgimble"])));
 }
 
+void validateFuelTankVariables(std::unordered_map<String, String> map) {
+
+}
+
 FuelTank loadFuelTank(String FuelTankFile) {
 	std::ifstream file(FuelTankFile.cstr());
 	String line;
@@ -149,6 +129,11 @@ FuelTank loadFuelTank(String FuelTankFile) {
 	validateFuelTankVariables(map);
 	return FuelTank(0, map["fueltype"], STold(map["fuelload"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
 }
+
+void validateRocketStageVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {
+
+}
+
 
 RocketStage loadRocketStage(String rocketStageFile) {
 	std::ifstream file(rocketStageFile.cstr());
@@ -179,12 +164,20 @@ RocketStage loadRocketStage(String rocketStageFile) {
 	return RocketStage("", STold(data["setup"]["drymass"]), { 0,0,0 }, returnVector3(data["setup"]["centerofmass"]), engines, reactionThrusters, fuelTanks, mesh);
 }
 
+void validatePlanetFileVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {
+
+}
+
 bool loadPlanet(String planetFile, PhysicsPlanet& physicsPlanet, FixedOrbitPlanet& fixedOrbitPlanet) {
 	std::ifstream file(planetFile.cstr());
 	auto data = loadBatches(file);
 	validatePlanetFileVariables(data);
 
 	Vector<Obstruction> obstructions;
+}
+
+void validateRocketVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {
+
 }
 
 Rocket loadRocket(String rocketFile) {
@@ -201,6 +194,28 @@ Rocket loadRocket(String rocketFile) {
 	if()
 	return Rocket()
 	
+}
+
+void validateSettingVariables(std::unordered_map<String, String> map) {
+
+}
+
+bool validateAllLoadedObjects(std::unordered_map<String, String> settings) {
+	Vector<String> validFuelTypes = settings["usedfueltypes"].split(',');
+	for (auto& [key, val] : LoadManagerObjects::engineMap) {
+		for (auto i = 0; i < val.fuelTypes().size(); i++)
+			if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
+				throw InvalidArgument(("Rocket engine: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
+	}
+	for (auto& [key, val] : LoadManagerObjects::reactionThrusterMap) {
+		for (auto i = 0; i < val.fuelTypes().size(); i++)
+			if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
+				throw InvalidArgument(("Rocket reaction thruster: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
+	}
+	for (auto& [key, val] : LoadManagerObjects::fuelTankMap) {
+		if (validFuelTypes.linearSearch(val.fuelType()) == -1)
+			throw InvalidArgument(("Rocket fuel tank: " + key + ". uses a fuel that is not valid( " + val.fuelType() + " ). check the speling").cstr());
+	}
 }
 
 void loadSettings(String settingsFile) {
@@ -224,7 +239,7 @@ void loadSettings(String settingsFile) {
 	objects::dt = STold(settings["deltatime"]);
 	options::edgeDetectionIterations = STold(settings["edgedetection"]);
 
-	validateAllLoadedObjects(settings)
+	validateAllLoadedObjects(settings);
 }
 
 std::unordered_map<String, String> loadVariablesAndValuesInToMap(std::ifstream& file) {

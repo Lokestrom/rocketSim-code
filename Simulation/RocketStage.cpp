@@ -103,12 +103,12 @@ Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quater
 	return thrust;
 }
 
-void RocketStage::rotate(Quaternion angle) noexcept 
+/*void RocketStage::rotate(Quaternion angle) noexcept
 {
 	for (auto& i : _engines) 
 		if(i.canGimble())
 			i.gimble()
-}
+}*/
 
 ld RocketStage::deltaV() const noexcept 
 {

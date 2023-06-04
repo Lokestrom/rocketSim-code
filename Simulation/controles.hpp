@@ -10,11 +10,13 @@
 using namespace Database;
 
 using ld = long double;
-using sizeT = unsigned int;
+using sizeT = unsigned long long;
 
 class RocketStage;
-class Planet;
 class Rocket;
+class Planet;
+class PhysicsPlanet;
+class FixedOrbitPlanet;
 
 const ld PI = 3.141592653589793l;
 const ld e = 2.718281828459045l;
@@ -128,9 +130,9 @@ namespace objects
 	extern Vector<PhysicsPlanet>* physicsPlanets;
 	extern Vector<Rocket>* rockets;
 	//s
-	ld time = 0;
-	ld dt = 0;
-	sizeT dtSinceLastLogging = 0;
+	inline ld time = 0;
+	inline ld dt = 0;
+	inline sizeT dtSinceLastLogging = 0;
 
 	void updateDT() noexcept{
 		time += dt;
@@ -139,19 +141,19 @@ namespace objects
 
 namespace options 
 {
-	sizeT edgeDetectionIterations = 0;
-	sizeT pointApproximationOfMeshesPerM2 = 0;
-	sizeT dtPerLogging = 1;
-	unsigned randomSeed;
+	inline sizeT edgeDetectionIterations = 0;
+	inline sizeT pointApproximationOfMeshesPerM2 = 0;
+	inline sizeT dtPerLogging = 1;
+	inline unsigned randomSeed;
 }
 
 namespace fileSystem 
 {
-	String simulationFolder;
-	String runFolder;
-	std::unordered_map<String, WriteFile<ld>> rocketFiles;
-	std::unordered_map<String, WriteFile<ld>> rocketStageFiles;
-	std::unordered_map<String, WriteFile<ld>> engineFiles;
-	std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
-	std::unordered_map<String, WriteFile<ld>> planetFiles;
+	inline String simulationFolder;
+	inline String runFolder;
+	inline std::unordered_map<String, WriteFile<ld>> rocketFiles;
+	inline std::unordered_map<String, WriteFile<ld>> rocketStageFiles;
+	inline std::unordered_map<String, WriteFile<ld>> engineFiles;
+	inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
+	inline std::unordered_map<String, WriteFile<ld>> planetFiles;
 }
