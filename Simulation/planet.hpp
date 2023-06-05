@@ -25,7 +25,7 @@ class Planet
 private:
 	String _ID;
 	ld _mass;
-	Sphere _mesh; //kansje bare ha en mesh som e planet
+	Sphere _mesh;
 	Vector3 _pos, _vel;
 	Quaternion _spin;
 	Vector<Obstruction> _obstructions;

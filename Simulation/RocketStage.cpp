@@ -2,6 +2,15 @@
 #include "RocketStage.hpp"
 #include "planet.hpp"
 
+RocketStage::RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
+	Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
+	Vector<FuelTank> fuelTanks, Shape mesh)
+	: _ID(ID), _pos(pos), _dryMass(dryMass), _centerOfMass(centerOfMass),
+	_engines(engines), _reactionThrusters(reactionThrusters),
+	_fuelTanks(fuelTanks), _mesh(mesh)
+{
+}
+
 /*getters*/
 constexpr int RocketStage::ID() const noexcept 
 {

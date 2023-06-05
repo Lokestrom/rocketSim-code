@@ -1,11 +1,19 @@
 #pragma once
 
 #include <unordered_map>
+#include <fstream>
 
 #include <Vector.hpp>
 #include <WriteFile.hpp>
 
 #include "Vector3.hpp"
+
+#ifndef NDEBUG
+	bool debug = false;
+#else
+	bool debug = true;
+#endif // !NDEBUG
+
 
 using namespace Database;
 
@@ -27,6 +35,17 @@ const ld R = 8.31446261815324l;
 
 //m/s
 const ld C = 299792458;
+
+/*
+* low: neer to no chance of effecting the program
+* mid: low chance of effecting the program
+* severe: very high chance of effecting the program
+*/
+enum errorSeverityLevel { low, mid, severe };
+
+enum exitCodes { success, 
+	badUserBehaviorLow, badUserBehaviorMid, badUserBehaviorSevere
+};
 
 struct minMaxVal 
 {
@@ -156,4 +175,8 @@ namespace fileSystem
 	inline std::unordered_map<String, WriteFile<ld>> engineFiles;
 	inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
 	inline std::unordered_map<String, WriteFile<ld>> planetFiles;
+#if !debug
+	inline std::ofstream errorLogFile;
+#endif // !debug
+
 }

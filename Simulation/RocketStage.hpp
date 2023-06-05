@@ -13,8 +13,9 @@ class RocketStage
 {
 public:
 
-	RocketStage();
-	RocketStage(int ID, ld dryMass, Vector3 pos, Vector3 centerOfMass, Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, Vector<FuelTank> fuelTanks, Shape mesh);
+	RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
+		Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
+		Vector<FuelTank> fuelTanks, Shape mesh);
 
 	/*getters*/
 	constexpr int ID() const noexcept;
@@ -38,7 +39,7 @@ public:
 
 	Vector3 thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass, String ID) const noexcept;
 
-	void rotate(Quaternion angle) noexcept;
+	//void rotate(Quaternion angle) noexcept;
 
 	ld deltaV() const noexcept;
 
