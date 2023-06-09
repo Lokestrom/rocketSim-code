@@ -180,9 +180,9 @@ bool collision(const Shape& s1, const Shape& s2) {
     return false;
 }
 
-bool pointInsideShape(const Vector3& point, const Shape& shape) {
+bool Shape::pointInside(const Vector3& point) const noexcept {
     bool inside = false;
-    for (const auto& i : shape.meshes)
+    for (const auto& i : meshes)
         switch (i.meshType)
         {
         case MeshType::Sphere:
@@ -199,9 +199,9 @@ bool pointInsideShape(const Vector3& point, const Shape& shape) {
     return inside;
 }
 
-bool pointsInsideShape(const Vector<Vector3>& points, const Shape& shape) {
+bool Shape::pointsInside(const Vector<Vector3>& points) const noexcept {
     for (const auto& i : points)
-        if (shape.pointInside(i))
+        if (pointInside(i))
             return true;
     return false;
 }

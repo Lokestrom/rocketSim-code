@@ -15,32 +15,32 @@ Planet::Planet() {
 Planet::Planet(ld mass, ld radius, Vector3 pos, Vector3 vel)
 	: _mass(mass), _pos(pos), _vel(vel), _mesh({0,0,0}, 0, radius) {}
 
-constexpr String Planet::ID() const noexcept
+String Planet::ID() const noexcept
 {
 	return _ID;
 }
 
-constexpr Vector3 Planet::pos() const noexcept 
+Vector3 Planet::pos() const noexcept 
 {
 	return this->_pos;
 }
-constexpr Vector3 Planet::vel() const noexcept 
+Vector3 Planet::vel() const noexcept 
 {
 	return this->_vel;
 }
-constexpr ld Planet::mass() const noexcept 
+ld Planet::mass() const noexcept 
 {
 	return this->_mass;
 }
-constexpr ld Planet::radius() const noexcept 
+ld Planet::radius() const noexcept 
 {
 	return this->_mesh.radius;
 }
-constexpr Sphere Planet::mesh() const noexcept 
+Sphere Planet::mesh() const noexcept 
 {
 	return _mesh;
 }
-constexpr Vector<Obstruction> Planet::obstructions() const noexcept 
+Vector<Obstruction> Planet::obstructions() const noexcept 
 {
 	return _obstructions;
 }
@@ -105,10 +105,10 @@ bool Planet::checkIfPointInside(const Vector3& point) const noexcept
 void PhysicsPlanet::earlyUpdate() 
 {
 	this->gravity = Vector3::null();
-	for (PhysicsPlanet& i : *(objects::physicsPlanets)) {
+	for (PhysicsPlanet& i : *(objectLists::physicsPlanets)) {
 		this->gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
-	for (FixedOrbitPlanet& i : *(objects::fixedOrbitPlanets)) {
+	for (FixedOrbitPlanet& i : *(objectLists::fixedOrbitPlanets)) {
 		this->gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
 }
@@ -117,8 +117,8 @@ void PhysicsPlanet::update()
 {
 	Vector3 new_acc = gravity / this->mass();
 
-	setPos(pos() + vel() * objects::dt + acc * (objects::dt * objects::dt * 0.5));
-	setVel(vel() + (acc + new_acc) * (objects::dt * 0.5));
+	setPos(pos() + vel() * timeObjects::dt + acc * (timeObjects::dt * timeObjects::dt * 0.5));
+	setVel(vel() + (acc + new_acc) * (timeObjects::dt * 0.5));
 	acc = new_acc;
 }
 
@@ -137,7 +137,7 @@ void FixedOrbitPlanet::update()
 /*non-Member fungtions*/
 const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
 {
-	for (auto& i : *objects::physicsPlanets)
+	for (auto& i : *objectLists::physicsPlanets)
 		if (i.ID() == planetID)
 			return &i;
 
@@ -146,7 +146,7 @@ const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
 
 const FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept
 {
-	for (auto& i : *objects::fixedOrbitPlanets)
+	for (auto& i : *objectLists::fixedOrbitPlanets)
 		if (i.ID() == planetID)
 			return &i;
 

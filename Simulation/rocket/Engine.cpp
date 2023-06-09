@@ -2,7 +2,7 @@
 
 #include "String.hpp"
 
-#include "planet.hpp"
+#include "../planet.hpp"
 
 using namespace Database;
 
@@ -32,7 +32,7 @@ constexpr int Engine::ID() const noexcept
 {
 	return _ID;
 }
-constexpr Vector3 Engine::centerOfMass() const noexcept
+Vector3 Engine::centerOfMass() const noexcept
 {
 	return _centerOfMass;
 }
@@ -48,11 +48,11 @@ constexpr bool Engine::canGimble() const noexcept
 {
 	return _canGimble;
 }
-constexpr Vector3 Engine::mountPos() const noexcept
+Vector3 Engine::mountPos() const noexcept
 {
 	return _mountPos;
 }
-constexpr Vector<String> Engine::fuelTypes() const noexcept
+Vector<String> Engine::fuelTypes() const noexcept
 {
 	return _fuelPerSecond.fuelTypes();
 }
@@ -74,7 +74,7 @@ void Engine::toggle(bool newState) noexcept
 void Engine::update() 
 {
 	if (_orientation != _desierdOrientation &&  canGimble()) {
-		_orientation += getStepQuaternion(_orientation, _desierdOrientation, _gimbletime, _maxGimblePerSecond) * objects::dt;
+		_orientation += getStepQuaternion(_orientation, _desierdOrientation, _gimbletime, _maxGimblePerSecond) * timeObjects::dt;
 	}
 }
 
@@ -108,12 +108,19 @@ void Engine::gimble(sizeT t, Quaternion newGimble = Quaternion())
 
 bool Engine::pointInside(Vector3& point) noexcept
 {
-	return pointInsideShape(point, _shape);
+	return _shape.pointInside(point);
 }
 
 bool Engine::isColliding() noexcept
 {
-	for (auto& i : *objects::planets) {
+	for (auto& i : *objectLists::physicsPlanets) {
+		if (collision(_shape, i.mesh()))
+			return true;
+		for (auto& j : i.obstructions())
+			if (collision(j.mesh, _shape))
+				return true;
+	}
+	for (auto& i : *objectLists::fixedOrbitPlanets) {
 		if (collision(_shape, i.mesh()))
 			return true;
 		for (auto& j : i.obstructions())
@@ -125,7 +132,7 @@ bool Engine::isColliding() noexcept
 
 /*Reaction Thruster*/
 
-ReactionThruster::ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Vector<Mesh> _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond)
+ReactionThruster::ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Shape _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond)
 {
 }
 

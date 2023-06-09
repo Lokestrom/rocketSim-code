@@ -1,5 +1,7 @@
 #include "Vector3.hpp"
 
+#include "controles.hpp"
+
 Vector3::Vector3(ld x, ld y, ld z)
 	: x(x),
 	y(y),
@@ -108,19 +110,19 @@ ld Vector3::dot(const Vector3& v) const noexcept
 }
 
 /*unit Vector3*/
-constexpr Vector3 Vector3::UnitX() noexcept
+Vector3 Vector3::UnitX() noexcept
 {
 	return Vector3(1, 0, 0);
 }
-constexpr Vector3 Vector3::UnitY() noexcept
+Vector3 Vector3::UnitY() noexcept
 {
 	return Vector3(0, 1, 0);
 }
-constexpr Vector3 Vector3::UnitZ() noexcept
+Vector3 Vector3::UnitZ() noexcept
 {
 	return Vector3(0, 0, 1);
 }
-constexpr Vector3 Vector3::null() noexcept
+Vector3 Vector3::null() noexcept
 {
 	return Vector3(0, 0, 0);
 }

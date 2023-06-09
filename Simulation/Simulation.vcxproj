@@ -127,36 +127,42 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="controles.cpp" />
     <ClCompile Include="DragSim.cpp" />
-    <ClCompile Include="Engine.cpp" />
-    <ClCompile Include="Fuelmap.cpp" />
-    <ClCompile Include="FuelTank.cpp" />
-    <ClCompile Include="LoadManager.cpp" />
-    <ClCompile Include="logging.cpp" />
+    <ClCompile Include="FileSystem\fileSystem.cpp" />
+    <ClCompile Include="FileSystem\Instructions.cpp" />
+    <ClCompile Include="FileSystem\LoadManager.cpp" />
+    <ClCompile Include="FileSystem\logging.cpp" />
+    <ClCompile Include="helpers\controles.cpp" />
+    <ClCompile Include="helpers\Mesh.cpp" />
+    <ClCompile Include="helpers\Quaternion.cpp" />
+    <ClCompile Include="run.cpp" />
+    <ClCompile Include="helpers\Vector3.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Planet.cpp" />
-    <ClCompile Include="Quaternion.cpp" />
-    <ClCompile Include="Rocket.cpp" />
-    <ClCompile Include="RocketStage.cpp" />
-    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="rocket\Engine.cpp" />
+    <ClCompile Include="rocket\Fuelmap.cpp" />
+    <ClCompile Include="rocket\FuelTank.cpp" />
+    <ClCompile Include="rocket\Rocket.cpp" />
+    <ClCompile Include="rocket\RocketStage.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="controles.hpp" />
     <ClInclude Include="DragSim.hpp" />
-    <ClInclude Include="Engine.hpp" />
-    <ClInclude Include="flags.hpp" />
-    <ClInclude Include="FuelTank.hpp" />
-    <ClInclude Include="Fuelmap.hpp" />
-    <ClInclude Include="LoadManager.hpp" />
-    <ClInclude Include="logging.hpp" />
-    <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="FileSystem\fileSystem.hpp" />
+    <ClInclude Include="FileSystem\Instructions.hpp" />
+    <ClInclude Include="FileSystem\LoadManager.hpp" />
+    <ClInclude Include="FileSystem\logging.hpp" />
+    <ClInclude Include="helpers\controles.hpp" />
+    <ClInclude Include="helpers\flags.hpp" />
+    <ClInclude Include="helpers\Mesh.hpp" />
+    <ClInclude Include="helpers\Quaternion.hpp" />
+    <ClInclude Include="run.hpp" />
+    <ClInclude Include="helpers\Vector3.hpp" />
     <ClInclude Include="planet.hpp" />
-    <ClInclude Include="Quaternion.hpp" />
-    <ClInclude Include="Rocket.hpp" />
-    <ClInclude Include="RocketStage.hpp" />
-    <ClInclude Include="Vector3.hpp" />
+    <ClInclude Include="rocket\Engine.hpp" />
+    <ClInclude Include="rocket\Fuelmap.hpp" />
+    <ClInclude Include="rocket\FuelTank.hpp" />
+    <ClInclude Include="rocket\Rocket.hpp" />
+    <ClInclude Include="rocket\RocketStage.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

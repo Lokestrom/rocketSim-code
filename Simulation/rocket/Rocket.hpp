@@ -1,10 +1,10 @@
 #pragma once
 #include <unordered_map>
 
-#include <Vector.hpp>
+#include "Vector.hpp"
 
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
+#include "../helpers/Vector3.hpp"
+#include "../helpers/Quaternion.hpp"
 #include "rocketStage.hpp"
 
 using namespace Database;
@@ -35,8 +35,8 @@ public:
 	void burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept;
 	void shutdown(Vector<int> engines = {}) noexcept;
 
-	void rotate(Quaternion angle);
-	void rotate(ld t, Quaternion angle);
+	//void rotate(Quaternion angle);
+	//void rotate(ld t, Quaternion angle);
 
 	void stage() noexcept;
 

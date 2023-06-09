@@ -3,17 +3,17 @@
 #include <unordered_map>
 #include <fstream>
 
-#include <Vector.hpp>
-#include <WriteFile.hpp>
+#include "Vector.hpp"
+#include "WriteFile.hpp"
 
 #include "Vector3.hpp"
+#include "../FileSystem/Instructions.hpp"
 
 #ifndef NDEBUG
 	bool debug = false;
 #else
 	bool debug = true;
 #endif // !NDEBUG
-
 
 using namespace Database;
 
@@ -39,21 +39,31 @@ const ld C = 299792458;
 /*
 * low: neer to no chance of effecting the program
 * mid: low chance of effecting the program
+* high: high chance of effecting the program
 * severe: very high chance of effecting the program
 */
-enum errorSeverityLevel { low, mid, severe };
-
-enum exitCodes { success, 
-	badUserBehaviorLow, badUserBehaviorMid, badUserBehaviorSevere
+enum errorCodes {
+	invalidUserBehavior,
+	low, 
+	mid, 
+	high, 
+	severe
 };
 
-struct minMaxVal 
-{
-	ld min, max;
-
-	minMaxVal(ld min, ld max)
-		: min(min), max(max){}
+enum exitCodes {
+	success,
+	badUserBehavior,
+	fileFault
 };
+
+struct error {
+	String what;
+	errorCodes level;
+};
+
+namespace loadingVar {
+	errorCodes exitLevel;
+}
 
 struct geographicCoordinate 
 {
@@ -86,13 +96,6 @@ ld abs(ld x)
 	return (x < 0) 
 		? -x 
 		: x;
-}
-
-ld modSqrt(ld x)
-{
-	return (x < 0) 
-		? -sqrtl(-x) 
-		: sqrtl(x);
 }
 
 ld fixSmallValue(ld value) 
@@ -143,18 +146,29 @@ ld gravityFormulaNewton(ld m, ld M, ld r)
 }
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);
 
-namespace objects 
+namespace objectLists
 {
-	extern Vector<FixedOrbitPlanet>* fixedOrbitPlanets;
-	extern Vector<PhysicsPlanet>* physicsPlanets;
-	extern Vector<Rocket>* rockets;
-	//s
-	inline ld time = 0;
-	inline ld dt = 0;
-	inline sizeT dtSinceLastLogging = 0;
+	inline Vector<FixedOrbitPlanet>* fixedOrbitPlanets;
+	inline Vector<PhysicsPlanet>* physicsPlanets;
+	inline Vector<Rocket>* rockets;
+	inline Vector<Instructions>* instructions;
 
-	void updateDT() noexcept{
-		time += dt;
+	void deleteObjectLists() noexcept {
+		delete physicsPlanets;
+		delete fixedOrbitPlanets;
+		delete rockets;
+	}
+}
+
+
+namespace timeObjects {
+	inline ld currentTime = 0;
+	inline ld dt = 0;
+	inline sizeT dtInstancesSinceLastLogging = 0;
+
+	void updateDT() noexcept {
+		currentTime += dt;
+		dtInstancesSinceLastLogging++;
 	}
 }
 
@@ -162,21 +176,6 @@ namespace options
 {
 	inline sizeT edgeDetectionIterations = 0;
 	inline sizeT pointApproximationOfMeshesPerM2 = 0;
-	inline sizeT dtPerLogging = 1;
+	inline sizeT dtInstancesPerLogging = 1;
 	inline unsigned randomSeed;
-}
-
-namespace fileSystem 
-{
-	inline String simulationFolder;
-	inline String runFolder;
-	inline std::unordered_map<String, WriteFile<ld>> rocketFiles;
-	inline std::unordered_map<String, WriteFile<ld>> rocketStageFiles;
-	inline std::unordered_map<String, WriteFile<ld>> engineFiles;
-	inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
-	inline std::unordered_map<String, WriteFile<ld>> planetFiles;
-#if !debug
-	inline std::ofstream errorLogFile;
-#endif // !debug
-
 }

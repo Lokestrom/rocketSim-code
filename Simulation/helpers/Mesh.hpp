@@ -95,3 +95,9 @@ struct Shape {
 	bool pointsInside(const Vector<Vector3>& point) const noexcept;
 };
 
+bool collision(const Shape& shape, const Sphere& sphere);
+bool collision(const Shape& shape, const Box& box);
+bool collision(const Shape& shape, const Cylinder& cylinder);
+bool collision(const Shape& shape, const NoseCone& noseCone);
+
+bool collision(const Shape& s1, const Shape& s2);

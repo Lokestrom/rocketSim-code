@@ -4,7 +4,7 @@
 #include <String.hpp>
 
 #include "FuelTank.hpp"
-#include "Mesh.hpp"
+#include "../helpers/Mesh.hpp"
 #include "Engine.hpp"
 
 using namespace Database;

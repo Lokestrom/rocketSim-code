@@ -147,11 +147,18 @@ bool RocketStage::isColliding() const noexcept
 	for (auto& i : _reactionThrusters)
 		if (i.isColliding())
 			return true;
-	for (auto& i : *objects::planets) {
+	for (auto& i : *objects::physicsPlanets) {
 		if (collision(mesh(), i.mesh()))
 			return true;
 		for (auto& j : i.obstructions())
-			if (collision(j.mesh, mesh()))
+			if (collision(mesh(), j.mesh))
+				return true;
+	}
+	for (auto& i : *objects::fixedOrbitPlanets) {
+		if (collision(mesh(), i.mesh()))
+			return true;
+		for (auto& j : i.obstructions())
+			if (collision(mesh(), j.mesh))
 				return true;
 	}
 	return false;

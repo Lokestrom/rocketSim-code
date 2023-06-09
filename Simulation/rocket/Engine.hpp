@@ -2,8 +2,8 @@
 
 #include "Vector.hpp"
 
-#include "Vector3.hpp"
-#include "Mesh.hpp"
+#include "../helpers/Vector3.hpp"
+#include "../helpers/Mesh.hpp"
 #include "Fuelmap.hpp"
 
 using namespace Database;
@@ -35,10 +35,10 @@ public:
 	constexpr bool active() const noexcept;
 	constexpr ld exitVel() const noexcept;
 	constexpr bool canGimble() const noexcept;
-	constexpr Vector3 mountPos() const noexcept;
-	constexpr Vector3 centerOfMass() const noexcept;
-	constexpr Vector<String> fuelTypes() const noexcept;
-	constexpr Vector<int> fueltankIDs() const noexcept;
+	Vector3 mountPos() const noexcept;
+	Vector3 centerOfMass() const noexcept;
+	Vector<String> fuelTypes() const noexcept;
+	Vector<int> fueltankIDs() const noexcept;
 
 	void setID(int newID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
@@ -58,7 +58,7 @@ public:
 
 class ReactionThruster : public Engine{
 public:
-	ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Vector<Mesh> _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond);
+	ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Shape _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond);
 	ReactionThruster(Engine engine);
 };
 

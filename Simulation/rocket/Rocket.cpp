@@ -1,7 +1,7 @@
 #include "Rocket.hpp"
 
-#include "controles.hpp"
-#include "planet.hpp"
+#include "../helpers/controles.hpp"
+#include "../planet.hpp"
 
 Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages) 
 	: _pos(pos), _vel(vel), _acc(acc), _orientation(rotation), _rocketStages(rocketStages)
@@ -85,19 +85,19 @@ void Rocket::update() noexcept
 	
 	Vector3 withoutRotationPos = -_orientation.rotate(_centerOfMass);
 
-	_orientation += _rotationVel * objects::dt + _rotationAcc * (objects::dt * objects::dt * 0.5);
-	_rotationVel += (_rotationAcc + newRotationAcc) * (objects::dt * 0.5);
+	_orientation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
+	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
 
 	Vector3 withRotationPos = -_orientation.rotate(_centerOfMass);
 
-	_pos += (withRotationPos - withoutRotationPos) + vel() * objects::dt + acc() * (objects::dt * objects::dt * 0.5);
-	_vel += (acc() + newAcc) * (objects::dt * 0.5);
+	_pos += (withRotationPos - withoutRotationPos) + vel() * timeObjects::dt + acc() * (timeObjects::dt * timeObjects::dt * 0.5);
+	_vel += (acc() + newAcc) * (timeObjects::dt * 0.5);
 
 	_acc = newAcc;
 	_rotationAcc = newRotationAcc;
 
 	if (isColliding())
-		objects::rockets->pop(rocketSearchIndex(ID()));
+		objectLists::rockets->pop(rocketSearchIndex(ID()));
 }
 
 void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept 
@@ -105,7 +105,7 @@ void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
 	for (auto& i : engines) {
-		engineShutDownTime[i] = burnTime + objects::time;
+		engineShutDownTime[i] = burnTime + timeObjects::currentTime;
 		_rocketStages[0].engineSearch(i)->toggle(true);
 	}
 }
@@ -114,25 +114,25 @@ void Rocket::shutdown(Vector<int> engines = {}) noexcept
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
 	for (auto& i : engines) {
-		engineShutDownTime[i] = objects::time;
+		engineShutDownTime[i] = timeObjects::currentTime;
 		_rocketStages[0].engineSearch(i)->toggle(false);
 	}
 }
 
-void Rocket::rotate(Quaternion angle) 
+/*void Rocket::rotate(Quaternion angle)
 {
 	_rocketStages[0].rotate(angle);
 }
 
 void Rocket::rotate(ld t, Quaternion angle)
 {
-}
+}*/
 
 void Rocket::stage() noexcept 
 {
-	objects::rockets->pushBack(Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
+	objectLists::rockets->pushBack(Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
 	_rocketStages.pop(0);
-	fileSystem::rocketFiles.insert({ (*objects::rockets)[objects::rockets->size() - 1].ID(), WriteFile<ld>(fileSystem::runFolder + "rocket/" + (*objects::rockets)[objects::rockets->size() - 1].ID()) });
+	fileSystem::objects::rocketFiles.insert({ (*objectLists::rockets)[objectLists::rockets->size() - 1].ID(), WriteFile<ld>(fileSystem::objects::runFolder + "rocket/" + (*objectLists::rockets)[objectLists::rockets->size() - 1].ID()) });
 
 }
 
@@ -241,7 +241,7 @@ void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geograp
 
 Rocket* rocketSearch(String ID) noexcept
 {
-	for (auto& i : *objects::rockets)
+	for (auto& i : *objectLists::rockets)
 		if (i.ID() == ID)
 			return &i;
 	return nullptr;
@@ -250,7 +250,7 @@ Rocket* rocketSearch(String ID) noexcept
 int rocketSearchIndex(String ID) noexcept
 {
 	int index = 0;
-	for (auto& i : *objects::rockets) {
+	for (auto& i : *objectLists::rockets) {
 		if (i.ID() == ID)
 			return index;
 	}
@@ -266,10 +266,10 @@ void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noex
 void Rocket::gravity(Vector3& gravity) const noexcept
 {
 	gravity = Vector3::null();
-	for (auto& i : *(objects::fixedOrbitPlanets)) {
+	for (auto& i : *(objectLists::fixedOrbitPlanets)) {
 		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
-	for (auto& i : *(objects::physicsPlanets)) {
+	for (auto& i : *(objectLists::physicsPlanets)) {
 		gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
 	}
 }
@@ -277,6 +277,6 @@ void Rocket::gravity(Vector3& gravity) const noexcept
 void Rocket::engineShutdownChecker() noexcept
 {
 	for (auto i : _rocketStages[0].engineIDs())
-		if (engineShutDownTime[i] <= objects::time)
+		if (engineShutDownTime[i] <= timeObjects::currentTime)
 			_rocketStages[0].engineSearch(i)->toggle(false);
 }

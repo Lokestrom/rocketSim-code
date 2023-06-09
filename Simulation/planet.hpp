@@ -1,10 +1,10 @@
 #pragma once
 
-#include <String.hpp>
-#include <ReadFile.hpp>
+#include "String.hpp"
+#include "ReadFile.hpp"
 
-#include "Vector3.hpp"
-#include "Mesh.hpp"
+#include "helpers/Vector3.hpp"
+#include "helpers/Mesh.hpp"
 
 struct Obstruction 
 {

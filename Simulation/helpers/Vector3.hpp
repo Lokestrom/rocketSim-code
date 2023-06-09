@@ -33,10 +33,10 @@ struct Vector3 {
 	Vector3 cross(const Vector3& v) const noexcept;
 
 	/*unit Vector3*/
-	constexpr static Vector3 UnitX() noexcept;
-	constexpr static Vector3 UnitY() noexcept;
-	constexpr static Vector3 UnitZ() noexcept;
-	constexpr static Vector3 null() noexcept;
+	static Vector3 UnitX() noexcept;
+	static Vector3 UnitY() noexcept;
+	static Vector3 UnitZ() noexcept;
+	static Vector3 null() noexcept;
 };
 
 Vector3 abs(const Vector3& v) noexcept;
