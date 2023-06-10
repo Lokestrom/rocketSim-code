@@ -12,10 +12,9 @@ struct Obstruction
 	Vector3 pos;
 	Quaternion orientation;
 
-	Obstruction(Shape mesh, geographicCoordinate geoCord)
-		: mesh(mesh) {}
-	Obstruction(Vector3 pos, Quaternion orientation, Shape mesh)
-		:pos(pos), orientation(orientation), mesh(mesh) {}
+	Obstruction();
+	Obstruction(Shape mesh, geographicCoordinate geoCord);
+	Obstruction(Vector3 pos, Quaternion orientation, Shape mesh);
 
 	bool pointInside(const Vector3& point) noexcept;
 };
@@ -34,15 +33,15 @@ private:
 public:
 
 	Planet();
-	Planet(ld mass, ld radius, Vector3 pos, Vector3 vel);
+	Planet(String ID, ld mass, ld radius, Vector3 pos);
 	
-	constexpr String ID() const noexcept;
-	constexpr Vector3 pos() const noexcept;
-	constexpr Vector3 vel() const noexcept;
-	constexpr ld mass() const noexcept;
-	constexpr ld radius() const noexcept;
-	constexpr Sphere mesh() const noexcept;
-	constexpr Vector<Obstruction> obstructions() const noexcept;
+	String ID() const noexcept;
+	Vector3 pos() const noexcept;
+	Vector3 vel() const noexcept;
+	ld mass() const noexcept;
+	ld radius() const noexcept;
+	Sphere mesh() const noexcept;
+	Vector<Obstruction> obstructions() const noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;
@@ -55,9 +54,9 @@ public:
 
 	bool checkIfPointInside(const Vector3& point) const noexcept;
 
-	Vector3 point(geographicCoordinate cord) const noexcept;
-	Vector3 velosityAtPoint(geographicCoordinate cord) const noexcept;
-	Quaternion getUpAtpoint(geographicCoordinate cord) const noexcept;
+	//Vector3 point(geographicCoordinate cord) const noexcept;
+	//Vector3 velosityAtPoint(geographicCoordinate cord) const noexcept;
+	//Quaternion getUpAtpoint(geographicCoordinate cord) const noexcept;
 	
 	void virtual earlyUpdate() = 0;
 	void virtual update() = 0;
@@ -67,7 +66,10 @@ class PhysicsPlanet : public Planet
 {
 public:
 	PhysicsPlanet();
-	PhysicsPlanet(ld mass, ld radius, ld spin, Vector3 pos);
+	PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos);
+
+	PhysicsPlanet operator=(const PhysicsPlanet& planet);
+
 	void earlyUpdate();
 	void update();
 
@@ -80,13 +82,12 @@ class FixedOrbitPlanet : public Planet
 {
 public:
 	FixedOrbitPlanet();
-	FixedOrbitPlanet(ld mass, ld radius, ld startingt, ld inclination);
+	FixedOrbitPlanet(String ID, ld mass, ld radius);
+
+	FixedOrbitPlanet operator=(const FixedOrbitPlanet& planet);
 
 	void earlyUpdate();
 	void update();
-
-private:
-	ld inclination, currentT;
 };
 
 const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept;

@@ -1,13 +1,17 @@
 #include "FuelTank.hpp"
 
+FuelTank::FuelTank()
+	: _ID(-1), _fuel(Fuelmap()), density(0), _mesh(Cylinder())
+{}
+
 FuelTank::FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity)
 	: _ID(ID), _fuel(fuelType, fuelLoad), density(fuelDensity) {
-	mesh.radius = radius;
-	mesh.height = height;
+	_mesh.radius = radius;
+	_mesh.height = height;
 	_pos = { 0,0,0 };
 }
 
-constexpr int FuelTank::ID() const noexcept
+int FuelTank::ID() const noexcept
 {
 	return _ID;
 }
@@ -38,7 +42,7 @@ void FuelTank::setPos(Vector3 newPos) noexcept
 
 Vector3 FuelTank::centerOfMass() const noexcept
 {
-	return { _pos.x * ((fuelMass() / density) / mesh.volum()), _pos.y, _pos.z };
+	return { _pos.x * ((fuelMass() / density) / _mesh.volum()), _pos.y, _pos.z };
 }
 
 void FuelTank::removeFuel(Fuelmap outFuel) noexcept

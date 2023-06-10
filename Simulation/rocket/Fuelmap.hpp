@@ -6,8 +6,6 @@
 
 #include "../helpers/controles.hpp"
 
-
-
 class Fuelmap 
 {
 public:
@@ -24,6 +22,7 @@ public:
 	Fuelmap operator+=(const Fuelmap& other);
 	Fuelmap operator-=(const Fuelmap& other);
 
+	void addFuel(const Fuelmap& other);
 	ld totalMass() const;
 	Vector<String> fuelTypes() const;
 

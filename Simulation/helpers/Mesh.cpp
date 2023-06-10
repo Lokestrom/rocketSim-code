@@ -9,7 +9,7 @@ ld Sphere::volum() const noexcept
 {
     return (4/3) * PI * radius * radius * radius;
 }
-Vector<Vector3> Sphere::pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept
+Vector<Vector3> Sphere::pointApproximation(sizeT n) const noexcept
 {
     n *= surfaceArea();
     Vector<Vector3> ans(n);
@@ -37,7 +37,7 @@ ld Box::volum() const noexcept
 {
     return dimensions.x * dimensions.y * dimensions.z;
 }
-Vector<Vector3> Box::pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept
+Vector<Vector3> Box::pointApproximation(sizeT n) const noexcept
 {
     n *= surfaceArea();
     Vector<Vector3> ans(n);
@@ -94,7 +94,7 @@ ld Cylinder::surfaceArea() const noexcept
 {
     return 2 * PI * radius * (height + radius);
 }
-Vector<Vector3> Cylinder::pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept {
+Vector<Vector3> Cylinder::pointApproximation(sizeT n) const noexcept {
     Vector<Vector3> ans;
     
     ld area = surfaceArea();
@@ -109,12 +109,28 @@ Vector<Vector3> Cylinder::pointApproximation(sizeT n = options::pointApproximati
     for (auto i = 0; i < topOrBottomPointAmount; i++) {
 
     }
+    return ans;
 }
 bool Cylinder::pointInside(const Vector3& point) const noexcept {
     Vector3 relative = point - pos;
     relative = orientation.rotate(relative);
     return (relative.x > -height * 0.5 || relative.x < height * 0.5)
         && relative.y * relative.y + relative.z * relative.z < radius;
+}
+
+ld NoseCone::surfaceArea() const noexcept
+{
+    return 0;
+}
+
+ld NoseCone::volum() const noexcept
+{
+    return 0;
+}
+
+Vector<Vector3> NoseCone::pointApproximation(sizeT n) const noexcept
+{
+    return Vector<Vector3>();
 }
 
 bool NoseCone::pointInside(const Vector3& point) const noexcept{

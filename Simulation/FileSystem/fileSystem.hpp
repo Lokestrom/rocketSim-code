@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <filesystem>
+#include <iostream>
 
 #include "String.hpp"
 #include "WriteFile.hpp"
@@ -16,7 +17,6 @@
 using namespace Database;
 
 namespace fileSystem {
-
 	void writeError(error e, exitCodes code);
 
 	namespace objects
@@ -28,7 +28,7 @@ namespace fileSystem {
 		inline std::unordered_map<String, WriteFile<ld>> engineFiles;
 		inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
 		inline std::unordered_map<String, WriteFile<ld>> planetFiles;
-#if !debug
+#ifdef _DEBUG
 		inline std::ofstream errorLogFile;
 #endif // !debug
 

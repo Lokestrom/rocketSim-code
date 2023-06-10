@@ -3,7 +3,9 @@
 #include "fileSystem.hpp"
 using namespace Database;
 namespace fileSystem {
-
+	Instructions::Instructions() {
+		_rocket = nullptr;
+	}
 	Instructions::Instructions(String fileName, Rocket* rocket) {
 		_file.open(toSTD(fileName));
 		if (!_file.is_open())
@@ -37,7 +39,7 @@ namespace fileSystem {
 		getInstruction();
 	}
 
-	Vector<String> Instructions::getInstruction() {
+	void Instructions::getInstruction() {
 		String line;
 		getline(_file, line);
 		line.remove(' ');
@@ -112,7 +114,7 @@ namespace fileSystem {
 
 	void assignRocketInstructions(Rocket* rocket) {
 		try {
-			objectLists::instructions.pushBack(Instructions(rocket->ID() + ".txt", rocket));
+			objectLists::instructions->pushBack(Instructions(rocket->ID() + ".txt", rocket));
 		}
 		catch (error& e) {
 			writeError(error("When assigning instructions to rocket \"" + rocket->ID() + "\" an error has acured:\n\t" + e.what), badUserBehavior);

@@ -12,22 +12,22 @@ using namespace Database;
 class RocketStage 
 {
 public:
-
+	RocketStage();
 	RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
 		Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
 		Vector<FuelTank> fuelTanks, Shape mesh);
 
 	/*getters*/
-	constexpr int ID() const noexcept;
-	constexpr ld dryMass() const noexcept;
+	int ID() const noexcept;
+	ld dryMass() const noexcept;
 	ld mass() const noexcept;
-	constexpr Shape mesh() const noexcept;
-	constexpr Vector3 pos() const noexcept;
+	Shape mesh() const noexcept;
+	Vector3 pos() const noexcept;
 	Vector3 centerOfGravity() const noexcept;
-	constexpr Vector<Engine> engines() const noexcept;
-	constexpr Vector<int> engineIDs() const noexcept;
-	constexpr Vector<FuelTank> fuelTanks() const noexcept;
-	constexpr Vector<int> fuelTankIDs() const noexcept;
+	Vector<Engine> engines() const noexcept;
+	Vector<int> engineIDs() const noexcept;
+	Vector<FuelTank> fuelTanks() const noexcept;
+	Vector<int> fuelTankIDs() const noexcept;
 
 
 	/*setters*/

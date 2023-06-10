@@ -57,7 +57,13 @@ Fuelmap Fuelmap::operator-=(const Fuelmap& other)
 	return *this;
 }
 
-
+void Fuelmap::addFuel(const Fuelmap& other) {
+	for (auto& [key, val] : other._fuelmap) {
+		if (!this->_fuelmap.count(key))
+			this->_fuelmap[key] = val;
+		this->_fuelmap[key] += val;
+	}
+}
 ld Fuelmap::totalMass() const
 {
 	ld mass = 0;

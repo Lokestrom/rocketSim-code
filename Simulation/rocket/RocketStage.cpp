@@ -1,6 +1,11 @@
 #include "Rocket.hpp"
 #include "RocketStage.hpp"
-#include "planet.hpp"
+#include "../planet.hpp"
+
+RocketStage::RocketStage() : _ID(-1), _pos(Vector3::null()), _dryMass(0), _centerOfMass(Vector3::null()),
+_engines(Vector<Engine>()), _reactionThrusters(Vector<ReactionThruster>()),
+_fuelTanks(Vector<FuelTank>()), _mesh(Shape())
+{}
 
 RocketStage::RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
 	Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
@@ -12,28 +17,28 @@ RocketStage::RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass,
 }
 
 /*getters*/
-constexpr int RocketStage::ID() const noexcept 
+int RocketStage::ID() const noexcept 
 {
 	return _ID;
 }
 
-constexpr ld RocketStage::dryMass() const noexcept 
+ld RocketStage::dryMass() const noexcept 
 {
 	return _dryMass;
 }
-ld RocketStage::mass() const 
+ld RocketStage::mass() const noexcept
 {
 	ld fuelMass = 0;
 	for (auto& i : _fuelTanks)
 		fuelMass += i.fuelMass();
 	return _dryMass + fuelMass;
 }
-constexpr Shape RocketStage::mesh() const noexcept 
+Shape RocketStage::mesh() const noexcept 
 {
 	return _mesh;
 }
 
-constexpr Vector3 RocketStage::pos() const noexcept 
+Vector3 RocketStage::pos() const noexcept 
 {
 	return _pos;
 }
@@ -46,11 +51,11 @@ Vector3 RocketStage::centerOfGravity() const noexcept
 	return _centerOfMass + fuelTankCM;
 }
 
-constexpr Vector<Engine> RocketStage::engines() const noexcept 
+Vector<Engine> RocketStage::engines() const noexcept
 {
 	return _engines;
 }
-constexpr Vector<int> RocketStage::engineIDs() const noexcept 
+Vector<int> RocketStage::engineIDs() const noexcept 
 {
 	Vector<int> eID;
 	for (auto& i : _engines)
@@ -58,12 +63,12 @@ constexpr Vector<int> RocketStage::engineIDs() const noexcept
 	return eID;
 }
 
-constexpr Vector<FuelTank> RocketStage::fuelTanks() const noexcept
+Vector<FuelTank> RocketStage::fuelTanks() const noexcept
 {
 	return _fuelTanks;
 }
 
-constexpr Vector<int> RocketStage::fuelTankIDs() const noexcept
+Vector<int> RocketStage::fuelTankIDs() const noexcept
 {
 	Vector<int> fID;
 	for (auto& i : _fuelTanks)
@@ -147,14 +152,14 @@ bool RocketStage::isColliding() const noexcept
 	for (auto& i : _reactionThrusters)
 		if (i.isColliding())
 			return true;
-	for (auto& i : *objects::physicsPlanets) {
+	for (auto& i : *objectLists::physicsPlanets) {
 		if (collision(mesh(), i.mesh()))
 			return true;
 		for (auto& j : i.obstructions())
 			if (collision(mesh(), j.mesh))
 				return true;
 	}
-	for (auto& i : *objects::fixedOrbitPlanets) {
+	for (auto& i : *objectLists::fixedOrbitPlanets) {
 		if (collision(mesh(), i.mesh()))
 			return true;
 		for (auto& j : i.obstructions())

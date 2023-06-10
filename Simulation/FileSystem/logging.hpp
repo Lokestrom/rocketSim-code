@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fileSystem.hpp"
+
 namespace fileSystem {
 
 	void loggCurrentState();

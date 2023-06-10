@@ -1,7 +1,17 @@
 #include "planet.hpp"
 
 /*Obstruction*/
-bool Obstruction::pointInside(const Vector3& point) 
+Obstruction::Obstruction()
+	: mesh(Shape()), pos(Vector3::null()), orientation(Quaternion())
+{}
+Obstruction::Obstruction(Shape mesh, geographicCoordinate geoCord)
+	: mesh(mesh) 
+{}
+Obstruction::Obstruction(Vector3 pos, Quaternion orientation, Shape mesh)
+	: pos(pos), orientation(orientation), mesh(mesh) 
+{}
+
+bool Obstruction::pointInside(const Vector3& point) noexcept
 {
 	return mesh.pointInside(point);
 }
@@ -12,8 +22,8 @@ Planet::Planet() {
 	_ID = "";
 }
 
-Planet::Planet(ld mass, ld radius, Vector3 pos, Vector3 vel)
-	: _mass(mass), _pos(pos), _vel(vel), _mesh({0,0,0}, 0, radius) {}
+Planet::Planet(String ID, ld mass, ld radius, Vector3 pos)
+	: _ID(ID), _mass(mass), _pos(pos), _vel({0,0,0}), _mesh({0,0,0}, 0, radius) {}
 
 String Planet::ID() const noexcept
 {
@@ -100,6 +110,19 @@ bool Planet::checkIfPointInside(const Vector3& point) const noexcept
 	return false;
 }
 
+PhysicsPlanet::PhysicsPlanet()
+	: Planet()
+{}
+
+PhysicsPlanet::PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos)
+	: Planet(ID, mass, radius, pos)
+{
+}
+
+PhysicsPlanet PhysicsPlanet::operator=(const PhysicsPlanet& planet)
+{
+	return PhysicsPlanet(planet.ID(), planet.mass(), planet.radius(), planet.pos());
+}
 
 /*PhysicsPlanet*/
 void PhysicsPlanet::earlyUpdate() 
@@ -122,16 +145,28 @@ void PhysicsPlanet::update()
 	acc = new_acc;
 }
 
+FixedOrbitPlanet::FixedOrbitPlanet()
+	: Planet()
+{
+}
+
 /*FixedOrbitPlanet*/
-FixedOrbitPlanet::FixedOrbitPlanet(ld mass, ld radius, ld startingt, ld inclination)
-	: Planet(mass, radius, { 0,0,0 }, { 0,0,0 })
-	, inclination(inclination)
+FixedOrbitPlanet::FixedOrbitPlanet(String ID, ld mass, ld radius)
+	: Planet(ID, mass, radius, { 0,0,0 })
 {}
 
-
-void FixedOrbitPlanet::update() 
+FixedOrbitPlanet FixedOrbitPlanet::operator=(const FixedOrbitPlanet& planet)
 {
+	return FixedOrbitPlanet(planet.ID(), planet.mass(), planet.radius());
+}
 
+
+void FixedOrbitPlanet::earlyUpdate()
+{
+}
+
+void FixedOrbitPlanet::update()
+{
 }
 
 /*non-Member fungtions*/

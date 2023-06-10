@@ -13,18 +13,19 @@ class Rocket
 {
 public:
 
+	Rocket();
 	Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages);
 
-	constexpr String ID() const noexcept;
-	constexpr Vector3 pos() const noexcept;
-	constexpr Vector3 vel() const noexcept;
-	constexpr Vector3 acc() const noexcept;
-	constexpr Quaternion orientation() const noexcept;
-	constexpr Quaternion rotationVel() const noexcept;
-	constexpr Quaternion rotationAcc() const noexcept;
-	constexpr ld mass() const noexcept;
-	constexpr bool RCS() const noexcept;
-	constexpr Vector<RocketStage> stages() const noexcept;
+	String ID() const noexcept;
+	Vector3 pos() const noexcept;
+	Vector3 vel() const noexcept;
+	Vector3 acc() const noexcept;
+	Quaternion orientation() const noexcept;
+	Quaternion rotationVel() const noexcept;
+	Quaternion rotationAcc() const noexcept;
+	ld mass() const noexcept;
+	bool RCS() const noexcept;
+	Vector<RocketStage> stages() const noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;

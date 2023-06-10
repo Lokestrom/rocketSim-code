@@ -10,9 +10,10 @@ using namespace Database;
 
 class FuelTank {
 public:
+	FuelTank();
 	FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity);
 
-	constexpr int ID() const noexcept;
+	int ID() const noexcept;
 
 	ld fuelMass() const noexcept;
 	Fuelmap fuelmap() const noexcept;
@@ -28,7 +29,7 @@ public:
 private:
 	int _ID;
 	Fuelmap _fuel;
-	Cylinder mesh;
+	Cylinder _mesh;
 	Vector3 _pos;
 	ld density;
 };

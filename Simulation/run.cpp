@@ -25,7 +25,7 @@ bool update()
 	if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging) {
 		fileSystem::loggCurrentState();
 	}
-	timeObjects::updateDT();
+	timeObjects::updateTime();
 
 	return true;
 }
@@ -36,7 +36,7 @@ void run(int argc, const char* argv[]) {
 	objectLists::physicsPlanets = new Vector<PhysicsPlanet>();
 	objectLists::fixedOrbitPlanets = new Vector<FixedOrbitPlanet>();
 	objectLists::rockets = new Vector<Rocket>();
-	objectLists::instructions = new Vector<Instructions>();
+	objectLists::instructions = new Vector<fileSystem::Instructions>();
 
 	fileSystem::loadInObjects();
 	fileSystem::loggingStartup();

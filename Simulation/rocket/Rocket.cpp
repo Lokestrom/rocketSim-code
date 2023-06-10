@@ -2,53 +2,61 @@
 
 #include "../helpers/controles.hpp"
 #include "../planet.hpp"
+#include "../FileSystem/fileSystem.hpp"
+
+Rocket::Rocket() 
+	: _ID(""), _pos(Vector3::null()), _vel(Vector3::null()), _acc(Vector3::null()), _orientation(Quaternion()), _rocketStages()
+{
+	
+}
 
 Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages) 
-	: _pos(pos), _vel(vel), _acc(acc), _orientation(rotation), _rocketStages(rocketStages)
+	: _ID(name), _pos(pos), _vel(vel), _acc(acc), _orientation(rotation), _rocketStages(rocketStages)
 {
 	updateCenterOfGravity();
 }
 
-constexpr String Rocket::ID() const noexcept 
+String Rocket::ID() const noexcept 
 {
 	return _ID;
 }
-constexpr Vector3 Rocket::pos() const noexcept 
+Vector3 Rocket::pos() const noexcept 
 {
 	return _pos;
 }
-constexpr Vector3 Rocket::vel() const noexcept 
+Vector3 Rocket::vel() const noexcept 
 {
 	return _vel;
 }
-constexpr Vector3 Rocket::acc() const noexcept 
+Vector3 Rocket::acc() const noexcept 
 {
 	return _acc;
 }
-constexpr Quaternion Rocket::orientation() const noexcept 
+Quaternion Rocket::orientation() const noexcept 
 {
 	return  _orientation;
 }
-constexpr Quaternion Rocket::rotationVel() const noexcept
+Quaternion Rocket::rotationVel() const noexcept
 {
 	return _rotationVel;
 }
-constexpr Quaternion Rocket::rotationAcc() const noexcept
+Quaternion Rocket::rotationAcc() const noexcept
 {
 	return _rotationAcc;
 }
-constexpr ld Rocket::mass() const noexcept 
+ld Rocket::mass() const noexcept 
 {
 	ld m = 0;
 	for (RocketStage& i : _rocketStages) {
 		m += i.mass();
 	}
+	return m;
 }
-constexpr bool Rocket::RCS() const noexcept
+bool Rocket::RCS() const noexcept
 {
 	return _RCS;
 }
-constexpr Vector<RocketStage> Rocket::stages() const noexcept
+Vector<RocketStage> Rocket::stages() const noexcept
 {
 	return _rocketStages;
 }
@@ -100,7 +108,7 @@ void Rocket::update() noexcept
 		objectLists::rockets->pop(rocketSearchIndex(ID()));
 }
 
-void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept 
+void Rocket::burn(ld burnTime, Vector<int> engines) noexcept 
 {
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
@@ -109,7 +117,7 @@ void Rocket::burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept
 		_rocketStages[0].engineSearch(i)->toggle(true);
 	}
 }
-void Rocket::shutdown(Vector<int> engines = {}) noexcept 
+void Rocket::shutdown(Vector<int> engines) noexcept 
 {
 	if (!engines.size())
 		engines = _rocketStages[0].engineIDs();
@@ -197,6 +205,7 @@ bool Rocket::pointInside(Vector3 point) noexcept
 	for (RocketStage i : _rocketStages)
 		if (i.pointInside(point))
 			return true;
+	return false;
 }
 
 ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) noexcept
@@ -217,7 +226,7 @@ ld Rocket::determenRadius(Vector3 edgePoint, Vector3 edgeToCm) noexcept
 }
 
 /*non-member fungtions*/
-void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographicCoordinate cord) 
+/*void GenetateStartValues(const PhysicsPlanet& planet, Rocket& rocket, geographicCoordinate cord)
 {
 	Vector3 pos = planet.point(cord);
 	Vector3 vel = planet.velosityAtPoint(cord);
@@ -237,7 +246,7 @@ void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geograp
 	rocket.setPos(pos);
 	rocket.setVel(vel);
 	rocket.setOrientation(orientation);
-}
+}*/
 
 Rocket* rocketSearch(String ID) noexcept
 {

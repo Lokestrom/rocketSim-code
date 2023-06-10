@@ -7,12 +7,11 @@
 #include "WriteFile.hpp"
 
 #include "Vector3.hpp"
-#include "../FileSystem/Instructions.hpp"
 
-#ifndef NDEBUG
-	bool debug = false;
+#ifdef _DEBUG 
+	inline bool debug = true;
 #else
-	bool debug = true;
+	inline bool debug = false;
 #endif // !NDEBUG
 
 using namespace Database;
@@ -25,7 +24,9 @@ class Rocket;
 class Planet;
 class PhysicsPlanet;
 class FixedOrbitPlanet;
-
+namespace fileSystem {
+	class Instructions;
+}
 const ld PI = 3.141592653589793l;
 const ld e = 2.718281828459045l;
 const ld G = 6.6743E-11l;
@@ -62,7 +63,7 @@ struct error {
 };
 
 namespace loadingVar {
-	errorCodes exitLevel;
+	inline errorCodes exitLevel;
 }
 
 struct geographicCoordinate 
@@ -73,77 +74,28 @@ struct geographicCoordinate
 		: latitude(latitude), longitude(longitude) {}
 };
 
-ld radToDeg(ld x) 
-{
-	return x * PI / 180;
-}
+ld radToDeg(ld x);
+ld degToRad(ld x);
 
-ld degToRad(ld x) 
-{
-	return x * 180 / PI;
-}
+ld findRest(ld x, ld y);
 
-ld findRest(ld x, ld y)
-{
-	while (x >= y){
-		x -= y;
-	}
-	return x;
-}
+ld fixSmallValue(ld value);
 
-ld abs(ld x)
-{
-	return (x < 0) 
-		? -x 
-		: x;
-}
+ld fixAngle360(ld angle);
+ld fixAngle180(ld angle);
 
-ld fixSmallValue(ld value) 
-{
-	return (value < 1E-12 && value > -1E-12) 
-		? 0 
-		: value;
-}
-
-ld distanse(Vector3 pos, Vector3 otherPos) 
-{
-	pos -= otherPos;
-	return pos.length();
-}
+ld distanse(Vector3 pos, Vector3 otherPos);
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-ld generateMultiplierX(geographicCoordinate cord) 
-{
-	return sinl(cord.latitude) * cosl(cord.longitude);
-}
-ld generateMultiplierY(geographicCoordinate cord) 
-{
-	return sinl(cord.latitude) * sinl(cord.longitude);
-}
-ld generateMultiplierZ(geographicCoordinate cord) 
-{
-	return cosl(cord.latitude);
-}
-ld findLatitude(Vector3 pos, Vector3 otherPos) 
-{
-	return fixSmallValue(acosl((pos.z - otherPos.z) / distanse(pos, otherPos)));
-}
+ld generateMultiplierX(geographicCoordinate cord);
+ld generateMultiplierY(geographicCoordinate cord);
+ld generateMultiplierZ(geographicCoordinate cord);
+ld findLatitude(Vector3 pos, Vector3 otherPos);
+ld findLongitude(Vector3 pos, Vector3 otherPos);
 
-//https://en.wikipedia.org/wiki/Atan2#Definition_and_computation, https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
-ld findLongitude(Vector3 pos, Vector3 otherPos) 
-{
-	return fixSmallValue(atan2l(pos.y - otherPos.y, pos.x - otherPos.x));
-}
+geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos);
 
-geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos) 
-{
-	return { findLatitude(pos, otherPos), findLongitude(pos, otherPos) };
-}
-
-ld gravityFormulaNewton(ld m, ld M, ld r)
-{
-	return (G * m * M) / (r * r);
-}
+ld gravityFormulaNewton(ld m, ld M, ld r);
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);
 
 namespace objectLists
@@ -151,13 +103,9 @@ namespace objectLists
 	inline Vector<FixedOrbitPlanet>* fixedOrbitPlanets;
 	inline Vector<PhysicsPlanet>* physicsPlanets;
 	inline Vector<Rocket>* rockets;
-	inline Vector<Instructions>* instructions;
+	inline Vector<fileSystem::Instructions>* instructions;
 
-	void deleteObjectLists() noexcept {
-		delete physicsPlanets;
-		delete fixedOrbitPlanets;
-		delete rockets;
-	}
+	void deleteObjectLists() noexcept;
 }
 
 
@@ -166,10 +114,7 @@ namespace timeObjects {
 	inline ld dt = 0;
 	inline sizeT dtInstancesSinceLastLogging = 0;
 
-	void updateDT() noexcept {
-		currentTime += dt;
-		dtInstancesSinceLastLogging++;
-	}
+	void updateTime() noexcept;
 }
 
 namespace options 

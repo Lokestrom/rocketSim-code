@@ -3,13 +3,18 @@
 #include "FileSystem/fileSystem.hpp"
 
 #include <iostream>
+#include "FileSystem/LoadManager.hpp"
 
-int main(int argc, const char* argv[])
+int main()
 {
-	std::cout << "compiled\n";
-	/*if (argc < 4)
-		run(argc, argv);
-	else
-		writeError(error("Too few arguments passed in at start, make sure that you have the folder of the siulation and the name of the run.", severe));
-	*/
+	fileSystem::objects::simulationFolder = "D:\\code\\codeProjects\\rocketSimulation\\testSimulationFiles";
+	try {
+		fileSystem::loadInObjects();
+	}
+	catch (error& e) {
+		std::cout << e.what;
+	}
+	std::cout << "sucsses";
+	int x;
+	std::cin >> x;
 }

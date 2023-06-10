@@ -6,6 +6,14 @@
 
 using namespace Database;
 
+Engine::Engine()
+	: _ID(-1), _mass(0), _exitVel(0),
+	_maxGimblePerSecond(0), _maxGimble(0),
+	_pos(Vector3::null()), _centerOfMass(Vector3::null()), _mountPos(Vector3::null()),
+	_fuelPerSecond(Fuelmap()), _shape(Shape()), _active(false), _gimbletime(0), _canGimble(false),
+	_thrustPercent(0)
+{}
+
 Engine::Engine(int ID, ld mass, ld exitVel,
 	Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
 	Fuelmap fuelPerSecond, Shape shape,
@@ -13,7 +21,8 @@ Engine::Engine(int ID, ld mass, ld exitVel,
 	: _ID(ID), _mass(mass), _exitVel(exitVel),
 	_maxGimblePerSecond(maxGimblePerSecond), _maxGimble(maxGimble),
 	_pos(pos), _centerOfMass(centerOfMass), _mountPos(mountPos),
-	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(true) 
+	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(true),
+	_thrustPercent(100)
 {
 
 }
@@ -23,12 +32,13 @@ Engine::Engine(int ID, ld mass, ld exitVel,
 	Fuelmap fuelPerSecond, Shape shape)
 	: _ID(ID), _mass(mass), _exitVel(exitVel),
 	_pos(pos), _centerOfMass(centerOfMass), _mountPos(mountPos),
-	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(false) 
+	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(false),
+	_thrustPercent(100)
 {
 
 }
 
-constexpr int Engine::ID() const noexcept
+int Engine::ID() const noexcept
 {
 	return _ID;
 }
@@ -36,15 +46,15 @@ Vector3 Engine::centerOfMass() const noexcept
 {
 	return _centerOfMass;
 }
-constexpr bool Engine::active() const noexcept
+bool Engine::active() const noexcept
 {
 	return _active;
 }
-constexpr ld Engine::exitVel() const noexcept
+ld Engine::exitVel() const noexcept
 {
 	return _exitVel;
 }
-constexpr bool Engine::canGimble() const noexcept
+bool Engine::canGimble() const noexcept
 {
 	return _canGimble;
 }
@@ -132,10 +142,22 @@ bool Engine::isColliding() noexcept
 
 /*Reaction Thruster*/
 
-ReactionThruster::ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Shape _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond)
-{
-}
+ReactionThruster::ReactionThruster()
+	: Engine()
+{}
+
+ReactionThruster::ReactionThruster(int ID, ld mass, ld exitVel,
+	Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
+	Fuelmap fuelPerSecond, Shape shape,
+	ld maxGimblePerSecond, ld maxGimble)
+	: Engine(ID, mass, exitVel, pos, centerOfMass, mountPos, fuelPerSecond, shape, maxGimblePerSecond, maxGimble)
+{}
+
+ReactionThruster::ReactionThruster(int ID, ld mass, ld exitVel,
+	Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
+	Fuelmap fuelPerSecond, Shape shape)
+	: Engine(ID, mass, exitVel, pos , centerOfMass, mountPos, fuelPerSecond, shape)
+{}
 
 ReactionThruster::ReactionThruster(Engine engine) : Engine(engine)
-{
-}
+{}

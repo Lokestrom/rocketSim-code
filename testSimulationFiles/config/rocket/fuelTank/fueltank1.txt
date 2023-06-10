@@ -1,0 +1,5 @@
+FuelType=ch4
+radius=4
+height=6
+FuelDensity=0.5
+fuelmass=1

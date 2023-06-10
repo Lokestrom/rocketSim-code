@@ -23,6 +23,7 @@ private:
 	Vector<int> _fuelTankIDs;
 
 public:
+	Engine();
 	Engine(int ID, ld mass, ld exitVel, 
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
 		Fuelmap fuelPerSecond, Shape shape,
@@ -31,14 +32,13 @@ public:
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
 		Fuelmap fuelPerSecond, Shape shape);
 
-	constexpr int ID() const noexcept;
-	constexpr bool active() const noexcept;
-	constexpr ld exitVel() const noexcept;
-	constexpr bool canGimble() const noexcept;
+	int ID() const noexcept;
+	bool active() const noexcept;
+	ld exitVel() const noexcept;
+	bool canGimble() const noexcept;
 	Vector3 mountPos() const noexcept;
 	Vector3 centerOfMass() const noexcept;
 	Vector<String> fuelTypes() const noexcept;
-	Vector<int> fueltankIDs() const noexcept;
 
 	void setID(int newID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
@@ -58,7 +58,14 @@ public:
 
 class ReactionThruster : public Engine{
 public:
-	ReactionThruster(int ID, Vector3 pos, ld mass, String _fuelType, Shape _shape, Vector3 centerOfGravity, ld maxGimbleAngle, ld gimbleAnglePerSecond);
+	ReactionThruster();
+	ReactionThruster(int ID, ld mass, ld exitVel,
+		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
+		Fuelmap fuelPerSecond, Shape shape,
+		ld maxGimblePerSecond, ld maxGimble);
+	ReactionThruster(int ID, ld mass, ld exitVel,
+		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
+		Fuelmap fuelPerSecond, Shape shape);
 	ReactionThruster(Engine engine);
 };
 

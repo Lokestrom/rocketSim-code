@@ -38,7 +38,7 @@ namespace fileSystem {
 		inline std::unordered_map<String, FuelTank> fuelTank;
 		inline std::unordered_map<String, RocketStage> rocketStage;
 
-		inline std::unordered_map<String, FixedOrbitPlanet> fixedOrbitPlanet;
 		inline std::unordered_map<String, PhysicsPlanet> pysicsPlanet;
+		inline std::unordered_map<String, FixedOrbitPlanet> fixedOrbitPlanet;
 	}
 } // fileSystem

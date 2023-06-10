@@ -2,8 +2,8 @@
 
 namespace flags {
 	enum gravitySimulationStyles{newton, generalRelativity};
-	int gravitySimulation;
+	inline int gravitySimulation;
 	enum aerodynamicSimulationStyles{simple, CFD};
-	int aerodynamicSimulation;
-	bool random;
+	inline int aerodynamicSimulation;
+	inline bool random;
 };

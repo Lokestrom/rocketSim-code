@@ -13,7 +13,7 @@ struct Mesh
 	virtual ld surfaceArea() const noexcept = 0;
 	virtual ld volum() const noexcept = 0;
 
-	virtual Vector<Vector3> pointApproximation(sizeT n = options::pointApproximationOfMeshesPerM2) const noexcept = 0;
+	virtual Vector<Vector3> pointApproximation(sizeT n) const noexcept = 0;
 	virtual bool pointInside(const Vector3& point) const noexcept = 0;
 };
 
@@ -64,7 +64,7 @@ struct NoseCone : public Mesh
 {
 	ld radius, height;
 	Quaternion orientation;
-	NoseCone() : Mesh({0,0,0}, 0) {}
+	NoseCone() : height(0), radius(0), Mesh({0,0,0}, 0) {}
 	NoseCone(Vector3 pos, ld radius, ld height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
 
 	ld f(ld y, ld z) const noexcept{
