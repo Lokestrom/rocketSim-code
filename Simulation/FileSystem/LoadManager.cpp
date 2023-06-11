@@ -1,14 +1,15 @@
 #include "LoadManager.hpp"
+#include "Instructions.hpp"
 
 #include <iostream>
 
 namespace fs = std::filesystem;
 namespace fileSystem {
 	void loadInObjects() {
-		objects::simulationFolder += "/config";
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "/mesh")))
+		objects::simulationFolder += "/config/";
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "mesh")))
 			LoadManagerMaps::mesh[String(entry.path().filename().string()).split('.')[0]] = loadMesh(entry.path().string());
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "/rocket/engine"))) {
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket/engine"))) {
 			bool isReactionThruster = false;
 			Engine engine = loadEngine(entry.path().string(), isReactionThruster);
 			if (isReactionThruster)
@@ -16,9 +17,9 @@ namespace fileSystem {
 			else
 				LoadManagerMaps::engine[String(entry.path().filename().string()).split('.')[0]] = engine;
 		}
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "/rocket/fuelTank")))
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket/fuelTank")))
 			LoadManagerMaps::fuelTank[String(entry.path().filename().string()).split('.')[0]] = loadFuelTank(entry.path().string());
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "/planet"))) {
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "planet"))) {
 			PhysicsPlanet physicsPlanet;
 			FixedOrbitPlanet fixedOrbitPlanet;
 			bool isFixedOrbit = loadPlanet(entry.path().string(), physicsPlanet, fixedOrbitPlanet);
@@ -28,9 +29,20 @@ namespace fileSystem {
 			else
 				LoadManagerMaps::pysicsPlanet[String(entry.path().filename().string()).split('.')[0]] = physicsPlanet;
 		}
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "/rocket/rocketStage")))
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket/rocketStage")))
 			LoadManagerMaps::rocketStage[String(entry.path().filename().string()).split('.')[0]] = loadRocketStage(entry.path().string());
-
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket")))
+			if (!entry.is_directory()) {
+				objectLists::rockets->pushBack(loadRocket(entry.path().string()));
+				objectLists::instructions->pushBack(Instructions(objectLists::rockets->at(objectLists::rockets->size() - 1).ID() + ".txt", (objectLists::rockets->at(objectLists::rockets->size() - 1))));
+			}
+		for (const auto& [key, val] : LoadManagerMaps::fixedOrbitPlanet) {
+			objectLists::fixedOrbitPlanets->pushBack(val);
+		}
+		for (const auto& [key, val] : LoadManagerMaps::pysicsPlanet) {
+			objectLists::physicsPlanets->pushBack(val);
+		}
+		loadSettings(objects::simulationFolder + "settings.txt");
 	}
 
 
@@ -79,7 +91,7 @@ namespace fileSystem {
 			}
 			else {
 				file.close();
-				writeError(error("The mesh type: " + type + ". Is not a valid mesh", low), badUserBehavior);
+				throw error("The mesh type: " + type + ". Is not a valid mesh", exitCodes::badUserBehavior);
 
 			}
 		}
@@ -87,16 +99,18 @@ namespace fileSystem {
 		return shape;
 	}
 
-	bool validationLayer(const std::unordered_map<String, String>& map, const String& variable, String& msg) {
-		if (!map.count(lower(variable).remove(' '))) {
+	bool validationLayer(const std::unordered_map<String, String>& map, String variable, String& msg) {
+		variable.remove(' ');
+		if (!map.count(lower(variable))) {
 			msg += "\t" + variable + ",\n";
 			return false;
 		}
 		return true;
 	}
 
-	bool validationLayer(const std::unordered_map<String, std::unordered_map<String, String>>& map, const String& variable, String& msg) {
-		if (!map.count(lower(variable).remove(' '))) {
+	bool validationLayer(const std::unordered_map<String, std::unordered_map<String, String>>& map, String variable, String& msg) {
+		variable.remove(' ');
+		if (!map.count(lower(variable))) {
 			msg += "\t" + variable + ",\n";
 			return false;
 		}
@@ -113,7 +127,7 @@ namespace fileSystem {
 
 	void validateThatValueIsNotNegative(std::unordered_map<String, String> map, const String& val) {
 		if (STold(map[val]) < 0)
-			throw error((val + " can't be negative."), low);
+			throw error((val + " can't be negative."), exitCodes::badUserBehavior);
 	}
 
 	void validateEngineVariables(std::unordered_map<String, String> map) {
@@ -125,9 +139,9 @@ namespace fileSystem {
 		validationLayer(map, "center of mass", misingValues);
 		validationLayer(map, "mount pos", misingValues);
 		if (misingValues != "")
-			throw error("There is mising values in the Engine file:\n" + misingValues + "Check for spelling errors.", severe);
+			throw error("There is mising values in the Engine file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 		if (!LoadManagerMaps::mesh.count(map["mesh"]))
-			throw error("The mesh: " + map["mesh"] + "has not been loaded. Check for spelling errors", severe);
+			throw error("The mesh: " + map["mesh"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
 			validateThatValueIsNotNegative(map, "mass");
@@ -139,9 +153,9 @@ namespace fileSystem {
 		}
 
 		if (!map.count("maxgimblepersecond") && map.count("maxgimble"))
-			throw error("there is a value for max gimble but not for max gimble per second. you may have forgoten the max gimble per second variable", low);
+			throw error("there is a value for max gimble but not for max gimble per second. you may have forgoten the max gimble per second variable", exitCodes::badUserBehavior);
 		if (map.count("maxgimblepersecond") && !map.count("maxgimble"))
-			throw error("there is a value for max gimble per second but not for max gimble. you may have forgoten the max gimble variable", low);
+			throw error("there is a value for max gimble per second but not for max gimble. you may have forgoten the max gimble variable", exitCodes::badUserBehavior);
 
 	}
 
@@ -177,7 +191,7 @@ namespace fileSystem {
 		validationLayer(map, "fuel density", misingValues);
 		validationLayer(map, "fuelmass", misingValues);
 		if (misingValues != "")
-			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", severe);
+			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 
 		try {
 			validateThatValueIsNotNegative(map, "fuelmass");
@@ -190,7 +204,7 @@ namespace fileSystem {
 		}
 
 		if (PI * STold(map["radius"]) * STold(map["radius"]), STold(map["height"]) < STold(map["fuelmass"]) * STold(map["fueldensity"]))
-			throw error("There is more mass in the tank than there is volum. Decrease the fuel amont, increase the density or make the fuel tank bigger", low);
+			throw error("There is more mass in the tank than there is volum. Decrease the fuel amont, increase the density or make the fuel tank bigger", exitCodes::badUserBehavior);
 	}
 
 	FuelTank loadFuelTank(String FuelTankFile) {
@@ -203,7 +217,7 @@ namespace fileSystem {
 		}
 		catch (error& e) {
 			e.what = "Error in file: " + FuelTankFile + ":\n" + e.what;
-			writeError(e, badUserBehavior);
+			throw e;
 		}
 		return FuelTank(0, map["fueltype"], STold(map["fuelload"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
 	}
@@ -215,16 +229,16 @@ namespace fileSystem {
 		validationLayer(map, "reaction thrusters", misingBatches);
 		validationLayer(map, "fuel tanks", misingBatches);
 		if (misingBatches != "")
-			throw error("There is mising batches in the file:\n" + misingBatches + "Check for spelling errors.", severe);
+			throw error("There is mising batches in the file:\n" + misingBatches + "Check for spelling errors.", exitCodes::badUserBehavior);
 
 		String misingValues;
 		validationLayer(map["setup"], "center of mass", misingValues);
 		validationLayer(map["setup"], "mesh", misingValues);
 		validationLayer(map["setup"], "dry mass", misingValues);
 		if (misingValues != "")
-			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", severe);
+			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 		if (!LoadManagerMaps::mesh.count(map["setup"]["mesh"]))
-			throw error("The mesh: " + map["setup"]["mesh"] + "has not been loaded. Check for spelling errors", severe);
+			throw error("The mesh: " + map["setup"]["mesh"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
 			validateThatValueIsNotNegative(map["setup"], "drymass");
@@ -239,7 +253,7 @@ namespace fileSystem {
 		validateThatObjectshasBeenLoaded(map["fueltanks"], LoadManagerMaps::fuelTank, notLoadedObjects);
 
 		if(notLoadedObjects != "")
-			throw error("Therese objects are mising: \n" + notLoadedObjects + "Check for spelling errors", severe);
+			throw error("Therese objects are mising: \n" + notLoadedObjects + "Check for spelling errors", exitCodes::badUserBehavior);
 	}
 
 	RocketStage loadRocketStage(String rocketStageFile) {
@@ -283,10 +297,10 @@ namespace fileSystem {
 		Vector<Obstruction> obstructions;
 		
 		if (data["setup"]["fixedorbit"] == "true") {
-			fixedOrbitPlanet = FixedOrbitPlanet(data["setup"]["id"], STold(data["setup"]["mass"]), STold(data["setup"]["radius"]));
+			fixedOrbitPlanet = FixedOrbitPlanet(planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0], STold(data["setup"]["mass"]), STold(data["setup"]["radius"]));
 			return true;
 		}
-		physicsPlanet = PhysicsPlanet(data["setup"]["id"], STold(data["setup"]["mass"]), STold(data["setup"]["radius"]), returnVector3(data["setup"]["pos"]));
+		physicsPlanet = PhysicsPlanet(planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0], STold(data["setup"]["mass"]), STold(data["setup"]["radius"]), returnVector3(data["setup"]["pos"]));
 		return false;
 	}
 
@@ -295,19 +309,17 @@ namespace fileSystem {
 		validationLayer(map, "setup", misingBatches);
 		validationLayer(map, "stage", misingBatches);
 		if (misingBatches != "")
-			throw error("There is mising batches in the file:\n" + misingBatches + "Check for spelling errors.", severe);
+			throw error("There is mising batches in the file:\n" + misingBatches + "Check for spelling errors.", exitCodes::badUserBehavior);
 
 		String misingValues;
 		validationLayer(map["setup"], "orientation", misingValues);
-		validationLayer(map["setup"], "mesh", misingValues);
-		validationLayer(map["setup"], "dry mass", misingValues);
 		if (misingValues != "")
-			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", severe);
+			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 
 		String notLoadedObjects;
 		validateThatObjectshasBeenLoaded(map["stage"], LoadManagerMaps::rocketStage, notLoadedObjects);
-
-		throw error("Therese objects are mising: \n" + notLoadedObjects + "Check for spelling errors", severe);
+		if(notLoadedObjects != "")
+			throw error("Therese objects are mising: \n" + notLoadedObjects + "Check for spelling errors", exitCodes::badUserBehavior);
 	}
 
 	Rocket loadRocket(String rocketFile) {
@@ -323,9 +335,13 @@ namespace fileSystem {
 			rocketStages[i].setPos(returnVector3(returnArgs(data["stage"][toS(i)])[0]));
 		}
 		Vector3 pos, vel, acc;
+		pos = returnVector3(data["setup"]["pos"]);
+		vel = returnVector3(data["setup"]["vel"]);
+		acc = Vector3::null();
 		Quaternion rotation;
+		rotation = returnQuaternion(data["setup"]["orientation"]);
 
-		return Rocket(rocketFile.split('.')[0], pos, vel, acc, rotation, rocketStages);
+		return Rocket(rocketFile.split('\\')[rocketFile.split('\\').size()-1].split('.')[0], pos, vel, acc, rotation, rocketStages);
 	}
 
 	void validateSettingVariables(std::unordered_map<String, String> map) {
@@ -334,28 +350,28 @@ namespace fileSystem {
 		validationLayer(map, "aerodynamic", misingValues);
 		validationLayer(map, "randomnes", misingValues);
 		validationLayer(map, "edge detection", misingValues);
-		validationLayer(map, "Point approximation of mesh per m2", misingValues);
+		validationLayer(map, "point approximation of mesh per m2", misingValues);
 		validationLayer(map, "delta time", misingValues);
 		validationLayer(map, "used fuel types", misingValues);
 		if (misingValues != "")
-			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", severe);
+			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 	}
 
-	bool validateAllLoadedObjects(std::unordered_map<String, String> settings) {
+	void validateAllLoadedObjects(std::unordered_map<String, String> settings) {
 		Vector<String> validFuelTypes = settings["usedfueltypes"].split(',');
 		for (auto& [key, val] : LoadManagerMaps::engine) {
 			for (auto i = 0; i < val.fuelTypes().size(); i++)
 				if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
-					throw InvalidArgument(("Rocket engine: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
+					throw error("Rocket engine: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling", exitCodes::badUserBehavior);
 		}
 		for (auto& [key, val] : LoadManagerMaps::reactionThruster) {
 			for (auto i = 0; i < val.fuelTypes().size(); i++)
 				if (validFuelTypes.linearSearch(val.fuelTypes()[i]) == -1)
-					throw InvalidArgument(("Rocket reaction thruster: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling").cstr());
+					throw error("Rocket reaction thruster: " + key + ". uses a fuel that is not valid( " + val.fuelTypes()[i] + " ). check the speling", exitCodes::badUserBehavior);
 		}
 		for (auto& [key, val] : LoadManagerMaps::fuelTank) {
 			if (validFuelTypes.linearSearch(val.fuelType()) == -1)
-				throw InvalidArgument(("Rocket fuel tank: " + key + ". uses a fuel that is not valid( " + val.fuelType() + " ). check the speling").cstr());
+				throw error("Rocket fuel tank: " + key + ". uses a fuel that is not valid( " + val.fuelType() + " ). check the speling", exitCodes::badUserBehavior);
 		}
 	}
 
@@ -368,7 +384,7 @@ namespace fileSystem {
 		}
 		catch (error& e) {
 			e.what = "Error in file: " + settingsFile + ":\n" + e.what;
-			writeError(e, badUserBehavior);
+			throw e;
 		}
 		if (settings["gravity"] == "newton")
 			flags::gravitySimulation = flags::newton;
@@ -404,8 +420,11 @@ namespace fileSystem {
 		String line;
 		std::unordered_map<String, std::unordered_map<String, String>> batches;
 		while (getline(file, line)) {
-			if (line.contains("{"))
-				batches[lower(line.remove('{').remove(' '))] = loadVariablesAndValuesInToMap(file);
+			if (line.contains("{")) {
+				line.remove('{');
+				line.remove(' ');
+				batches[lower(line)] = loadVariablesAndValuesInToMap(file);
+			}
 		}
 		return batches;
 	}

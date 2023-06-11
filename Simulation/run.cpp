@@ -9,6 +9,12 @@
 
 bool update()
 {
+	for (auto& i : *objectLists::instructions) {
+		bool exitSimulation;
+		i.run(exitSimulation);
+		if (exitSimulation)
+			return false;
+	}
 	for (auto& i : *objectLists::physicsPlanets) {
 		i.earlyUpdate();
 	}
@@ -41,10 +47,7 @@ void run(int argc, const char* argv[]) {
 	fileSystem::loadInObjects();
 	fileSystem::loggingStartup();
 
-	bool continueSimulation = true;
-	while (continueSimulation) {
-		continueSimulation = update();
-	}
+	while (update())
 
 	fileSystem::loggingEnd();
 	objectLists::deleteObjectLists();

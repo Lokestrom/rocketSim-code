@@ -17,7 +17,7 @@
 using namespace Database;
 
 namespace fileSystem {
-	void writeError(error e, exitCodes code);
+	void writeError(error e);
 
 	namespace objects
 	{

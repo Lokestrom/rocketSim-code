@@ -1,0 +1,2 @@
+4:burn()
+5:delta time = 1

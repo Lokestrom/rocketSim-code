@@ -6,14 +6,26 @@ namespace fileSystem {
 	Instructions::Instructions() {
 		_rocket = nullptr;
 	}
-	Instructions::Instructions(String fileName, Rocket* rocket) {
-		_file.open(toSTD(fileName));
-		if (!_file.is_open())
-			throw error("File \"" + fileName + "\" couldn't be opened.", high);
-		_rocket = rocket;
+	Instructions::Instructions(String fileName, Rocket rocket) {
+		_file = std::allocate_shared<std::ifstream>(new std::ifstream);
+		_file->open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
+		if (!_file->is_open())
+			throw error("File \"" + fileName + "\" couldn't be opened.", exitCodes::fileFault);
+		_rocket = std::make_shared<Rocket>(rocket);
 		getInstruction();
 	}
-	void Instructions::run() {
+
+	Instructions& Instructions::operator=(const Instructions& ins) {
+		_file = ins._file;
+		if (!_file->is_open())
+			throw error("File \"" + ins._rocket->ID() + ".txt\" couldn't be opened.", exitCodes::fileFault);
+		_rocket = ins._rocket;
+		_nextInstruction = ins._nextInstruction;
+		_nextInstructionTime = ins._nextInstructionTime;
+		return *this;
+	}
+
+	void Instructions::run(bool& exitSimulation) {
 		if (timeObjects::currentTime > _nextInstructionTime)
 			return;
 		
@@ -25,23 +37,26 @@ namespace fileSystem {
 					continue;
 				}
 				if (i.contains("(")) {
-					runInstruction(std::move(i));
+					runInstruction(std::move(i), exitSimulation);
+					if (exitSimulation)
+						return;
 					continue;
 				}
 				throw error("The instruction \"" + i + "\" is not valid." +
 					"\nThe instruction must be formed like this:\n" +
-					"\"timestamp:instruction(args)\" or \"timestamp:setting=value", invalidUserBehavior);
+					"\"timestamp:instruction(args)\" or \"timestamp:setting=value", exitCodes::badUserBehavior);
 			}
 		}
 		catch (const error& e) {
-			writeError(e, badUserBehavior);
+			throw error("While runing instructions for rocket: \"" + _rocket->ID() + "\" an error apeared:\n" + e.what, e.code);
 		}
 		getInstruction();
+
 	}
 
 	void Instructions::getInstruction() {
 		String line;
-		getline(_file, line);
+		getline(*_file, line);
 		line.remove(' ');
 		line.lower();
 		ld _nextInstructionTime = STold(line.split(':')[0]);
@@ -58,7 +73,7 @@ namespace fileSystem {
 					instructoin.pushBack(i);
 				}
 				i += 2;
-				ans.pushBack(std::move(instructoin));
+				ans.pushBack(instructoin);
 			}
 		}
 		return ans;
@@ -75,10 +90,10 @@ namespace fileSystem {
 			options::dtInstancesPerLogging = SToull(value);
 
 		else
-			throw error("The variable \"" + variable + "\" is not a valid variable.", invalidUserBehavior);
+			throw error("The variable \"" + variable + "\" is not a valid variable.", exitCodes::badUserBehavior);
 	}
 
-	void Instructions::runInstruction(String instruction) {
+	void Instructions::runInstruction(String instruction, bool& exitSimulation) {
 		Vector<String> args = returnArgs(instruction);
 		instruction = instruction.split('(')[0];
 		if (instruction == "burn") {
@@ -91,7 +106,7 @@ namespace fileSystem {
 			case 2:
 				_rocket->burn(STold(args[0]), returnVectori(args[1]));
 			default:
-				throw error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", low);
+				throw error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
 			}
 		}
 		else if (instruction == "shutdown") {
@@ -102,22 +117,23 @@ namespace fileSystem {
 			case 1:
 				_rocket->shutdown(returnVectori(args[0]));
 			default:
-				throw error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", low);
+				throw error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
 			}
 		}
 		else if (instruction == "exit")
-			std::exit(success);
+			exitSimulation = true;
 
 		else
-			throw error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.", low);
+			throw error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.", exitCodes::badUserBehavior);
+		exitSimulation = false;
 	}
 
-	void assignRocketInstructions(Rocket* rocket) {
+	void assignRocketInstructions(Rocket rocket) {
 		try {
-			objectLists::instructions->pushBack(Instructions(rocket->ID() + ".txt", rocket));
+			objectLists::instructions->pushBack(Instructions(rocket.ID() + ".txt", rocket));
 		}
 		catch (error& e) {
-			writeError(error("When assigning instructions to rocket \"" + rocket->ID() + "\" an error has acured:\n\t" + e.what), badUserBehavior);
+			throw error("When assigning instructions to rocket \"" + rocket.ID() + "\" an error has acured:\n\t" + e.what, e.code);
 		}
 	}
 } //fileSystem

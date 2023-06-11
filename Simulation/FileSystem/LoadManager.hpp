@@ -24,7 +24,7 @@ namespace fileSystem {
 	Rocket loadRocket(String rocketFile);
 
 	void validateSettingVariables(std::unordered_map<String, String> map);
-	bool validateAllLoadedObjects(std::unordered_map<String, String> settings);
+	void validateAllLoadedObjects(std::unordered_map<String, String> settings);
 	void loadSettings(String settingsFile);
 
 	std::unordered_map<String, String> loadVariablesAndValuesInToMap(std::ifstream& file);

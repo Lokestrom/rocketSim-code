@@ -37,21 +37,7 @@ const ld R = 8.31446261815324l;
 //m/s
 const ld C = 299792458;
 
-/*
-* low: neer to no chance of effecting the program
-* mid: low chance of effecting the program
-* high: high chance of effecting the program
-* severe: very high chance of effecting the program
-*/
-enum errorCodes {
-	invalidUserBehavior,
-	low, 
-	mid, 
-	high, 
-	severe
-};
-
-enum exitCodes {
+enum class exitCodes {
 	success,
 	badUserBehavior,
 	fileFault
@@ -59,12 +45,8 @@ enum exitCodes {
 
 struct error {
 	String what;
-	errorCodes level;
+	exitCodes code;
 };
-
-namespace loadingVar {
-	inline errorCodes exitLevel;
-}
 
 struct geographicCoordinate 
 {

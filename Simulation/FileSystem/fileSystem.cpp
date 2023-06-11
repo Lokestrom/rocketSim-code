@@ -2,16 +2,12 @@
 
 namespace fileSystem {
 #ifdef _DEBUG
-	void writeError(error e, exitCodes code) {
+	void writeError(error e) {
 		std::cout << e.what << "\n";
-		if (e.level >= loadingVar::exitLevel)
-			std::exit(code);
 	}
 #else
-	void writeError(error e, exitCodes code) {
+	void writeError(error e) {
 		objects::errorLogFile << e.what << "\n";
-		if (e.level >= loadingVar::exitLevel)
-			std::exit(code);
 	}
 #endif
 
@@ -20,12 +16,12 @@ namespace fileSystem {
 		line.lower();
 		Vector<String> ans = line.split('=');
 		if (ans.size() > 2)
-			throw error("Too many arguments. Not alowed", mid);
+			throw error("Too many arguments. Not alowed", exitCodes::badUserBehavior);
 		return ans;
 	}
 
 	Vector<String> returnArgs(String args) {
-		args = args.remove(' ');
+		args.remove(' ');
 		if(args.contains("("))
 			args.pop(0, args.linearSearch('(')+1);
 		args.pop(args.linearSearchR(')'), args.length());
@@ -47,7 +43,7 @@ namespace fileSystem {
 
 	Vector<int> returnVectori(String arg) {
 		arg.popBack();
-		arg = arg.remove(' ');
+		arg.remove(' ');
 		arg.pop(0);
 		Vector<String> vec = std::move(arg.split(','));
 		Vector<int> ans(vec.size());
@@ -59,20 +55,20 @@ namespace fileSystem {
 
 	Vector3 returnVector3(String arg) {
 		if (arg.split('{')[0].length() != 0) {
-			throw error("The arg is labeld with: " + arg.split('{')[0] + " may not be a vector3", low);
+			throw error("The arg is labeld with: " + arg.split('{')[0] + " may not be a vector3", exitCodes::badUserBehavior);
 		}
 		arg.popBack();
-		arg = arg.remove(' ');
+		arg.remove(' ');
 		arg.pop(0);
 		return { STold(arg.split(',')[0]), STold(arg.split(',')[1]), STold(arg.split(',')[2]) };
 	}
 
 	Quaternion returnQuaternion(String arg) {
 		if (arg.split('{')[0] != "quat") {
-			throw error("The arg is not labeld a Quaternion. The arg may not be a quaternion", low);
+			throw error("The arg is not labeld a Quaternion. The arg may not be a quaternion", exitCodes::badUserBehavior);
 		}
 		arg.popBack();
-		arg = arg.remove(' ');
+		arg.remove(' ');
 		arg.pop(0);
 		return toQuaternion({ degToRad(STold(arg.split(',')[0])), degToRad(STold(arg.split(',')[1])), degToRad(STold(arg.split(',')[2])) });
 	}

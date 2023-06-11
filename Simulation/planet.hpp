@@ -21,7 +21,7 @@ struct Obstruction
 
 class Planet 
 {
-private:
+public:
 	String _ID;
 	ld _mass;
 	Sphere _mesh;
@@ -30,10 +30,10 @@ private:
 	Vector<Obstruction> _obstructions;
 	ReadFile<ld> atmosphereCondisions;
 
-public:
-
 	Planet();
 	Planet(String ID, ld mass, ld radius, Vector3 pos);
+
+	Planet& operator=(Planet& other);
 	
 	String ID() const noexcept;
 	Vector3 pos() const noexcept;
@@ -68,7 +68,7 @@ public:
 	PhysicsPlanet();
 	PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos);
 
-	PhysicsPlanet operator=(const PhysicsPlanet& planet);
+	PhysicsPlanet& operator=(const PhysicsPlanet& planet);
 
 	void earlyUpdate();
 	void update();
@@ -84,7 +84,7 @@ public:
 	FixedOrbitPlanet();
 	FixedOrbitPlanet(String ID, ld mass, ld radius);
 
-	FixedOrbitPlanet operator=(const FixedOrbitPlanet& planet);
+	FixedOrbitPlanet& operator=(const FixedOrbitPlanet& planet);
 
 	void earlyUpdate();
 	void update();

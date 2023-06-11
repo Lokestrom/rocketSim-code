@@ -6,29 +6,23 @@ namespace fileSystem {
 	class Instructions {
 	public:
 		Instructions();
-		Instructions(String fileName, Rocket* rocket);
+		Instructions(String fileName, Rocket rocket);
 
-		Instructions operator=(const Instructions& ins) {
-			_file.open(toSTD(ins._rocket->ID() + ".txt"));
-			if (!_file.is_open())
-				throw error("File \"" + ins._rocket->ID() + ".txt\" couldn't be opened.", high);
-			_rocket = ins._rocket;
-			getInstruction();
-		}
+		Instructions& operator=(const Instructions& ins);
 
-		void run();
+		void run(bool& exitSimulation);
 	
 	private: 
 		Vector<String> returnInstructions(const String& line);
 		void getInstruction();
 		void setVariable(const String& variable, const String& value);
-		void runInstruction(String instruction);
+		void runInstruction(String instruction, bool& exitSimulation);
 	
 	private:
-		std::ifstream _file;
+		std::shared_ptr<std::ifstream> _file;
 		ld _nextInstructionTime;
 		Vector<String> _nextInstruction;
-		Rocket* _rocket;
+		std::shared_ptr<Rocket> _rocket;
 	};
 
 	void assignRocketInstructions(Rocket* rocket);

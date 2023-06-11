@@ -33,7 +33,7 @@ Engine::Engine(int ID, ld mass, ld exitVel,
 	: _ID(ID), _mass(mass), _exitVel(exitVel),
 	_pos(pos), _centerOfMass(centerOfMass), _mountPos(mountPos),
 	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(false),
-	_thrustPercent(100)
+	_thrustPercent(100), _maxGimblePerSecond(0), _maxGimble(0)
 {
 
 }

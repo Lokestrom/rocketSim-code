@@ -23,7 +23,16 @@ Planet::Planet() {
 }
 
 Planet::Planet(String ID, ld mass, ld radius, Vector3 pos)
-	: _ID(ID), _mass(mass), _pos(pos), _vel({0,0,0}), _mesh({0,0,0}, 0, radius) {}
+	: _ID(ID), _mass(mass), _pos(pos), _vel({0,0,0}), _mesh({0,0,0}, radius) {}
+
+Planet& Planet::operator=(Planet& other)
+{
+	this->_ID = other._ID;
+	this->_mass = other._mass;
+	this->_mesh = other._mesh;
+	this->_pos = other._pos;
+	return *this;
+}
 
 String Planet::ID() const noexcept
 {
@@ -119,9 +128,13 @@ PhysicsPlanet::PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos)
 {
 }
 
-PhysicsPlanet PhysicsPlanet::operator=(const PhysicsPlanet& planet)
+PhysicsPlanet& PhysicsPlanet::operator=(const PhysicsPlanet& planet)
 {
-	return PhysicsPlanet(planet.ID(), planet.mass(), planet.radius(), planet.pos());
+	this->_ID = planet.ID();
+	this->_mass = planet.mass();
+	this->_mesh = planet.mesh();
+	this->_pos = planet.pos();
+	return *this;
 }
 
 /*PhysicsPlanet*/
@@ -155,9 +168,13 @@ FixedOrbitPlanet::FixedOrbitPlanet(String ID, ld mass, ld radius)
 	: Planet(ID, mass, radius, { 0,0,0 })
 {}
 
-FixedOrbitPlanet FixedOrbitPlanet::operator=(const FixedOrbitPlanet& planet)
+FixedOrbitPlanet& FixedOrbitPlanet::operator=(const FixedOrbitPlanet& planet)
 {
-	return FixedOrbitPlanet(planet.ID(), planet.mass(), planet.radius());
+	this->_ID = planet.ID();
+	this->_mass = planet.mass();
+	this->_mesh = planet.mesh();
+	this->_pos = planet.pos();
+	return *this;
 }
 
 
