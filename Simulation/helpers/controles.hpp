@@ -85,7 +85,7 @@ namespace objectLists
 	inline Vector<FixedOrbitPlanet>* fixedOrbitPlanets;
 	inline Vector<PhysicsPlanet>* physicsPlanets;
 	inline Vector<Rocket>* rockets;
-	inline Vector<fileSystem::Instructions>* instructions;
+	inline Vector<fileSystem::Instructions*>* instructions;
 
 	void deleteObjectLists() noexcept;
 }

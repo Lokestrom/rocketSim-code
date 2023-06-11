@@ -101,6 +101,9 @@ namespace objectLists {
         delete physicsPlanets;
         delete fixedOrbitPlanets;
         delete rockets;
+        for (auto& i : *instructions)
+            delete i;
+        delete instructions;
     }
 }
 

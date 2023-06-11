@@ -6,9 +6,7 @@ namespace fileSystem {
 	class Instructions {
 	public:
 		Instructions();
-		Instructions(String fileName, Rocket rocket);
-
-		Instructions& operator=(const Instructions& ins);
+		Instructions(String fileName, Rocket* rocket);
 
 		void run(bool& exitSimulation);
 	
@@ -19,10 +17,10 @@ namespace fileSystem {
 		void runInstruction(String instruction, bool& exitSimulation);
 	
 	private:
-		std::shared_ptr<std::ifstream> _file;
+		std::ifstream _file;
 		ld _nextInstructionTime;
 		Vector<String> _nextInstruction;
-		std::shared_ptr<Rocket> _rocket;
+		Rocket* _rocket;
 	};
 
 	void assignRocketInstructions(Rocket* rocket);

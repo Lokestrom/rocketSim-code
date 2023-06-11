@@ -6,23 +6,12 @@ namespace fileSystem {
 	Instructions::Instructions() {
 		_rocket = nullptr;
 	}
-	Instructions::Instructions(String fileName, Rocket rocket) {
-		_file = std::allocate_shared<std::ifstream>(new std::ifstream);
-		_file->open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
-		if (!_file->is_open())
+	Instructions::Instructions(String fileName, Rocket* rocket) {
+		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
+		if (!_file.is_open())
 			throw error("File \"" + fileName + "\" couldn't be opened.", exitCodes::fileFault);
-		_rocket = std::make_shared<Rocket>(rocket);
+		_rocket = rocket;
 		getInstruction();
-	}
-
-	Instructions& Instructions::operator=(const Instructions& ins) {
-		_file = ins._file;
-		if (!_file->is_open())
-			throw error("File \"" + ins._rocket->ID() + ".txt\" couldn't be opened.", exitCodes::fileFault);
-		_rocket = ins._rocket;
-		_nextInstruction = ins._nextInstruction;
-		_nextInstructionTime = ins._nextInstructionTime;
-		return *this;
 	}
 
 	void Instructions::run(bool& exitSimulation) {
@@ -56,10 +45,10 @@ namespace fileSystem {
 
 	void Instructions::getInstruction() {
 		String line;
-		getline(*_file, line);
+		getline(_file, line);
 		line.remove(' ');
 		line.lower();
-		ld _nextInstructionTime = STold(line.split(':')[0]);
+		_nextInstructionTime = STold(line.split(':')[0]);
 		_nextInstruction = returnInstructions(line.split(':')[1]);
 	}
 
@@ -67,13 +56,24 @@ namespace fileSystem {
 		String instructoin;
 		Vector<String> ans(5);
 		for (auto i = 0; i < line.length(); i++) {
-			instructoin.pushBack(i);
-			if (i == '(') {
-				for (; i < line.length() && line[i] != ')'; i++) {
-					instructoin.pushBack(i);
+			instructoin.pushBack(line[i]);
+			if (line[i] == '(') {
+				for (i++; i < line.length() && line[i] != ')'; i++) {
+					instructoin.pushBack(line[i]);
 				}
-				i += 2;
+				instructoin.pushBack(')');
+				i++;
 				ans.pushBack(instructoin);
+				std::cout << instructoin << "\n";
+				instructoin.clear();
+			}
+			if (line[i] == '=') {
+				for (i++; i < line.length() && line[i] != ','; i++) {
+					instructoin.pushBack(line[i]);
+				}
+				ans.pushBack(instructoin);
+				std::cout << instructoin << "\n";
+				instructoin.clear();
 			}
 		}
 		return ans;
@@ -128,12 +128,12 @@ namespace fileSystem {
 		exitSimulation = false;
 	}
 
-	void assignRocketInstructions(Rocket rocket) {
+	void assignRocketInstructions(Rocket* rocket) {
 		try {
-			objectLists::instructions->pushBack(Instructions(rocket.ID() + ".txt", rocket));
+			objectLists::instructions->pushBack(new Instructions(rocket->ID() + ".txt", rocket));
 		}
 		catch (error& e) {
-			throw error("When assigning instructions to rocket \"" + rocket.ID() + "\" an error has acured:\n\t" + e.what, e.code);
+			throw error("When assigning instructions to rocket \"" + rocket->ID() + "\" an error has acured:\n\t" + e.what, e.code);
 		}
 	}
 } //fileSystem

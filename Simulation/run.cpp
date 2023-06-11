@@ -11,7 +11,7 @@ bool update()
 {
 	for (auto& i : *objectLists::instructions) {
 		bool exitSimulation;
-		i.run(exitSimulation);
+		i->run(exitSimulation);
 		if (exitSimulation)
 			return false;
 	}
@@ -42,7 +42,7 @@ void run(int argc, const char* argv[]) {
 	objectLists::physicsPlanets = new Vector<PhysicsPlanet>();
 	objectLists::fixedOrbitPlanets = new Vector<FixedOrbitPlanet>();
 	objectLists::rockets = new Vector<Rocket>();
-	objectLists::instructions = new Vector<fileSystem::Instructions>();
+	objectLists::instructions = new Vector<fileSystem::Instructions*>();
 
 	fileSystem::loadInObjects();
 	fileSystem::loggingStartup();

@@ -13,7 +13,7 @@ int main()
 	objectLists::physicsPlanets = new Vector<PhysicsPlanet>();
 	objectLists::fixedOrbitPlanets = new Vector<FixedOrbitPlanet>();
 	objectLists::rockets = new Vector<Rocket>();
-	objectLists::instructions = new Vector<fileSystem::Instructions>();
+	objectLists::instructions = new Vector<fileSystem::Instructions*>();
 	try {
 		fileSystem::loadInObjects();
 	}

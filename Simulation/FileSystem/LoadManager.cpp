@@ -34,7 +34,7 @@ namespace fileSystem {
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket")))
 			if (!entry.is_directory()) {
 				objectLists::rockets->pushBack(loadRocket(entry.path().string()));
-				objectLists::instructions->pushBack(Instructions(objectLists::rockets->at(objectLists::rockets->size() - 1).ID() + ".txt", (objectLists::rockets->at(objectLists::rockets->size() - 1))));
+				objectLists::instructions->pushBack(new Instructions(objectLists::rockets->at(objectLists::rockets->size() - 1).ID() + ".txt", &(objectLists::rockets->at(objectLists::rockets->size() - 1))));
 			}
 		for (const auto& [key, val] : LoadManagerMaps::fixedOrbitPlanet) {
 			objectLists::fixedOrbitPlanets->pushBack(val);
