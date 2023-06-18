@@ -15,7 +15,7 @@ namespace fileSystem {
 	}
 
 	void Instructions::run(bool& exitSimulation) {
-		if (timeObjects::currentTime > _nextInstructionTime)
+		if (timeObjects::currentTime < _nextInstructionTime)
 			return;
 		
 		try {
@@ -45,7 +45,11 @@ namespace fileSystem {
 
 	void Instructions::getInstruction() {
 		String line;
-		getline(_file, line);
+		if (!getline(_file, line)) {
+			_nextInstructionTime = LDBL_MAX;
+			_nextInstruction = { "no more instructions in file" };
+			return;
+		}
 		line.remove(' ');
 		line.lower();
 		_nextInstructionTime = STold(line.split(':')[0]);
@@ -64,7 +68,6 @@ namespace fileSystem {
 				instructoin.pushBack(')');
 				i++;
 				ans.pushBack(instructoin);
-				std::cout << instructoin << "\n";
 				instructoin.clear();
 			}
 			if (line[i] == '=') {
@@ -72,7 +75,6 @@ namespace fileSystem {
 					instructoin.pushBack(line[i]);
 				}
 				ans.pushBack(instructoin);
-				std::cout << instructoin << "\n";
 				instructoin.clear();
 			}
 		}
@@ -101,12 +103,16 @@ namespace fileSystem {
 			{
 			case 0:
 				_rocket->burn();
+				break;
 			case 1:
 				_rocket->burn(STold(args[0]));
+				break;
 			case 2:
 				_rocket->burn(STold(args[0]), returnVectori(args[1]));
+				break;
 			default:
 				throw error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
+				break;
 			}
 		}
 		else if (instruction == "shutdown") {
@@ -114,15 +120,20 @@ namespace fileSystem {
 			{
 			case 0:
 				_rocket->shutdown();
+				break;
 			case 1:
 				_rocket->shutdown(returnVectori(args[0]));
+				break;
 			default:
 				throw error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
+				break;
 			}
 		}
 		else if (instruction == "exit")
 			exitSimulation = true;
 
+		else if (instruction == "no more instructions in file")
+			_nextInstructionTime = LDBL_MAX;
 		else
 			throw error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.", exitCodes::badUserBehavior);
 		exitSimulation = false;
@@ -130,7 +141,7 @@ namespace fileSystem {
 
 	void assignRocketInstructions(Rocket* rocket) {
 		try {
-			objectLists::instructions->pushBack(new Instructions(rocket->ID() + ".txt", rocket));
+			objectLists::instructions.pushBack(new Instructions(rocket->ID() + ".txt", rocket));
 		}
 		catch (error& e) {
 			throw error("When assigning instructions to rocket \"" + rocket->ID() + "\" an error has acured:\n\t" + e.what, e.code);

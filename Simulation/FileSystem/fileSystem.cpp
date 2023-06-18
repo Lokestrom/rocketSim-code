@@ -54,7 +54,7 @@ namespace fileSystem {
 	}
 
 	Vector3 returnVector3(String arg) {
-		if (arg.split('{')[0].length() != 0) {
+		if (arg.split('{').size() != 1) {
 			throw error("The arg is labeld with: " + arg.split('{')[0] + " may not be a vector3", exitCodes::badUserBehavior);
 		}
 		arg.popBack();

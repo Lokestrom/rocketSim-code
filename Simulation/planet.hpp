@@ -66,6 +66,7 @@ class PhysicsPlanet : public Planet
 {
 public:
 	PhysicsPlanet();
+	PhysicsPlanet(const PhysicsPlanet& planet);
 	PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos);
 
 	PhysicsPlanet& operator=(const PhysicsPlanet& planet);
@@ -82,6 +83,7 @@ class FixedOrbitPlanet : public Planet
 {
 public:
 	FixedOrbitPlanet();
+	FixedOrbitPlanet(const FixedOrbitPlanet& planet);
 	FixedOrbitPlanet(String ID, ld mass, ld radius);
 
 	FixedOrbitPlanet& operator=(const FixedOrbitPlanet& planet);

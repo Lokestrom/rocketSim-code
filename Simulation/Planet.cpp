@@ -123,6 +123,11 @@ PhysicsPlanet::PhysicsPlanet()
 	: Planet()
 {}
 
+PhysicsPlanet::PhysicsPlanet(const PhysicsPlanet& planet)
+	: Planet(planet.ID(), planet.mass(), planet.radius(), planet.pos())
+{
+}
+
 PhysicsPlanet::PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos)
 	: Planet(ID, mass, radius, pos)
 {
@@ -141,11 +146,11 @@ PhysicsPlanet& PhysicsPlanet::operator=(const PhysicsPlanet& planet)
 void PhysicsPlanet::earlyUpdate() 
 {
 	this->gravity = Vector3::null();
-	for (PhysicsPlanet& i : *(objectLists::physicsPlanets)) {
-		this->gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
+	for (PhysicsPlanet* i : objectLists::physicsPlanets) {
+		this->gravity += generateGravity(this->mass(), i->mass(), this->pos(), i->pos());
 	}
-	for (FixedOrbitPlanet& i : *(objectLists::fixedOrbitPlanets)) {
-		this->gravity += generateGravity(this->mass(), i.mass(), this->pos(), i.pos());
+	for (FixedOrbitPlanet* i : objectLists::fixedOrbitPlanets) {
+		this->gravity += generateGravity(this->mass(), i->mass(), this->pos(), i->pos());
 	}
 }
 
@@ -160,6 +165,11 @@ void PhysicsPlanet::update()
 
 FixedOrbitPlanet::FixedOrbitPlanet()
 	: Planet()
+{
+}
+
+FixedOrbitPlanet::FixedOrbitPlanet(const FixedOrbitPlanet& planet)
+	: Planet(planet.ID(), planet.mass(), planet.radius(), planet.pos())
 {
 }
 
@@ -189,18 +199,18 @@ void FixedOrbitPlanet::update()
 /*non-Member fungtions*/
 const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
 {
-	for (auto& i : *objectLists::physicsPlanets)
-		if (i.ID() == planetID)
-			return &i;
+	for (auto i : objectLists::physicsPlanets)
+		if (i->ID() == planetID)
+			return i;
 
 	return nullptr;
 }
 
 const FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept
 {
-	for (auto& i : *objectLists::fixedOrbitPlanets)
-		if (i.ID() == planetID)
-			return &i;
+	for (auto i : objectLists::fixedOrbitPlanets)
+		if (i->ID() == planetID)
+			return i;
 
 	return nullptr;
 }

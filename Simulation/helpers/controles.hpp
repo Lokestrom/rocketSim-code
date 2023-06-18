@@ -82,10 +82,10 @@ Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);
 
 namespace objectLists
 {
-	inline Vector<FixedOrbitPlanet>* fixedOrbitPlanets;
-	inline Vector<PhysicsPlanet>* physicsPlanets;
-	inline Vector<Rocket>* rockets;
-	inline Vector<fileSystem::Instructions*>* instructions;
+	inline Vector<FixedOrbitPlanet*> fixedOrbitPlanets;
+	inline Vector<PhysicsPlanet*> physicsPlanets;
+	inline Vector<Rocket*> rockets;
+	inline Vector<fileSystem::Instructions*> instructions;
 
 	void deleteObjectLists() noexcept;
 }

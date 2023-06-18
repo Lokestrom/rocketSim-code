@@ -202,13 +202,37 @@ bool Shape::pointInside(const Vector3& point) const noexcept {
         switch (i.meshType)
         {
         case MeshType::Sphere:
-            inside = i.sphere.pointInside(point);
+            if (i.sphere.pointInside(point)) {
+                if (i.sphere.solid)
+                    inside = true;
+                else
+                    inside = false;
+            }
+            break;
         case MeshType::Box:
-            inside = i.box.pointInside(point);
+            if (i.box.pointInside(point)) {
+                if (i.box.solid)
+                    inside = true;
+                else
+                    inside = false;
+            }
+            break;
         case MeshType::Cylinder:
-            inside = i.cylinder.pointInside(point);
+            if (i.cylinder.pointInside(point)) {
+                if (i.cylinder.solid)
+                    inside = true;
+                else
+                    inside = false;
+            }
+            break;
         case MeshType::NoseCone:
-            inside = i.noseCone.pointInside(point);
+            if (i.noseCone.pointInside(point)) {
+                if (i.noseCone.solid)
+                    inside = true;
+                else
+                    inside = false;
+            }
+            break;
         default:
             break;
         }

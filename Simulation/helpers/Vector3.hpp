@@ -20,6 +20,9 @@ struct Vector3 {
 	friend Vector3 operator*(Vector3 l, Vector3 r) noexcept;
 	friend Vector3 operator/(Vector3 l, const ld r) noexcept;
 
+	friend bool operator==(const Vector3& l, const Vector3& r);
+	friend bool operator!=(const Vector3& l, const Vector3& r);
+
 	Vector3& operator+=(const Vector3& v) noexcept;
 	Vector3& operator-=(const Vector3& v) noexcept;
 	Vector3& operator*=(const Vector3& v) noexcept;

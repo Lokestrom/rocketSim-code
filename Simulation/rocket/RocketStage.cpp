@@ -28,10 +28,14 @@ ld RocketStage::dryMass() const noexcept
 }
 ld RocketStage::mass() const noexcept
 {
-	ld fuelMass = 0;
+	ld addisionalMass = 0;
 	for (auto& i : _fuelTanks)
-		fuelMass += i.fuelMass();
-	return _dryMass + fuelMass;
+		addisionalMass += i.fuelMass();
+	for (auto& i : _engines)
+		addisionalMass += i.mass();
+	for (auto& i : _reactionThrusters)
+		addisionalMass += i.mass();
+	return _dryMass + addisionalMass;
 }
 Shape RocketStage::mesh() const noexcept 
 {
@@ -152,17 +156,17 @@ bool RocketStage::isColliding() const noexcept
 	for (auto& i : _reactionThrusters)
 		if (i.isColliding())
 			return true;
-	for (auto& i : *objectLists::physicsPlanets) {
-		if (collision(mesh(), i.mesh()))
+	for (auto& i : objectLists::physicsPlanets) {
+		if (collision(mesh(), i->mesh()))
 			return true;
-		for (auto& j : i.obstructions())
+		for (auto& j : i->obstructions())
 			if (collision(mesh(), j.mesh))
 				return true;
 	}
-	for (auto& i : *objectLists::fixedOrbitPlanets) {
-		if (collision(mesh(), i.mesh()))
+	for (auto& i : objectLists::fixedOrbitPlanets) {
+		if (collision(mesh(), i->mesh()))
 			return true;
-		for (auto& j : i.obstructions())
+		for (auto& j : i->obstructions())
 			if (collision(mesh(), j.mesh))
 				return true;
 	}

@@ -16,6 +16,8 @@ public:
 	Rocket();
 	Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages);
 
+	~Rocket(){}
+
 	String ID() const noexcept;
 	Vector3 pos() const noexcept;
 	Vector3 vel() const noexcept;
@@ -33,7 +35,7 @@ public:
 
 	void update() noexcept;
 
-	void burn(ld burnTime = 1E10, Vector<int> engines = {}) noexcept;
+	void burn(ld burnTime = 1E100, Vector<int> engines = {}) noexcept;
 	void shutdown(Vector<int> engines = {}) noexcept;
 
 	//void rotate(Quaternion angle);

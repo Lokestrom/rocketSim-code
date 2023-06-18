@@ -28,7 +28,7 @@ namespace fileSystem {
 		inline std::unordered_map<String, WriteFile<ld>> engineFiles;
 		inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
 		inline std::unordered_map<String, WriteFile<ld>> planetFiles;
-#ifdef _DEBUG
+#ifndef _DEBUG
 		inline std::ofstream errorLogFile;
 #endif // !debug
 

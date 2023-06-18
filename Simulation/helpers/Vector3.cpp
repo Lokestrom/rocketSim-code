@@ -54,6 +54,16 @@ Vector3 operator/(Vector3 l, const ld r) noexcept
 	return l;
 }
 
+bool operator==(const Vector3& l, const Vector3& r)
+{
+	return l.x == r.x && l.y == r.y && l.z == r.z;
+}
+
+bool operator!=(const Vector3& l, const Vector3& r)
+{
+	return !(l == r);
+}
+
 Vector3& Vector3::operator+=(const Vector3& v) noexcept
 {
 	this->x += v.x;

@@ -34,6 +34,7 @@ public:
 
 	int ID() const noexcept;
 	bool active() const noexcept;
+	ld mass() const noexcept;
 	ld exitVel() const noexcept;
 	bool canGimble() const noexcept;
 	Vector3 mountPos() const noexcept;

@@ -1,1 +1,5 @@
-﻿
+﻿  Instructions.cpp
+  database.lib(Exceprion.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+  Generating code
+  Finished generating code
+  Simulation.vcxproj -> D:\code\codeProjects\rocketSimulation\Simulation\x64\Release\Simulation.exe

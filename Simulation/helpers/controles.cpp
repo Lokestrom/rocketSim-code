@@ -93,17 +93,21 @@ ld gravityFormulaNewton(ld m, ld M, ld r)
     return (G * m * M) / (r * r);
 }
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos) {
+    if (pos == otherPos)
+        return Vector3::null();
     return gravityFormulaNewton(m, M, distanse(pos, otherPos)) * (otherPos - pos).normal();
 }
 
 namespace objectLists {
     void deleteObjectLists() noexcept {
-        delete physicsPlanets;
-        delete fixedOrbitPlanets;
-        delete rockets;
-        for (auto& i : *instructions)
+        for (auto& i : physicsPlanets)
             delete i;
-        delete instructions;
+        for (auto& i : fixedOrbitPlanets)
+            delete i;
+        for (auto& i : rockets)
+            delete i;
+        for (auto& i : instructions)
+            delete i;
     }
 }
 

@@ -33,14 +33,14 @@ namespace fileSystem {
 			LoadManagerMaps::rocketStage[String(entry.path().filename().string()).split('.')[0]] = loadRocketStage(entry.path().string());
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket")))
 			if (!entry.is_directory()) {
-				objectLists::rockets->pushBack(loadRocket(entry.path().string()));
-				objectLists::instructions->pushBack(new Instructions(objectLists::rockets->at(objectLists::rockets->size() - 1).ID() + ".txt", &(objectLists::rockets->at(objectLists::rockets->size() - 1))));
+				objectLists::rockets.pushBack(new Rocket(loadRocket(entry.path().string())));
+				objectLists::instructions.pushBack(new Instructions(objectLists::rockets.at(objectLists::rockets.size() - 1)->ID() + ".txt", objectLists::rockets.at(objectLists::rockets.size() - 1)));
 			}
 		for (const auto& [key, val] : LoadManagerMaps::fixedOrbitPlanet) {
-			objectLists::fixedOrbitPlanets->pushBack(val);
+			objectLists::fixedOrbitPlanets.pushBack(new FixedOrbitPlanet(val));
 		}
 		for (const auto& [key, val] : LoadManagerMaps::pysicsPlanet) {
-			objectLists::physicsPlanets->pushBack(val);
+			objectLists::physicsPlanets.pushBack(new PhysicsPlanet(val));
 		}
 		loadSettings(objects::simulationFolder + "settings.txt");
 	}
@@ -66,7 +66,7 @@ namespace fileSystem {
 				));
 			}
 			else if (type == "box") {
-				shape.meshes.pushBack(ShapeNode(MeshType::Sphere,
+				shape.meshes.pushBack(ShapeNode(MeshType::Box,
 					Sphere(),
 					Box(returnVector3(argv[0]), returnVector3(argv[1]), returnQuaternion(argv[2]), solid),
 					Cylinder(),
@@ -174,6 +174,7 @@ namespace fileSystem {
 		Vector<String> fuelPerSecondArgs = map["fuelpersecond"].split(',');
 		for (const auto& i : fuelPerSecondArgs) {
 			Vector<String> fuel = i.split(':');
+			std::cout << fuel[1] << ", " << STold(fuel[1]);
 			fuelPerSecond.addFuel(Fuelmap(fuel[0], STold(fuel[1])));
 		}
 		file.close();
@@ -203,7 +204,7 @@ namespace fileSystem {
 			throw e;
 		}
 
-		if (PI * STold(map["radius"]) * STold(map["radius"]), STold(map["height"]) < STold(map["fuelmass"]) * STold(map["fueldensity"]))
+		if (PI * STold(map["radius"]) * STold(map["radius"]), STold(map["height"]) < STold(map["fuelmass"])/STold(map["fueldensity"]))
 			throw error("There is more mass in the tank than there is volum. Decrease the fuel amont, increase the density or make the fuel tank bigger", exitCodes::badUserBehavior);
 	}
 
@@ -219,7 +220,7 @@ namespace fileSystem {
 			e.what = "Error in file: " + FuelTankFile + ":\n" + e.what;
 			throw e;
 		}
-		return FuelTank(0, map["fueltype"], STold(map["fuelload"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
+		return FuelTank(0, map["fueltype"], STold(map["fuelmass"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
 	}
 
 	void validateRocketStageVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {

@@ -22,7 +22,7 @@ Engine::Engine(int ID, ld mass, ld exitVel,
 	_maxGimblePerSecond(maxGimblePerSecond), _maxGimble(maxGimble),
 	_pos(pos), _centerOfMass(centerOfMass), _mountPos(mountPos),
 	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(true),
-	_thrustPercent(100)
+	_thrustPercent(1)
 {
 
 }
@@ -33,7 +33,7 @@ Engine::Engine(int ID, ld mass, ld exitVel,
 	: _ID(ID), _mass(mass), _exitVel(exitVel),
 	_pos(pos), _centerOfMass(centerOfMass), _mountPos(mountPos),
 	_fuelPerSecond(fuelPerSecond), _shape(shape), _active(false), _gimbletime(1), _canGimble(false),
-	_thrustPercent(100), _maxGimblePerSecond(0), _maxGimble(0)
+	_thrustPercent(1), _maxGimblePerSecond(0), _maxGimble(0)
 {
 
 }
@@ -49,6 +49,10 @@ Vector3 Engine::centerOfMass() const noexcept
 bool Engine::active() const noexcept
 {
 	return _active;
+}
+ld Engine::mass() const noexcept
+{
+	return _mass;
 }
 ld Engine::exitVel() const noexcept
 {
@@ -90,7 +94,7 @@ void Engine::update()
 
 Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept
 {
-	usedFuel += _fuelPerSecond * _thrustPercent;
+	usedFuel.addFuel(_fuelPerSecond * _thrustPercent * timeObjects::dt);
 	ld radius = (centerOfMass - _mountPos).length();
 	rotationalAcc += centerOfMass.cross((_orientation * rocketOrientation).rotate(usedFuel.totalMass() * _exitVel))/(0.5 * mass * radius*radius);
 	Vector3 Cmnorm = centerOfMass.normal();
@@ -123,17 +127,17 @@ bool Engine::pointInside(Vector3& point) noexcept
 
 bool Engine::isColliding() noexcept
 {
-	for (auto& i : *objectLists::physicsPlanets) {
-		if (collision(_shape, i.mesh()))
+	for (auto& i : objectLists::physicsPlanets) {
+		if (collision(_shape, i->mesh()))
 			return true;
-		for (auto& j : i.obstructions())
+		for (auto& j : i->obstructions())
 			if (collision(j.mesh, _shape))
 				return true;
 	}
-	for (auto& i : *objectLists::fixedOrbitPlanets) {
-		if (collision(_shape, i.mesh()))
+	for (auto& i : objectLists::fixedOrbitPlanets) {
+		if (collision(_shape, i->mesh()))
 			return true;
-		for (auto& j : i.obstructions())
+		for (auto& j : i->obstructions())
 			if (collision(j.mesh, _shape))
 				return true;
 	}

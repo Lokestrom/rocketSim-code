@@ -1,0 +1,16 @@
+setup{
+dryMass=200
+centerOfMass={0,0,0}
+mesh=a
+}
+
+Engines{
+0=Engine1({-3,-1,0})
+}
+
+reaction thrusters{
+}
+
+FuelTanks{
+0=FuelTank1({2,0,0})
+}
