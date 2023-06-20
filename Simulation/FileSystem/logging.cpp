@@ -22,30 +22,13 @@ namespace fileSystem {
 		fs::create_directories((objects::runFolder + "rocket/rocketStage/fuelTank/").cstr());
 		fs::create_directories((objects::runFolder + "planet/").cstr());
 
-		for (const auto rocket : objectLists::rockets) {
-			objects::rocketFiles.insert({ rocket->ID(),  WriteFile<ld>(objects::runFolder + "rocket/" + rocket->ID() + ".db")});
-			objects::rocketFiles[rocket->ID()].addcolumns({ "time" });
-			for (const auto& rocketStage : rocket->stages()) {
-				objects::rocketStageFiles.insert({ rocket->ID() + toS(rocketStage.ID()), WriteFile<ld>(objects::runFolder + "rocket/rocketStage/" + rocket->ID() + toS(rocketStage.ID()) + ".db") });
-				objects::rocketStageFiles[rocket->ID() + toS(rocketStage.ID())].addcolumns({ "time" });
-				for (const auto& engine : rocketStage.engineIDs()) {
-					objects::engineFiles.insert({ rocket->ID() + toS(rocketStage.ID()) + toS(engine), WriteFile<ld>(objects::runFolder + "rocket/rocketStage/engine/" + rocket->ID() + toS(rocketStage.ID()) + toS(engine) + ".db") });
-					objects::engineFiles[rocket->ID() + toS(rocketStage.ID()) + toS(engine)].addcolumns({ "time" });
-				}
-				for (const auto& fuelTank : rocketStage.fuelTankIDs()) {
-					objects::fuelTankFiles.insert({ rocket->ID() + toS(rocketStage.ID()) + toS(fuelTank), WriteFile<ld>(objects::runFolder + "rocket/rocketStage/fuelTank/" + rocket->ID() + toS(rocketStage.ID()) + toS(fuelTank) + ".db") });
-					objects::fuelTankFiles[rocket->ID() + toS(rocketStage.ID()) + toS(fuelTank)].addcolumns({ "time" });
-				}
-			}
-		}
-		for (const auto planet : objectLists::fixedOrbitPlanets) {
-			objects::planetFiles.insert({ planet->ID(), WriteFile<ld>(objects::runFolder + "planet/" + planet->ID() + ".db") });
-			objects::planetFiles[planet->ID()].addcolumns({ "time" });
-		}
-		for (const auto planet : objectLists::physicsPlanets) {
-			objects::planetFiles.insert({ planet->ID(), WriteFile<ld>(objects::runFolder + "planet/" + planet->ID() + ".db") });
-			objects::planetFiles[planet->ID()].addcolumns({ "time" });
-		}
+		for (const auto rocket : objectLists::rockets)
+			createLoggingFilesForNewRocket(*rocket);
+		for (const auto planet : objectLists::fixedOrbitPlanets)
+			createNewPlanetLoggingFile(planet->ID());
+		for (const auto planet : objectLists::physicsPlanets)
+			createNewPlanetLoggingFile(planet->ID());
+		loggCurrentState();
 	}
 
 	void loggingEnd() {
@@ -73,6 +56,63 @@ namespace fileSystem {
 		file << "randomSeed=" << toS(options::randomSeed) << std::endl;
 		file << "totalTime=" << toS(timeObjects::currentTime);
 		file.close();
+	}
+
+	void createLoggingFilesForNewRocket(const Rocket& rocket) {
+		createNewRocketLoggingFile(rocket.ID());
+		for (const auto& rocketStage : rocket.stages()) {
+			createNewRocketStageLoggingFile(rocket.ID() + toS(rocketStage.ID()));
+			for (const auto& engine : rocketStage.engineIDs())
+				createNewEngineLoggingFile(rocket.ID() + toS(rocketStage.ID()) + toS(engine));
+			for (const auto& fuelTank : rocketStage.fuelTankIDs())
+				createNewFuelTankLoggingFile(rocket.ID() + toS(rocketStage.ID()) + toS(fuelTank));
+		}
+	}
+
+	void createNewRocketLoggingFile(const String& ID)
+	{
+		objects::rocketFiles.insert({ ID,  WriteFile<ld>(objects::runFolder + "rocket/" + ID + ".db") });
+		objects::rocketFiles[ID].addcolumns({ "time",
+			"pos.x", "pos.y", "pos.z",
+			"vel.x", "vel.y", "vel.z",
+			"acc.x", "acc.y", "acc.z",
+			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
+			"rotationVel.w", "rotationVel.x", "rotationVel.y", "rotationVel.z",
+			"rotationAcc.w", "rotationAcc.x", "rotationAcc.y", "rotationAcc.z",
+			"RCS"
+			});
+	}
+
+	void createNewRocketStageLoggingFile(const String& ID)
+	{
+		objects::rocketStageFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/" + ID + ".db") });
+		objects::rocketStageFiles[ID].addcolumns({ "time", "staged"});
+	}
+
+	void createNewEngineLoggingFile(const String& ID)
+	{
+		objects::engineFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/engine/" + ID + ".db") });
+		objects::engineFiles[ID].addcolumns({ "time",
+			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
+			"active", "thrustPercent"
+			});
+	}
+
+	void createNewFuelTankLoggingFile(const String& ID)
+	{
+		objects::fuelTankFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/fuelTank/" + ID + ".db") });
+		objects::fuelTankFiles[ID].addcolumns({ "time",
+			"fuelMass"
+			});
+	}
+
+	void createNewPlanetLoggingFile(const String& ID)
+	{
+		objects::planetFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "planet/" + ID + ".db") });
+		objects::planetFiles[ID].addcolumns({ "time",
+			"pos.x", "pos.y", "pos.z",
+			"vel.x", "vel.y", "vel.z",
+			});
 	}
 
 	/*
@@ -107,7 +147,7 @@ namespace fileSystem {
 			rocket.orientation().w, rocket.orientation().x, rocket.orientation().y, rocket.orientation().z,
 			rocket.rotationVel().w, rocket.rotationVel().x, rocket.rotationVel().y, rocket.rotationVel().z,
 			rocket.rotationAcc().w, rocket.rotationAcc().x, rocket.rotationAcc().y, rocket.rotationAcc().z,
-			rocket.mass(), (rocket.RCS()) ? 1.0 : 0,
+			(rocket.RCS()) ? 1.0l : 0.0l
 			});
 	}
 
@@ -118,21 +158,28 @@ namespace fileSystem {
 
 	void loggEngine(const Engine& engine, const String& globalID) {
 		objects::engineFiles[globalID].addData({ timeObjects::currentTime,
+			engine.orientation().w, engine.orientation().x, engine.orientation().y, engine.orientation().z,
+			(engine.active()) ? 1.0l : 0.0l, engine.thrustPercent()
 			});
 	}
 
 	void loggFuelTank(const FuelTank& fuelTank, const String& globalID) {
 		objects::fuelTankFiles[globalID].addData({ timeObjects::currentTime,
+			fuelTank.fuelMass()
 			});
 	}
 
 	void loggPlanet(const PhysicsPlanet& planet) {
 		objects::planetFiles[planet.ID()].addData({ timeObjects::currentTime,
+			planet.pos().x, planet.pos().y, planet.pos().z,
+			planet.vel().x, planet.vel().y, planet.vel().z
 			});
 	}
 
 	void loggPlanet(const FixedOrbitPlanet& planet) {
 		objects::planetFiles[planet.ID()].addData({ timeObjects::currentTime,
+			planet.pos().x, planet.pos().y, planet.pos().z,
+			planet.vel().x, planet.vel().y, planet.vel().z,
 			});
 	}
 }

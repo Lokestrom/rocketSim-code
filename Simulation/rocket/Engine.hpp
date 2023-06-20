@@ -36,9 +36,11 @@ public:
 	bool active() const noexcept;
 	ld mass() const noexcept;
 	ld exitVel() const noexcept;
+	ld thrustPercent() const noexcept;
 	bool canGimble() const noexcept;
 	Vector3 mountPos() const noexcept;
 	Vector3 centerOfMass() const noexcept;
+	Quaternion orientation() const noexcept;
 	Vector<String> fuelTypes() const noexcept;
 
 	void setID(int newID) noexcept;

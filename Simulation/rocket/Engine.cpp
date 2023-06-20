@@ -46,6 +46,10 @@ Vector3 Engine::centerOfMass() const noexcept
 {
 	return _centerOfMass;
 }
+Quaternion Engine::orientation() const noexcept
+{
+	return _orientation;
+}
 bool Engine::active() const noexcept
 {
 	return _active;
@@ -57,6 +61,10 @@ ld Engine::mass() const noexcept
 ld Engine::exitVel() const noexcept
 {
 	return _exitVel;
+}
+ld Engine::thrustPercent() const noexcept
+{
+	return _thrustPercent;
 }
 bool Engine::canGimble() const noexcept
 {
@@ -94,7 +102,7 @@ void Engine::update()
 
 Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept
 {
-	usedFuel.addFuel(_fuelPerSecond * _thrustPercent * timeObjects::dt);
+	usedFuel.addFuel(_fuelPerSecond * _thrustPercent);
 	ld radius = (centerOfMass - _mountPos).length();
 	rotationalAcc += centerOfMass.cross((_orientation * rocketOrientation).rotate(usedFuel.totalMass() * _exitVel))/(0.5 * mass * radius*radius);
 	Vector3 Cmnorm = centerOfMass.normal();

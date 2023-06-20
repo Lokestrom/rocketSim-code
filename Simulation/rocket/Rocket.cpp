@@ -3,6 +3,8 @@
 #include "../helpers/controles.hpp"
 #include "../planet.hpp"
 #include "../FileSystem/fileSystem.hpp"
+#include "../FileSystem/logging.hpp"
+#include "../FileSystem/Instructions.hpp"
 
 Rocket::Rocket() 
 	: _ID(""), _pos(Vector3::null()), _vel(Vector3::null()), _acc(Vector3::null()), _orientation(Quaternion()), _rocketStages()
@@ -94,7 +96,9 @@ void Rocket::update() noexcept
 	Vector3 withoutRotationPos = -_orientation.rotate(_centerOfMass);
 
 	_orientation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
+	_orientation = _orientation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
+	_rotationVel = _orientation.normalized();
 
 	Vector3 withRotationPos = -_orientation.rotate(_centerOfMass);
 
@@ -139,16 +143,20 @@ void Rocket::rotate(ld t, Quaternion angle)
 void Rocket::stage() noexcept 
 {
 	objectLists::rockets.pushBack(new Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
-	_rocketStages.pop(0);
-	fileSystem::objects::rocketFiles.insert({ objectLists::rockets[objectLists::rockets.size() - 1]->ID(), WriteFile<ld>(fileSystem::objects::runFolder + "rocket/" + objectLists::rockets[objectLists::rockets.size() - 1]->ID()) });
-
+	fileSystem::createLoggingFilesForNewRocket(*objectLists::rockets[objectLists::rockets.size() - 1]);
+	try {
+		objectLists::instructions.pushBack(new fileSystem::Instructions(objectLists::rockets[objectLists::rockets.size() - 1]));
+	}
+	catch (const error& e) {
+		throw error("When staging the stage: " + toS(_rocketStages[0].ID()) + "from the rocket: " + ID() + "an error apeared:\n" + e.what, e.code);
+	}
 }
 
 void Rocket::updateCenterOfGravity() noexcept 
 {
 	_centerOfMass = Vector3::null();
 	for (RocketStage i : _rocketStages)
-		_centerOfMass += i.centerOfGravity();
+		_centerOfMass += i.centerOfGravity() + i.pos();
 	_centerOfMass = _centerOfMass / _rocketStages.size();
 }
 
@@ -171,7 +179,7 @@ ld Rocket::deltaV(const int& stageID) const
 	for (auto& i : _rocketStages)
 		if (stageID == i.ID())
 			return i.deltaV();
-	throw InvalidArgument("Rocket does not have a stage with that ID");
+	throw error("Rocket does not have a stage with that ID", exitCodes::badUserBehavior);
 }
 ld Rocket::altitude(const String& planetID) const 
 {
@@ -188,7 +196,7 @@ ld Rocket::altitude(const String& planetID) const
 		alt = abs(alt) - pp->radius();
 		return alt;
 	}
-	throw InvalidArgument(("The planet: " + planetID + " does not excist").cstr());
+	throw error(("The planet: " + planetID + " does not excist").cstr(), exitCodes::badUserBehavior);
 
 	return 0;
 }
@@ -271,7 +279,7 @@ int rocketSearchIndex(String ID) noexcept
 /*private fungtions*/
 void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noexcept
 {
-	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass + _rocketStages[0].pos(), orientation(), mass, ID());
+	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass - _rocketStages[0].pos(), orientation(), mass, ID());
 }
 
 void Rocket::gravity(Vector3& gravity) const noexcept

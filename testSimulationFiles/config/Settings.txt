@@ -3,5 +3,5 @@ Aerodynamic=simple
 Randomnes=false
 Edge detection=100
 Point approximation of mesh per m2 = 100
-delta time=0.001
+delta time=1
 used fuel types= ch4

@@ -174,7 +174,6 @@ namespace fileSystem {
 		Vector<String> fuelPerSecondArgs = map["fuelpersecond"].split(',');
 		for (const auto& i : fuelPerSecondArgs) {
 			Vector<String> fuel = i.split(':');
-			std::cout << fuel[1] << ", " << STold(fuel[1]);
 			fuelPerSecond.addFuel(Fuelmap(fuel[0], STold(fuel[1])));
 		}
 		file.close();

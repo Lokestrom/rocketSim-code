@@ -6,6 +6,13 @@ namespace fileSystem {
 	Instructions::Instructions() {
 		_rocket = nullptr;
 	}
+	Instructions::Instructions(Rocket* rocket) {
+		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + rocket->ID() + ".txt"));
+		if (!_file.is_open())
+			throw error("File \"" + rocket->ID() + ".txt" + "\" couldn't be opened.", exitCodes::fileFault);
+		_rocket = rocket;
+		getInstruction();
+	}
 	Instructions::Instructions(String fileName, Rocket* rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
 		if (!_file.is_open())
@@ -15,31 +22,31 @@ namespace fileSystem {
 	}
 
 	void Instructions::run(bool& exitSimulation) {
-		if (timeObjects::currentTime < _nextInstructionTime)
-			return;
 		
 		try {
-			for (auto& i : _nextInstruction) {
-				if (i.contains("=")) {
-					Vector<String> variable = returnVariableAndValue(i);
-					setVariable(variable[0], variable[1]);
-					continue;
+			while (timeObjects::currentTime >= _nextInstructionTime) {
+				for (auto& i : _nextInstruction) {
+					if (i.contains("=")) {
+						Vector<String> variable = returnVariableAndValue(i);
+						setVariable(variable[0], variable[1]);
+						continue;
+					}
+					if (i.contains("(")) {
+						runInstruction(std::move(i), exitSimulation);
+						if (exitSimulation)
+							return;
+						continue;
+					}
+					throw error("The instruction \"" + i + "\" is not valid." +
+						"\nThe instruction must be formed like this:\n" +
+						"\"timestamp:instruction(args)\" or \"timestamp:setting=value", exitCodes::badUserBehavior);
 				}
-				if (i.contains("(")) {
-					runInstruction(std::move(i), exitSimulation);
-					if (exitSimulation)
-						return;
-					continue;
-				}
-				throw error("The instruction \"" + i + "\" is not valid." +
-					"\nThe instruction must be formed like this:\n" +
-					"\"timestamp:instruction(args)\" or \"timestamp:setting=value", exitCodes::badUserBehavior);
+				getInstruction();
 			}
 		}
 		catch (const error& e) {
 			throw error("While runing instructions for rocket: \"" + _rocket->ID() + "\" an error apeared:\n" + e.what, e.code);
 		}
-		getInstruction();
 
 	}
 
@@ -129,8 +136,10 @@ namespace fileSystem {
 				break;
 			}
 		}
-		else if (instruction == "exit")
+		else if (instruction == "exit") {
 			exitSimulation = true;
+			return;
+		}
 
 		else if (instruction == "no more instructions in file")
 			_nextInstructionTime = LDBL_MAX;

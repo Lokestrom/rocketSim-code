@@ -1,4 +1,9 @@
 #pragma once
 
+#include "String.hpp"
+
+using namespace Database;
+
 bool update();
-void run(int argc, const char* argv[]);
+
+void run(String folder, String runName);

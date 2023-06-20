@@ -84,10 +84,12 @@ Vector<int> RocketStage::fuelTankIDs() const noexcept
 
 void RocketStage::setID(int newID) noexcept
 {
+	_ID = newID;
 }
 
 void RocketStage::setPos(Vector3 newPos) noexcept
 {
+	_pos = newPos;
 }
 
 /*other*/
@@ -116,7 +118,7 @@ Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quater
 			fuelDrain[i.fuelType()]++;
 	}
 	for (auto& i : _fuelTanks) {
-		i.removeFuel(usedfuel / fuelDrain[i.fuelType()]);
+		i.removeFuel((usedfuel / fuelDrain[i.fuelType()]) * timeObjects::dt);
 	}
 	return thrust;
 }

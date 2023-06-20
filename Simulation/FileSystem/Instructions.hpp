@@ -6,6 +6,7 @@ namespace fileSystem {
 	class Instructions {
 	public:
 		Instructions();
+		Instructions(Rocket* rocket);
 		Instructions(String fileName, Rocket* rocket);
 
 		void run(bool& exitSimulation);

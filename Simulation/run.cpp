@@ -10,7 +10,7 @@
 bool update()
 {
 	for (auto& i : objectLists::instructions) {
-		bool exitSimulation;
+		bool exitSimulation = false;
 		i->run(exitSimulation);
 		if (exitSimulation)
 			return false;
@@ -31,14 +31,14 @@ bool update()
 	if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging) {
 		fileSystem::loggCurrentState();
 	}
+	std::cout << timeObjects::currentTime;
 	timeObjects::updateTime();
-
 	return true;
 }
 
-void run(int argc, const char* argv[]) {
-	fileSystem::objects::simulationFolder = argv[1] + '/';
-	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + argv[2] + "/";
+void run(String folder, String runName) {
+	fileSystem::objects::simulationFolder = folder + '/';
+	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
 	objectLists::physicsPlanets = Vector<PhysicsPlanet*>();
 	objectLists::fixedOrbitPlanets = Vector<FixedOrbitPlanet*>();
 	objectLists::rockets = Vector<Rocket*>();
@@ -47,7 +47,7 @@ void run(int argc, const char* argv[]) {
 	fileSystem::loadInObjects();
 	fileSystem::loggingStartup();
 
-	while (update())
+	while (update());
 
 	fileSystem::loggingEnd();
 	objectLists::deleteObjectLists();
