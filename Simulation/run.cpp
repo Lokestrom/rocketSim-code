@@ -31,7 +31,6 @@ bool update()
 	if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging) {
 		fileSystem::loggCurrentState();
 	}
-	std::cout << timeObjects::currentTime;
 	timeObjects::updateTime();
 	return true;
 }

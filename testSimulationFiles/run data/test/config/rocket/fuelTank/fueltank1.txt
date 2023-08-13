@@ -1,5 +1,5 @@
 FuelType=ch4
 radius=4
 height=6
-FuelDensity=100
-fuelmass=100
+FuelDensity=10000
+fuelmass=10000

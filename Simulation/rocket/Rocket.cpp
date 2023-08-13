@@ -98,7 +98,7 @@ void Rocket::update() noexcept
 	_orientation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
 	_orientation = _orientation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
-	_rotationVel = _orientation.normalized();
+	_rotationVel = _rotationVel.normalized();
 
 	Vector3 withRotationPos = -_orientation.rotate(_centerOfMass);
 
