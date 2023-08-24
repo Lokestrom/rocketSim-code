@@ -92,12 +92,12 @@ GameObject3D GameObject3D::makePointLight(float intensity, float radius, glm::ve
     return gameObj;
 }
 
-void GameObject2D::setButtonFunction(void(*function)())
+void GameObject2D::setButtonFunction(void(*function)(WindowInfo& window))
 {
     clickedFunction = function;
 }
 
-bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res) {
+bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& window) {
     glm::mat2 rotationMat = { {cos(transform.rotation), -sin(transform.rotation)}, {sin(transform.rotation), cos(transform.rotation)} };
 
     glm::vec2 relativePos = (mousePos - transform.translation);
@@ -110,7 +110,7 @@ bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res) {
         relativePos.x <= transform.scale.x &&
         relativePos.y >= -transform.scale.y &&
         relativePos.y <= transform.scale.y) {
-        clickedFunction();
+        clickedFunction(window);
         return true;
     }
     return false;

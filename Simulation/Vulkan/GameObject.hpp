@@ -1,5 +1,6 @@
 #pragma once
 #include "Model.hpp"
+#include "App.hpp"
 
 // libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,9 +23,9 @@ struct Transform2DComponent {
 };
 
 struct Transform3DComponent {
-    Vector3 translation{};
+    Vector3 translation;
     Vector3 scale{ 1.f, 1.f, 1.f };
-    Quaternion rotation{};
+    Quaternion rotation;
 
     glm::mat4 mat4();
 
@@ -38,7 +39,6 @@ struct PointLightComponent {
 enum class GameObject2DType {
     nonInteractive,
     button,
-    text,
     backGround
 };
 
@@ -60,7 +60,7 @@ public:
 
     id_t getId() { return id; }
 
-    void setButtonFunction(void (*function)());
+    void setButtonFunction(void (*function)(WindowInfo& window));
 
     glm::vec3 color{};
     Transform2DComponent transform{};
@@ -74,9 +74,9 @@ public:
     bool isClicked(glm::vec2 mousePos, glm::vec2 res);
 
 private:
-    GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{objType} {}
+    GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{ objType } {}
 
-    void (*clickedFunction)() = nullptr;
+    void (*clickedFunction)(WindowInfo& window) = nullptr;
     id_t id;
 };
 
@@ -84,7 +84,7 @@ class GameObject3D
 {
 public:
     using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, GameObject3D>;
+    using Map = std::unordered_map<id_t, std::shared_ptr<GameObject3D>>;
 
     static GameObject3D createGameObject() {
         static id_t currentId = 0;
@@ -102,7 +102,7 @@ public:
     id_t getId() { return id; }
 
     glm::vec3 color{};
-    Transform3DComponent transform{};
+    Transform3DComponent transform;
 
     // Optional pointer components
     std::shared_ptr<Model3D> model{};

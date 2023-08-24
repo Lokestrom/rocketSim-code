@@ -1,4 +1,5 @@
 #include "planet.hpp"
+#include "Vulkan/GameObject.hpp"
 
 /*Obstruction*/
 Obstruction::Obstruction()
@@ -47,6 +48,10 @@ Vector3 Planet::vel() const noexcept
 {
 	return this->_vel;
 }
+Quaternion Planet::orientation() const noexcept
+{
+	return _orientation;
+}
 ld Planet::mass() const noexcept 
 {
 	return this->_mass;
@@ -62,6 +67,21 @@ Sphere Planet::mesh() const noexcept
 Vector<Obstruction> Planet::obstructions() const noexcept 
 {
 	return _obstructions;
+}
+
+std::shared_ptr<GameObject3D> Planet::object() const noexcept
+{
+	return _object;
+}
+
+Vector3& Planet::posRef() noexcept
+{
+	return _pos;
+}
+
+Quaternion& Planet::orientationRef() noexcept
+{
+	return _orientation;
 }
 
 void Planet::setPos(Vector3 newPos) noexcept

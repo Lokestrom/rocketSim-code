@@ -21,7 +21,6 @@ struct GlobalUbo {
 	int numLights;
 };
 
-
 struct FrameInfo {
 	int frameIndex;
 	float frameTime;
@@ -30,5 +29,6 @@ struct FrameInfo {
 	vk::DescriptorSet globalDescriptorSet;
 	GameObject2D::Map& gameObjects2D;
 	GameObject3D::Map& gameObjects3D;
-	Text::Map& text;
+	StaticText::Map& staticText;
+	StaticText::MapRef varyingText;
 };

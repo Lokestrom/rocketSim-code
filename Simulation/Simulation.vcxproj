@@ -77,14 +77,14 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database</AdditionalLibraryDirectories>
-      <AdditionalDependencies>debug/database.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>debug/database.lib;;vulkan-1.lib;glfw3.lib;debug/freetype.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,7 +93,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -102,31 +102,33 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database</AdditionalLibraryDirectories>
-      <AdditionalDependencies>database.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>database.lib;vulkan-1.lib;glfw3.lib;freetype.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database</AdditionalLibraryDirectories>
-      <AdditionalDependencies>debug/database.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>debug/database.lib;;vulkan-1.lib;glfw3.lib;debug/freetype.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database</AdditionalLibraryDirectories>
-      <AdditionalDependencies>database.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>database.lib;vulkan-1.lib;glfw3.lib;freetype.lib;</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)../externalLibs/database/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Vulkan\UI.cpp" />
+    <ClCompile Include="Vulkan\callbackFunctions.cpp" />
     <ClCompile Include="DragSim.cpp" />
     <ClCompile Include="FileSystem\fileSystem.cpp" />
     <ClCompile Include="FileSystem\Instructions.cpp" />
@@ -144,8 +146,27 @@
     <ClCompile Include="rocket\FuelTank.cpp" />
     <ClCompile Include="rocket\Rocket.cpp" />
     <ClCompile Include="rocket\RocketStage.cpp" />
+    <ClCompile Include="Vulkan\App.cpp" />
+    <ClCompile Include="Vulkan\Buffer.cpp" />
+    <ClCompile Include="Vulkan\Camera.cpp" />
+    <ClCompile Include="Vulkan\descriptors.cpp" />
+    <ClCompile Include="Vulkan\Device.cpp" />
+    <ClCompile Include="Vulkan\GameObject.cpp" />
+    <ClCompile Include="Vulkan\Model.cpp" />
+    <ClCompile Include="Vulkan\PeripheralInputDevice.cpp" />
+    <ClCompile Include="Vulkan\Pipeline.cpp" />
+    <ClCompile Include="Vulkan\Renderer.cpp" />
+    <ClCompile Include="Vulkan\SwapChain.cpp" />
+    <ClCompile Include="Vulkan\systems\PointLightSystem.cpp" />
+    <ClCompile Include="Vulkan\systems\RenderSystem.cpp" />
+    <ClCompile Include="Vulkan\systems\RenderSystem2D.cpp" />
+    <ClCompile Include="Vulkan\systems\TextSystem.cpp" />
+    <ClCompile Include="Vulkan\Text.cpp" />
+    <ClCompile Include="Vulkan\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vulkan\UI.hpp" />
+    <ClInclude Include="Vulkan\callbackFunctions.hpp" />
     <ClInclude Include="DragSim.hpp" />
     <ClInclude Include="FileSystem\fileSystem.hpp" />
     <ClInclude Include="FileSystem\Instructions.hpp" />
@@ -163,6 +184,24 @@
     <ClInclude Include="rocket\FuelTank.hpp" />
     <ClInclude Include="rocket\Rocket.hpp" />
     <ClInclude Include="rocket\RocketStage.hpp" />
+    <ClInclude Include="Vulkan\App.hpp" />
+    <ClInclude Include="Vulkan\Buffer.hpp" />
+    <ClInclude Include="Vulkan\Camera.hpp" />
+    <ClInclude Include="Vulkan\descriptors.hpp" />
+    <ClInclude Include="Vulkan\Device.hpp" />
+    <ClInclude Include="Vulkan\frameInfo.hpp" />
+    <ClInclude Include="Vulkan\GameObject.hpp" />
+    <ClInclude Include="Vulkan\Model.hpp" />
+    <ClInclude Include="Vulkan\PeripheralInputDevice.hpp" />
+    <ClInclude Include="Vulkan\Pipeline.hpp" />
+    <ClInclude Include="Vulkan\Renderer.hpp" />
+    <ClInclude Include="Vulkan\SwapChain.hpp" />
+    <ClInclude Include="Vulkan\systems\PointLightSystem.hpp" />
+    <ClInclude Include="Vulkan\systems\RenderSystem.hpp" />
+    <ClInclude Include="Vulkan\systems\RenderSystem2D.hpp" />
+    <ClInclude Include="Vulkan\systems\TextSystem.hpp" />
+    <ClInclude Include="Vulkan\Text.hpp" />
+    <ClInclude Include="Vulkan\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

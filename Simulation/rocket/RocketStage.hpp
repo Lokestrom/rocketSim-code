@@ -15,7 +15,7 @@ public:
 	RocketStage();
 	RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
 		Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
-		Vector<FuelTank> fuelTanks, Shape mesh);
+		Vector<FuelTank> fuelTanks, Shape mesh, std::shared_ptr<GameObject3D> object);
 
 	/*getters*/
 	int ID() const noexcept;
@@ -28,7 +28,8 @@ public:
 	Vector<int> engineIDs() const noexcept;
 	Vector<FuelTank> fuelTanks() const noexcept;
 	Vector<int> fuelTankIDs() const noexcept;
-
+	
+	std::shared_ptr<GameObject3D> object() const noexcept;
 
 	/*setters*/
 	void setID(int newID) noexcept;
@@ -61,4 +62,6 @@ private:
 	Vector<Engine> _engines;
 	Vector<ReactionThruster> _reactionThrusters;
 	Vector<FuelTank> _fuelTanks;
+
+	std::shared_ptr<GameObject3D> _object;
 };

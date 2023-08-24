@@ -7,7 +7,7 @@
 
 #include "GameObject.hpp"
 
-#include "helpers/Quaternion.hpp"
+#include "../helpers/Quaternion.hpp"
 
 class Camera
 {

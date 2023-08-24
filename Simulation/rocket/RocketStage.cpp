@@ -1,6 +1,7 @@
 #include "Rocket.hpp"
 #include "RocketStage.hpp"
 #include "../planet.hpp"
+#include "../Vulkan/GameObject.hpp"
 
 RocketStage::RocketStage() : _ID(-1), _pos(Vector3::null()), _dryMass(0), _centerOfMass(Vector3::null()),
 _engines(Vector<Engine>()), _reactionThrusters(Vector<ReactionThruster>()),
@@ -9,10 +10,10 @@ _fuelTanks(Vector<FuelTank>()), _mesh(Shape())
 
 RocketStage::RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
 	Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
-	Vector<FuelTank> fuelTanks, Shape mesh)
+	Vector<FuelTank> fuelTanks, Shape mesh, std::shared_ptr<GameObject3D> object)
 	: _ID(ID), _pos(pos), _dryMass(dryMass), _centerOfMass(centerOfMass),
 	_engines(engines), _reactionThrusters(reactionThrusters),
-	_fuelTanks(fuelTanks), _mesh(mesh)
+	_fuelTanks(fuelTanks), _mesh(mesh), _object(object)
 {
 }
 
@@ -78,6 +79,11 @@ Vector<int> RocketStage::fuelTankIDs() const noexcept
 	for (auto& i : _fuelTanks)
 		fID.pushBack(i.ID());
 	return fID;
+}
+
+std::shared_ptr<GameObject3D> RocketStage::object() const noexcept
+{
+	return _object;
 }
 
 /*setters*/

@@ -63,6 +63,16 @@ Vector<RocketStage> Rocket::stages() const noexcept
 	return _rocketStages;
 }
 
+Vector3& Rocket::posRef() noexcept
+{
+	return _pos;
+}
+
+Quaternion& Rocket::orientationRef() noexcept
+{
+	return _orientation;
+}
+
 void Rocket::setPos(Vector3 newPos) noexcept
 {
 	_pos = newPos;

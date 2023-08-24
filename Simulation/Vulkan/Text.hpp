@@ -13,6 +13,9 @@
 #include <vector>
 #include <unordered_map>
 
+#include "Exception.hpp"
+#include "String.hpp"
+
 enum class CurveTag {
     on,
     conic,
@@ -79,11 +82,12 @@ struct Character {
     std::shared_ptr<CharacterGlyph> characterGlyph;
 };
 
-class Text
+class StaticText
 {
 public:
     using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, Text>;
+    using Map = std::unordered_map<id_t, StaticText>;
+    using MapRef = std::unordered_map<id_t, StaticText*>;
 
     struct Vertex {
         glm::vec3 position{};
@@ -97,10 +101,15 @@ public:
         }
     };
 
-    static Text createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string text = "") {
+    static StaticText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string text = "") {
         static id_t currentId = 0;
-        return Text{ device, currentId, pos, color, scale, text };
+        return StaticText{ device, currentId, pos, color, scale, text };
     }
+
+    StaticText(const StaticText&) = delete;
+    StaticText& operator=(const StaticText&) = delete;
+    StaticText(StaticText&&) = default;
+    StaticText& operator=(StaticText&&) = default;
 
     id_t getId() { return _id; }
     float getScale() { return _scale;  }
@@ -113,8 +122,7 @@ public:
     void draw(vk::CommandBuffer commandBuffer);
 
 private:
-    Text(Device& device, id_t id, glm::vec2 pos, glm::vec4 color, float scale, std::string text) : _device(device), _id(id), _pos(pos), _color(color), _scale(scale) {
-        _nextCharacterPos = { 0,0 };
+    StaticText(Device& device, id_t id, glm::vec2 pos, glm::vec4 color, float scale, std::string text) : _device(device), _id(id), _pos(pos), _color(color), _scale(scale) {
         assignText(text);
         createVertexBuffer();
     }
@@ -136,3 +144,115 @@ private:
     size_t _vertexCount;
     std::unique_ptr<Buffer> _boxBuffer;
 };
+
+template <typename T>
+class VaryingText {
+public:
+    using id_t = unsigned int;
+    using Map = std::unordered_map<id_t, VaryingText>;
+    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, T& text) {
+        static id_t currentId = 0;
+        StaticText::createText(device, pos, color, scale);
+        return VaryingText{ std::move(textObj), text };
+    }
+    void update();
+
+    StaticText::id_t getId();
+    StaticText& staticText();
+private:
+    VaryingText(StaticText&& textObj, T& text) : _textObj(textObj), _text(text) {}
+private:
+    StaticText _textObj;
+    T& _text;
+};
+
+template<typename T>
+inline void VaryingText<T>::update()
+{
+    throw InvalidArgument("Can't convert input to text.");
+}
+template<typename T>
+inline StaticText::id_t VaryingText<T>::getId()
+{
+    return _textObj.getId();
+}
+template<typename T>
+inline StaticText& VaryingText<T>::staticText()
+{
+    return _textObj;
+}
+template<>
+inline void VaryingText<int>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<short>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<long>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<long long>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<char>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<unsigned int>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<unsigned short>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<unsigned long>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<unsigned long long>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<unsigned char>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<float>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<double>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<long double>::update()
+{
+    _textObj.assignText(std::to_string(_text));
+}
+template<>
+inline void VaryingText<std::string>::update()
+{
+    _textObj.assignText(_text);
+}
+template<>
+inline void VaryingText<Database::String>::update()
+{
+    _textObj.assignText(Database::toSTD(_text));
+}

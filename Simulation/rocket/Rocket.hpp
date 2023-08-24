@@ -29,6 +29,9 @@ public:
 	bool RCS() const noexcept;
 	Vector<RocketStage> stages() const noexcept;
 
+	Vector3& posRef() noexcept;
+	Quaternion& orientationRef() noexcept;
+
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;
 	void setOrientation(Quaternion newOrientation) noexcept;

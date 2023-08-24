@@ -204,8 +204,8 @@ void Pipeline::defaultPipelineConfigInfo3D(PipelineConfigInfo& configInfo) {
 void Pipeline::defaultPipelineConfigInfoText(PipelineConfigInfo& configInfo)
 {
     defaultPipelineConfigInfo(configInfo);
-    configInfo.bindingDescriptions = Text::Vertex::getBindingDescriptions();
-    configInfo.attributeDescriptions = Text::Vertex::getAttributeDescriptions();
+    configInfo.bindingDescriptions = StaticText::Vertex::getBindingDescriptions();
+    configInfo.attributeDescriptions = StaticText::Vertex::getAttributeDescriptions();
     configInfo.depthStencilInfo.front = vk::StencilOpState();
     configInfo.depthStencilInfo.front.setReference(0);
     configInfo.depthStencilInfo.front.setCompareOp(vk::CompareOp::eAlways);

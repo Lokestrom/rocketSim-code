@@ -31,7 +31,9 @@ struct WindowInfo {
 	std::unique_ptr<DescriptorPool> globalPool;
 	GameObject3D::Map gameObjects3d;
 	GameObject2D::Map gameObjects2d;
-	Text::Map texts;
+	StaticText::Map staticTexts;
+	StaticText::MapRef varyingldsStaticTextRefs;
+	VaryingText<long double>::Map varyinglds;
 
 	std::vector<std::unique_ptr<Buffer>> uboBuffer;
 	std::vector<vk::DescriptorSet> globalDescriptorSet;
@@ -60,21 +62,22 @@ private:
 	WindowInfo(unsigned int id, std::string name);
 };
 
-class App
+class Vulkan
 {
 public:
 	static constexpr int WIDTH = 1100;
 	static constexpr int HEIGHT = 900;
 
-	App();
-	~App();
+	Vulkan();
+	~Vulkan();
 
-	App(const App&) = delete;
-	App& operator=(const App&) = delete;
+	Vulkan(const Vulkan&) = delete;
+	Vulkan& operator=(const Vulkan&) = delete;
 
 	static std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>>& getWindows() { return _windows; };
 
-	static void run();
+	static void startup();
+	static bool update();
 
 	static void addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&));
 

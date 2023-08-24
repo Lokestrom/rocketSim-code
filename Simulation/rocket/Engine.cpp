@@ -3,6 +3,7 @@
 #include "String.hpp"
 
 #include "../planet.hpp"
+#include "../Vulkan/GameObject.hpp"
 
 using namespace Database;
 
@@ -77,6 +78,11 @@ Vector3 Engine::mountPos() const noexcept
 Vector<String> Engine::fuelTypes() const noexcept
 {
 	return _fuelPerSecond.fuelTypes();
+}
+
+std::shared_ptr<GameObject3D> Engine::object() const noexcept
+{
+	return _object;
 }
 
 void Engine::setID(int newID) noexcept

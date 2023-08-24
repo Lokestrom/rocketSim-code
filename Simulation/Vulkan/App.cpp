@@ -20,14 +20,14 @@ glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
 
-std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> App::_windows;
-Keyboard App::_keyboard;
-Mouse App::_mouse;
-bool App::_pause = false;
+std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> Vulkan::_windows;
+Keyboard Vulkan::_keyboard;
+Mouse Vulkan::_mouse;
+bool Vulkan::_pause = false;
 
 WindowInfo::WindowInfo(unsigned int id, std::string name)
     : ID(id), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT) {
-    window = std::make_unique<Window>(App::WIDTH, App::HEIGHT, name);
+    window = std::make_unique<Window>(Vulkan::WIDTH, Vulkan::HEIGHT, name);
     device = std::make_unique<Device>(*window);
     renderer = std::make_unique<Renderer>(*window, *device);
 
@@ -76,7 +76,6 @@ WindowInfo::WindowInfo(unsigned int id, std::string name)
     camera = std::make_unique<Camera>();
 
     viewerObject = std::make_unique<GameObject3D>(GameObject3D::createGameObject());
-    viewerObject->transform.translation.z = -2.5f;
 }
 
 WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
@@ -88,7 +87,9 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     globalPool.swap(windowInfo.globalPool);
     gameObjects3d.swap(windowInfo.gameObjects3d);
     gameObjects2d.swap(windowInfo.gameObjects2d);
-    texts.swap(windowInfo.texts);
+    staticTexts.swap(windowInfo.staticTexts);
+    varyingldsStaticTextRefs.swap(windowInfo.varyingldsStaticTextRefs);
+    varyinglds.swap(windowInfo.varyinglds);
     uboBuffer.swap(windowInfo.uboBuffer);
     globalDescriptorSet.swap(windowInfo.globalDescriptorSet);
     renderSystem3D.swap(windowInfo.renderSystem3D);
@@ -117,8 +118,9 @@ WindowInfo::~WindowInfo()
 
     gameObjects3d.clear();
     gameObjects2d.clear();
-    texts.clear();
-
+    staticTexts.clear();
+    varyingldsStaticTextRefs.clear();
+    varyinglds.clear();
 
     renderer.reset();
     window.reset();
@@ -135,7 +137,7 @@ void loadShit(WindowInfo& window) {
 }
 
 void shitButtonFunction() {
-    App::addWindow(WindowInfo::createWindowInfo("shit"), loadShit);
+    Vulkan::addWindow(WindowInfo::createWindowInfo("shit"), loadShit);
     std::cout << "shit button was pressed!\n";
 }
 
@@ -154,16 +156,6 @@ void loadWin1(WindowInfo& window)
     floor.transform.translation = { 0.f, .5f, 0.f };
     floor.transform.scale = { 3.f, 1.f, 3.f };
     window.gameObjects3d.emplace(floor.getId(), std::move(floor));
-
-    std::shared_ptr<Model2D> model2d = Model2D::createModelFromFile(*window.device, "D:\\code\\codeProjects\\VulkanTest\\models\\colored_cube.obj");
-    auto uiShit = GameObject2D::createGameObject(GameObject2DType::button);
-    uiShit.model = model2d;
-    uiShit.transform.translation = { .9, -.7 };
-    uiShit.transform.scale = { .05f, .2f };
-    uiShit.transform.rotation = 0;
-    uiShit.setButtonFunction(shitButtonFunction);
-    window.gameObjects2d.emplace(uiShit.getId(), std::move(uiShit));
-
 
     std::vector<glm::vec3> lightColors{
         {1.f, 0.f, .1f},
@@ -186,91 +178,100 @@ void loadWin1(WindowInfo& window)
         window.gameObjects3d.emplace(pointLight.getId(), std::move(pointLight));
     }
     
-    auto text = Text::createText(*window.device, {-1,0}, {1,1,1,1 }, 0.0001, "H             e\neo");
-    window.texts.emplace(text.getId(), std::move(text));
+    auto text = StaticText::createText(*window.device, {-1,0}, {1,1,1,1 }, 0.0001, "H             e\neo");
+    window.staticTexts.emplace(text.getId(), std::move(text));
 }
 
-App::App() 
+Vulkan::Vulkan() 
 {
-    App::addWindow(WindowInfo::createWindowInfo("win1"), loadWin1);
+    Vulkan::addWindow(WindowInfo::createWindowInfo("win1"), loadWin1);
 }
 
-App::~App() {
+Vulkan::~Vulkan() {
     glfwTerminate();
 }
 
-void App::run() {
+void Vulkan::startup() {
     for (auto& [key, window] : _windows) {
         glfwSetKeyCallback(window->window->getGLFWwindow(), keyBoardInput);
         glfwSetMouseButtonCallback(window->window->getGLFWwindow(), mouseInput);
         keyBoardInput(window->window->getGLFWwindow(), 0, 0, 0, 0);
     }
 
-    for(auto& [key, window] : _windows)
+    for (auto& [key, window] : _windows)
         window->currentTime = std::chrono::high_resolution_clock::now();
-    while (!_windows.empty()) {
-        for (auto& [key, window] : _windows) {
-            glfwPollEvents();
-            if (window->window->shouldClose()) {
-                _windows.erase(key);
-                break;
-            }
-
-            auto newTime = std::chrono::high_resolution_clock::now();
-            float deltaTime =
-                std::chrono::duration<float, std::chrono::seconds::period>(newTime - window->currentTime).count();
-            window->currentTime = newTime;
-
-            if (!_pause) {
-                _mouse.rotate(*window->window, *window->viewerObject);
-                _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
-                _keyboard.move(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
-            }
-            window->camera->setViewYXZ(toVec3(window->viewerObject->transform.translation), window->viewerObject->transform.rotation);
-
-            double aspect = window->renderer->getAspectRatio();
-            window->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
-
-            if (auto commandBuffer = window->renderer->beginFrame()) {
-                int frameIndex = window->renderer->getFrameIndex();
-                FrameInfo frameInfo{
-                    frameIndex,
-                    deltaTime,
-                    commandBuffer,
-                    *window->camera,
-                    window->globalDescriptorSet[frameIndex],
-                    window->gameObjects2d,
-                    window->gameObjects3d,
-                    window->texts
-                };
-
-                // update
-                GlobalUbo ubo{};
-                ubo.projection = window->camera->getProjection();
-                ubo.view = window->camera->getView();
-                ubo.inverseView = window->camera->getInverseView();
-                ubo.resolution = glm::vec4{ window->window->getExtent().width / (float)std::max(window->window->getExtent().width, window->window->getExtent().height), window->window->getExtent().height / (float)std::max(window->window->getExtent().width, window->window->getExtent().height),0,0};
-                window->pointLightSystem->update(frameInfo, ubo, _pause);
-                window->uboBuffer[frameIndex]->writeToBuffer(&ubo);
-                window->uboBuffer[frameIndex]->flush();
-
-                // render
-                window->renderer->beginSwapChainRenderPass(commandBuffer);
-
-                // order here matters
-                window->textRenderSystem->renderText(frameInfo);
-                window->renderSystem2D->renderGameObjects(frameInfo);
-                window->renderSystem3D->renderGameObjects(frameInfo);
-                window->pointLightSystem->render(frameInfo);
-
-                window->renderer->endSwapChainRenderPass(commandBuffer);
-                window->renderer->endFrame();
-            }
-        }
-    }
 }
 
-void App::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
+bool Vulkan::update() {
+    if (_windows.empty())
+        return false;
+    for (auto& [key, window] : _windows) {
+        glfwPollEvents();
+        if (window->window->shouldClose()) {
+            _windows.erase(key);
+            break;
+        }
+        for (auto& [key, text] : window->varyinglds) {
+            text.update();
+            window->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
+        }
+
+        auto newTime = std::chrono::high_resolution_clock::now();
+        float deltaTime =
+            std::chrono::duration<float, std::chrono::seconds::period>(newTime - window->currentTime).count();
+        window->currentTime = newTime;
+
+        if (!_pause) {
+            _mouse.rotate(*window->window, *window->viewerObject);
+            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
+            _keyboard.move(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
+        }
+        window->camera->setViewYXZ(toVec3(window->viewerObject->transform.translation), window->viewerObject->transform.rotation);
+
+        double aspect = window->renderer->getAspectRatio();
+        window->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+
+        if (auto commandBuffer = window->renderer->beginFrame()) {
+            int frameIndex = window->renderer->getFrameIndex();
+            FrameInfo frameInfo{
+                frameIndex,
+                deltaTime,
+                commandBuffer,
+                *window->camera,
+                window->globalDescriptorSet[frameIndex],
+                window->gameObjects2d,
+                window->gameObjects3d,
+                window->staticTexts,
+                window->varyingldsStaticTextRefs
+            };
+
+            // update
+            GlobalUbo ubo{};
+            ubo.projection = window->camera->getProjection();
+            ubo.view = window->camera->getView();
+            ubo.inverseView = window->camera->getInverseView();
+            ubo.resolution = glm::vec4{ window->window->getExtent().width / (float)std::max(window->window->getExtent().width, window->window->getExtent().height), window->window->getExtent().height / (float)std::max(window->window->getExtent().width, window->window->getExtent().height),0,0};
+            window->pointLightSystem->update(frameInfo, ubo, _pause);
+            window->uboBuffer[frameIndex]->writeToBuffer(&ubo);
+            window->uboBuffer[frameIndex]->flush();
+
+            // render
+            window->renderer->beginSwapChainRenderPass(commandBuffer);
+
+            // order here matters
+            window->textRenderSystem->renderText(frameInfo);
+            window->renderSystem2D->renderGameObjects(frameInfo);
+            window->renderSystem3D->renderGameObjects(frameInfo);
+            window->pointLightSystem->render(frameInfo);
+
+            window->renderer->endSwapChainRenderPass(commandBuffer);
+            window->renderer->endFrame();
+        }
+    }
+    return true;
+}
+
+void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
 {
     unsigned int id = window.ID;
     _windows.emplace(id, std::make_unique<WindowInfo>(std::move(window)));
@@ -321,7 +322,7 @@ void App::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
 }*/
 
 
-void App::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         _pause = !_pause;
@@ -353,8 +354,7 @@ void App::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, i
     }
 }
 
-void App::mouseInput(GLFWwindow* window, int button, int action, int mods)
-{
+void Vulkan::mouseInput(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         glm::vec2 mousePos, res;
         double mousex, mousey;
@@ -377,4 +377,3 @@ void App::mouseInput(GLFWwindow* window, int button, int action, int mods)
         }
     }
 }
-

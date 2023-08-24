@@ -34,6 +34,7 @@ struct Vector3 {
 	Vector3 normal() const noexcept;
 	ld dot(const Vector3& v) const noexcept;
 	Vector3 cross(const Vector3& v) const noexcept;
+	Vector3 inverse() const noexcept;
 
 	/*unit Vector3*/
 	static Vector3 UnitX() noexcept;

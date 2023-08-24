@@ -118,6 +118,10 @@ ld Vector3::dot(const Vector3& v) const noexcept
 {
 	return x * v.x + y * v.y + z * v.z;
 }
+Vector3 Vector3::inverse() const noexcept
+{
+	return { 1 / x, 1 / y, 1 / z };
+}
 
 /*unit Vector3*/
 Vector3 Vector3::UnitX() noexcept

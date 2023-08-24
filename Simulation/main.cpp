@@ -12,31 +12,11 @@
 
 namespace fs = std::filesystem;
 
-
 #include "Vulkan/App.hpp"
-
-// std
-#include <cstdlib>
-#include <iostream>
-#include <stdexcept>
-
-int main() {
-	CharacterGlyphCache::setFont("C:/Windows/Fonts/arial.ttf");
-	App app{};
-
-	try {
-		app.run();
-	}
-	catch (const std::exception& e) {
-		std::cerr << e.what() << '\n';
-		return EXIT_FAILURE;
-	}
-
-	return EXIT_SUCCESS;
-}
-
 int main()
 {
+	CharacterGlyphCache::setFont("C:/Windows/Fonts/arial.ttf");
+
 	try {
 		run("D:\\code\\codeProjects\\rocketSimulation\\testSimulationFiles", "test");
 	}

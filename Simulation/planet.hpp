@@ -6,11 +6,14 @@
 #include "helpers/Vector3.hpp"
 #include "helpers/Mesh.hpp"
 
+#include "Vulkan/GameObject.hpp"
+
 struct Obstruction 
 {
 	Shape mesh;
 	Vector3 pos;
 	Quaternion orientation;
+	std::shared_ptr<GameObject3D> object;
 
 	Obstruction();
 	Obstruction(Shape mesh, geographicCoordinate geoCord);
@@ -26,9 +29,11 @@ public:
 	ld _mass;
 	Sphere _mesh;
 	Vector3 _pos, _vel;
-	Quaternion _spin;
+	Quaternion _orientation, _spin;
 	Vector<Obstruction> _obstructions;
-	ReadFile<ld> atmosphereCondisions;
+	ReadFile<ld> _atmosphereCondisions;
+
+	std::shared_ptr<GameObject3D> _object;
 
 	Planet();
 	Planet(String ID, ld mass, ld radius, Vector3 pos);
@@ -38,10 +43,16 @@ public:
 	String ID() const noexcept;
 	Vector3 pos() const noexcept;
 	Vector3 vel() const noexcept;
+	Quaternion orientation() const noexcept;
 	ld mass() const noexcept;
 	ld radius() const noexcept;
 	Sphere mesh() const noexcept;
 	Vector<Obstruction> obstructions() const noexcept;
+
+	std::shared_ptr<GameObject3D> object() const noexcept;
+
+	Vector3& posRef() noexcept;
+	Quaternion& orientationRef() noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;

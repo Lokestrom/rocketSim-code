@@ -4,59 +4,174 @@
 #include "Device.hpp"
 #include "GameObject.hpp"
 #include "App.hpp"
-#include "../helpers/controles.hpp"
 
+#include "../helpers/controles.hpp"
+#include "../rocket/Rocket.hpp"
+#include "../planet.hpp"
+#include "../FileSystem/fileSystem.hpp"
 
 void loadMainWindow(WindowInfo& window)
 {
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openOptionsWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    auto temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openOptionsWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openTelemetryWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    auto OptionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Options");
+    window.texts.emplace(OptionsText.getId(), std::move(OptionsText));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openInstructionsWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openTelemetryWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openMapViewWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    auto telemetryText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Telemetry");
+    window.texts.emplace(telemetryText.getId(), std::move(telemetryText));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openFreeCamWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openInstructionsWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openAlarmsWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    auto InstructionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Instructions");
+    window.texts.emplace(InstructionsText.getId(), std::move(InstructionsText));
 
-    auto options = GameObject2D::createGameObject(GameObject2DType::button);
-    options.transform.translation = { .9, -.7 };
-    options.transform.scale = { .05f, .2f };
-    options.transform.rotation = 0;
-    options.setButtonFunction(openTimeWindow);
-    window.gameObjects2d.emplace(options.getId(), std::move(options));
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openMapViewWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+
+    auto MapViewText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Map view");
+    window.texts.emplace(MapViewText.getId(), std::move(MapViewText));
+
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openFreeCamWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+
+    auto FreeCamText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Free cam");
+    window.texts.emplace(FreeCamText.getId(), std::move(FreeCamText));
+
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openAlarmsWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+
+    auto AlarmsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Alarms");
+    window.texts.emplace(AlarmsText.getId(), std::move(AlarmsText));
+
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(openTimeWindow);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+
+    auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Time");
+    window.texts.emplace(TimeText.getId(), std::move(TimeText));
+}
+
+void loadFreeCamWindow(WindowInfo& window)
+{
+    for (auto& rocket : objectLists::rockets) {
+        for (auto& rocketStage : rocket->stages()) {
+            window.gameObjects3d.emplace(rocketStage.object()->getId(), rocketStage.object());
+            for(auto& engine : rocketStage.engines())
+                window.gameObjects3d.emplace(engine.object()->getId(), engine.object());
+            for (auto& fuelTank : rocketStage.fuelTanks())
+                window.gameObjects3d.emplace(fuelTank.object()->getId(), fuelTank.object());
+        }
+    }
+    for (auto& planet : objectLists::physicsPlanets) {
+        window.gameObjects3d.emplace(planet->object()->getId(), planet->object());
+    }
+    for (auto& planet : objectLists::fixedOrbitPlanets) {
+        window.gameObjects3d.emplace(planet->object()->getId(), planet->object());
+    }
+}
+
+
+void addTelemetry(WindowInfo& window) {
+    
+}
+
+void loadTelemetryWindow(WindowInfo& window)
+{
+    auto temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { .9, -.7 };
+    temp.transform.scale = { .05f, .2f };
+    temp.transform.rotation = 0;
+    temp.setButtonFunction(addTelemetry);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+}
+
+void loadInstructionsWindow(WindowInfo& window)
+{
+}
+
+void loadMapViewWindow(WindowInfo& window)
+{
+}
+
+void loadOptionsWindow(WindowInfo& window)
+{
+}
+
+void loadPauseWindow(WindowInfo& window)
+{
+}
+
+void loadTimeWindow(WindowInfo& window)
+{
+    auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::currentTime);
+    window.texts.emplace(TimeText.getId(), std::move(TimeText));
+}
+
+void openOptionsWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Options"), loadOptionsWindow);
+}
+
+void openTelemetryWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Telemetry"), loadOptionsWindow);
+}
+
+void openInstructionsWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Instructions"), loadOptionsWindow);
+}
+
+void openMapViewWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Map view"), loadOptionsWindow);
+}
+
+void openFreeCamWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Free cam"), loadOptionsWindow);
+}
+
+void openAlarmsWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Alarms"), loadOptionsWindow);
+}
+
+void openTimeWindow(WindowInfo& window)
+{
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Time"), loadOptionsWindow);
 }
 
 void setSimulationTime(ld newTime)

@@ -6,22 +6,11 @@
 #include "../helpers/Mesh.hpp"
 #include "Fuelmap.hpp"
 
+#include "../Vulkan/App.hpp"
+
 using namespace Database;
 
 class Engine {
-private:
-	ld _mass,
-		_exitVel, _thrustPercent,
-		_maxGimblePerSecond, _maxGimble;
-	Quaternion _orientation, _desierdOrientation;
-	Fuelmap _fuelPerSecond;
-	Vector3 _pos, _centerOfMass, _mountPos;
-	Shape _shape;
-	int _ID,
-		_gimbletime;
-	bool _active, _canGimble;
-	Vector<int> _fuelTankIDs;
-
 public:
 	Engine();
 	Engine(int ID, ld mass, ld exitVel, 
@@ -43,6 +32,8 @@ public:
 	Quaternion orientation() const noexcept;
 	Vector<String> fuelTypes() const noexcept;
 
+	std::shared_ptr<GameObject3D> object() const noexcept;
+
 	void setID(int newID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
 	void toggle(bool newState) noexcept;
@@ -56,6 +47,20 @@ public:
 
 	bool pointInside(Vector3& point) noexcept;
 	bool isColliding() noexcept;
+private:
+	ld _mass,
+		_exitVel, _thrustPercent,
+		_maxGimblePerSecond, _maxGimble;
+	Quaternion _orientation, _desierdOrientation;
+	Fuelmap _fuelPerSecond;
+	Vector3 _pos, _centerOfMass, _mountPos;
+	Shape _shape;
+	int _ID,
+		_gimbletime;
+	bool _active, _canGimble;
+	Vector<int> _fuelTankIDs;
+
+	std::shared_ptr<GameObject3D> _object;
 };
 
 

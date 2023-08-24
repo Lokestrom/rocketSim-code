@@ -5,6 +5,7 @@
 #include "FileSystem/Instructions.hpp"
 #include "FileSystem/LoadManager.hpp"
 #include "FileSystem/logging.hpp"
+#include "Vulkan/App.hpp"
 
 
 bool update()
@@ -46,7 +47,14 @@ void run(String folder, String runName) {
 	fileSystem::loadInObjects();
 	fileSystem::loggingStartup();
 
-	while (update());
+	Vulkan::startup();
+
+	while (true){
+		if (!update())
+			break;
+		if (!Vulkan::update())
+			break;
+	}
 
 	fileSystem::loggingEnd();
 	objectLists::deleteObjectLists();

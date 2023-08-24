@@ -137,7 +137,7 @@ std::shared_ptr<CharacterGlyph> CharacterGlyphCache::getCharacterGlyph(char char
     return _cachedCharacters[character];
 }
 
-std::vector<vk::VertexInputBindingDescription> Text::Vertex::getBindingDescriptions() {
+std::vector<vk::VertexInputBindingDescription> StaticText::Vertex::getBindingDescriptions() {
     std::vector<vk::VertexInputBindingDescription> bindingDescriptions(1);
     bindingDescriptions[0].binding = 0;
     bindingDescriptions[0].stride = sizeof(Vertex);
@@ -145,7 +145,7 @@ std::vector<vk::VertexInputBindingDescription> Text::Vertex::getBindingDescripti
     return bindingDescriptions;
 }
 
-std::vector<vk::VertexInputAttributeDescription> Text::Vertex::getAttributeDescriptions() {
+std::vector<vk::VertexInputAttributeDescription> StaticText::Vertex::getAttributeDescriptions() {
     std::vector<vk::VertexInputAttributeDescription> attributeDescriptions{};
 
     attributeDescriptions.push_back({ 0, 0, vk::Format::eR32G32B32Sfloat, offsetof(Vertex, position) });
@@ -154,8 +154,9 @@ std::vector<vk::VertexInputAttributeDescription> Text::Vertex::getAttributeDescr
     return attributeDescriptions;
 }
 
-void Text::assignText(std::string text)
+void StaticText::assignText(std::string text)
 {
+    _nextCharacterPos = { 0,0 };
     Character newChar;
     _characters.clear();
     _characters.reserve(text.size());
@@ -173,25 +174,25 @@ void Text::assignText(std::string text)
     }
 }
 
-void Text::removeText()
+void StaticText::removeText()
 {
     _characters.clear();
     _characters.shrink_to_fit();
 }
 
-void Text::bind(vk::CommandBuffer commandBuffer)
+void StaticText::bind(vk::CommandBuffer commandBuffer)
 {
     vk::Buffer buffers[] = { _vertexBuffer->getBuffer() };
     vk::DeviceSize offsets[] = { 0 };
     commandBuffer.bindVertexBuffers(0, 1, buffers, offsets);
 }
 
-void Text::draw(vk::CommandBuffer commandBuffer)
+void StaticText::draw(vk::CommandBuffer commandBuffer)
 {
     commandBuffer.draw(_vertexCount, 1, 0, 0);
 }
 
-void Text::createVertexBuffer()
+void StaticText::createVertexBuffer()
 {
     Vertex vertex;
     std::vector<Vertex> vertices;
@@ -286,7 +287,7 @@ void Text::createVertexBuffer()
     _device.copyBuffer(stagingBufferbox.getBuffer(), _boxBuffer->getBuffer(), bufferSize);
 }
 
-void Text::bindBox(vk::CommandBuffer commandBuffer)
+void StaticText::bindBox(vk::CommandBuffer commandBuffer)
 {
 
 }

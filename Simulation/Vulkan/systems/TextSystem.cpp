@@ -61,7 +61,7 @@ void TextRenderer::renderText(FrameInfo& frameInfo) {
 
     frameInfo.commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
-    for (auto& kv : frameInfo.text) {
+    for (auto& kv : frameInfo.staticText) {
         auto& text = kv.second;
         TextRendererPushConstants push{};
         push.position = text.getPos();
@@ -70,5 +70,15 @@ void TextRenderer::renderText(FrameInfo& frameInfo) {
         frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(TextRendererPushConstants), &push);
         text.bind(frameInfo.commandBuffer);
         text.draw(frameInfo.commandBuffer);
+    }
+    for (auto& kv : frameInfo.varyingText) {
+        auto& text = kv.second;
+        TextRendererPushConstants push{};
+        push.position = text->getPos();
+        push.scale = text->getScale();
+
+        frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(TextRendererPushConstants), &push);
+        text->bind(frameInfo.commandBuffer);
+        text->draw(frameInfo.commandBuffer);
     }
 }

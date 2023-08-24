@@ -1,4 +1,5 @@
 #include "FuelTank.hpp"
+#include "../Vulkan/GameObject.hpp"
 
 FuelTank::FuelTank()
 	: _ID(-1), _fuel(Fuelmap()), density(0), _mesh(Cylinder())
@@ -29,6 +30,11 @@ Fuelmap FuelTank::fuelmap() const noexcept
 String FuelTank::fuelType() const noexcept
 {
 	return _fuel.fuelTypes()[0];
+}
+
+std::shared_ptr<GameObject3D> FuelTank::object() const noexcept
+{
+	return _object;
 }
 
 void FuelTank::setID(int newID) noexcept
