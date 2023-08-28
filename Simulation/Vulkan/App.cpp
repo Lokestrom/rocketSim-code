@@ -217,7 +217,7 @@ bool Vulkan::update() {
             break;
         }
         for (auto& [key, text] : window->varyinglds) {
-            text.update();
+            text.toS();
             window->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
         }
 

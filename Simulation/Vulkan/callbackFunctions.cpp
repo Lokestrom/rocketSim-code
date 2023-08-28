@@ -106,8 +106,9 @@ void loadFreeCamWindow(WindowInfo& window)
 
 void loadPosTelemetryView(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
-    auto posx = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, info.rocket.posRef().x);
+    auto posx = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, info.rocket.posRef().x, {"x: ", ", "});
     window.staticTexts.emplace(posx.getId(), std::move(posx));
+    
 }
 
 void addTelemetry(WindowInfo& window) {
