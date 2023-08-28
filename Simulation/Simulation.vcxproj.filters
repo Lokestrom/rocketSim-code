@@ -236,5 +236,8 @@
     <ClInclude Include="Vulkan\UI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vulkan\WindowTypeSpecificInfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

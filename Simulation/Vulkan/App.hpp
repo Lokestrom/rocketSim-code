@@ -25,6 +25,8 @@ enum class CameraSettings {
 
 struct WindowInfo {
 	unsigned int ID;
+	WindowType type;
+
 	std::unique_ptr<Window> window;
 	std::unique_ptr<Renderer> renderer;
 	std::unique_ptr<Device> device;
@@ -48,9 +50,11 @@ struct WindowInfo {
 
 	std::chrono::steady_clock::time_point currentTime;
 
-	static WindowInfo createWindowInfo(std::string name) {
+	void* typeSpecificInfo;
+
+	static WindowInfo createWindowInfo(std::string name, WindowType type, void* typeSpecificInfo) {
 		static unsigned int currentId = 0;
-		return WindowInfo{ currentId++, name };
+		return WindowInfo{ currentId++, name, type, typeSpecificInfo };
 	}
 	
 	WindowInfo(const WindowInfo& windowInfo) = delete;
@@ -59,7 +63,7 @@ struct WindowInfo {
 	~WindowInfo();
 
 private:
-	WindowInfo(unsigned int id, std::string name);
+	WindowInfo(unsigned int id, std::string name, WindowType type, void* typeSpecificInfo);
 };
 
 class Vulkan

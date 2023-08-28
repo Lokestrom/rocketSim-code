@@ -25,8 +25,8 @@ Keyboard Vulkan::_keyboard;
 Mouse Vulkan::_mouse;
 bool Vulkan::_pause = false;
 
-WindowInfo::WindowInfo(unsigned int id, std::string name)
-    : ID(id), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT) {
+WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType, void* windowTypeSpecificInfo)
+    : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), typeSpecificInfo(windowTypeSpecificInfo) {
     window = std::make_unique<Window>(Vulkan::WIDTH, Vulkan::HEIGHT, name);
     device = std::make_unique<Device>(*window);
     renderer = std::make_unique<Renderer>(*window, *device);
@@ -100,6 +100,9 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     cameraSetting = windowInfo.cameraSetting;
     viewerObject.swap(windowInfo.viewerObject);
     currentTime = windowInfo.currentTime;
+    typeSpecificInfo = windowInfo.typeSpecificInfo;
+    windowInfo.typeSpecificInfo = nullptr;
+    type = windowInfo.type;
 }
 
 WindowInfo::~WindowInfo()
@@ -125,6 +128,8 @@ WindowInfo::~WindowInfo()
     renderer.reset();
     window.reset();
     device.reset();
+
+    delete typeSpecificInfo;
 }
 
 void loadShit(WindowInfo& window) {

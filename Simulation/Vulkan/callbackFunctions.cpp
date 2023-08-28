@@ -4,6 +4,8 @@
 #include "Device.hpp"
 #include "GameObject.hpp"
 #include "App.hpp"
+#include "UI.hpp"
+#include "WindowTypeSpecificInfo.hpp"
 
 #include "../helpers/controles.hpp"
 #include "../rocket/Rocket.hpp"
@@ -20,7 +22,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto OptionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Options");
-    window.texts.emplace(OptionsText.getId(), std::move(OptionsText));
+    window.staticTexts.emplace(OptionsText.getId(), std::move(OptionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -30,7 +32,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto telemetryText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Telemetry");
-    window.texts.emplace(telemetryText.getId(), std::move(telemetryText));
+    window.staticTexts.emplace(telemetryText.getId(), std::move(telemetryText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -40,7 +42,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto InstructionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Instructions");
-    window.texts.emplace(InstructionsText.getId(), std::move(InstructionsText));
+    window.staticTexts.emplace(InstructionsText.getId(), std::move(InstructionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -50,7 +52,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto MapViewText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Map view");
-    window.texts.emplace(MapViewText.getId(), std::move(MapViewText));
+    window.staticTexts.emplace(MapViewText.getId(), std::move(MapViewText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -60,7 +62,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto FreeCamText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Free cam");
-    window.texts.emplace(FreeCamText.getId(), std::move(FreeCamText));
+    window.staticTexts.emplace(FreeCamText.getId(), std::move(FreeCamText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -70,7 +72,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto AlarmsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Alarms");
-    window.texts.emplace(AlarmsText.getId(), std::move(AlarmsText));
+    window.staticTexts.emplace(AlarmsText.getId(), std::move(AlarmsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
@@ -80,7 +82,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Time");
-    window.texts.emplace(TimeText.getId(), std::move(TimeText));
+    window.staticTexts.emplace(TimeText.getId(), std::move(TimeText));
 }
 
 void loadFreeCamWindow(WindowInfo& window)
@@ -102,9 +104,23 @@ void loadFreeCamWindow(WindowInfo& window)
     }
 }
 
+void loadPosTelemetryView(WindowInfo& window) {
+    TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
+    auto posx = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, info.rocket.posRef().x);
+    window.staticTexts.emplace(posx.getId(), std::move(posx));
+}
 
 void addTelemetry(WindowInfo& window) {
-    
+    String newTelemetry = lower(InputBox("New Telemetry:"));
+
+    if (newTelemetry == "pos" || newTelemetry == "position")
+        loadPosTelemetryView(window);
+}
+
+void changeRocketInViewTelemetry(WindowInfo& window) {
+    TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
+    String newRocket = lower(InputBox("Choose rocket:"));
+    info.rocket = *rocketSearch(newRocket);
 }
 
 void loadTelemetryWindow(WindowInfo& window)
@@ -115,6 +131,16 @@ void loadTelemetryWindow(WindowInfo& window)
     temp.transform.rotation = 0;
     temp.setButtonFunction(addTelemetry);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+    
+    auto createTelemetryText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "New telemetry view");
+    window.staticTexts.emplace(createTelemetryText.getId(), std::move(createTelemetryText));
+    
+    auto rocketInView = GameObject2D::createGameObject(GameObject2DType::button);
+    rocketInView.transform.translation = { 0,0 };
+    rocketInView.transform.scale = { 1,1 };
+    rocketInView.transform.rotation = 0;
+    rocketInView.setButtonFunction(changeRocketInViewTelemetry);
+    window.gameObjects2d.emplace(rocketInView.getId(), std::move(rocketInView));
 }
 
 void loadInstructionsWindow(WindowInfo& window)
@@ -135,8 +161,10 @@ void loadPauseWindow(WindowInfo& window)
 
 void loadTimeWindow(WindowInfo& window)
 {
-    auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::currentTime);
-    window.texts.emplace(TimeText.getId(), std::move(TimeText));
+    auto timeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::currentTime);
+    window.varyinglds.emplace(timeText.getId(), std::move(timeText));
+    auto deltaTimeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::dt);
+    window.varyinglds.emplace(deltaTimeText.getId(), std::move(deltaTimeText));
 }
 
 void openOptionsWindow(WindowInfo& window)

@@ -202,6 +202,7 @@
     <ClInclude Include="Vulkan\systems\TextSystem.hpp" />
     <ClInclude Include="Vulkan\Text.hpp" />
     <ClInclude Include="Vulkan\Window.hpp" />
+    <ClInclude Include="Vulkan\WindowTypeSpecificInfo.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
