@@ -2,6 +2,7 @@
 
 #include "frameInfo.hpp"
 #include "PeripheralInputDevice.hpp"
+#include "WindowTypeSpecificInfo.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -217,7 +218,7 @@ bool Vulkan::update() {
             break;
         }
         for (auto& [key, text] : window->varyinglds) {
-            text.toS();
+            text.update();
             window->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
         }
 

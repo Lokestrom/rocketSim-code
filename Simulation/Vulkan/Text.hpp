@@ -15,6 +15,8 @@
 
 #include "Exception.hpp"
 #include "String.hpp"
+#include "../helpers/controles.hpp"
+#include "Vector.hpp"
 
 enum class CurveTag {
     on,
@@ -146,41 +148,77 @@ private:
 };
 
 template <typename T>
-class VaryingTextString {
-    struct Variable {
-        T& variable;
-        sizeT index;
+class VaryingText {
+private:
+    class VaryingTextString {
+        struct Variable {
+            T& variable;
+            sizeT index;
 
-        bool operator> (const Variable& lhs, const Variable& rhs);
+            friend bool operator> (const Variable& lhs, const Variable& rhs);
+        };
+
+        VaryingTextString(std::string& text) : _planeText(text) {}
+
+        void addVariable(T& var, sizeT index);
+        void assignText(std::string text);
+
+        std::string getString() const noexcept;
+
+    private:
+        std::string toS(T& var);
+    private:
+        Vector<Variable> _variable;
+        std::string _planeText;
     };
-    
-    void addVariable(T& var, sizeT index);
+public:
+    using id_t = unsigned int;
+    using Map = std::unordered_map<id_t, VaryingText>;
+    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string& text) {
+        static id_t currentId = 0;
+        StaticText::createText(device, pos, color, scale);
+        return VaryingText{ std::move(textObj), text, staticTexts };
+    }
 
-    std::string getString() const noexcept;
+    void update();
 
+    StaticText::id_t getId();
+    StaticText& staticText();
 private:
-    std::string toS(T& var);
+    VaryingText(StaticText&& textObj, std::string& text) : _textObj(textObj), _text(text) {}
 private:
-    Vector<Variable> _variable;
-    std::string _planeText;
+    StaticText _textObj;
+    VaryingTextString _text;
 };
 
 template<typename T>
-inline void VaryingTextString<T>::addVariable(T& var, sizeT index)
+bool operator>(const VaryingText<T>::VaryingTextString::Variable& lhs, const VaryingText<T>::VaryingTextString::Variable& rhs)
 {
-    _variable.push_back({ var, index });
+    return lhs.index > rhs.index;
 }
 
 template<typename T>
-inline std::string VaryingTextString<T>::getString() const noexcept
+inline void VaryingText<T>::VaryingTextString::addVariable(T& var, sizeT index)
+{
+    _variable.push_back({ var, index });
+    _variable.bubbleSort();
+}
+
+template<typename T>
+inline void VaryingText<T>::VaryingTextString::assignText(std::string text)
+{
+    _planeText = text;
+}
+
+template<typename T>
+inline std::string VaryingText<T>::VaryingTextString::getString() const noexcept
 {
     std::string ans;
     ans.reserve(_planeText.size + (_variable * 5);
-    _variable.
 
     auto planeStringIndex = 0;
     auto variableIndex = 0;
-    while(planeStringIndex <= _planeText.size()) {
+    while (planeStringIndex <= _planeText.size()) {
         if (_variable[variableIndex].index == planeStringIndex) {
             ans.push_back(toS(_variable[variableIndex].variable));
             variableIndex++;
@@ -194,53 +232,39 @@ inline std::string VaryingTextString<T>::getString() const noexcept
     }
 }
 
+
 template<typename T>
-inline std::string VaryingTextString<T>::toS(T& var)
+inline std::string VaryingText<T>::VaryingTextString::toS(T& var)
 {
     throw InvalidArgument("Can't convert input to text.");
 }
 
 template<>
-inline std::string VaryingTextString<int>::toS(T& var)
+inline std::string VaryingText<int>::VaryingTextString::toS(int& var)
 {
-    return std::to_string(var)
+    return std::to_string(var);
 }
 template<>
-inline std::string VaryingTextString<long double>::toS(T& var)
+inline std::string VaryingText<long double>::VaryingTextString::toS(long double& var)
 {
-    _textObj.assignText(_staticTexts[0] + std::to_string(_text) + _staticTexts[1]);
+    return std::to_string(var);
 }
 template<>
-inline std::string VaryingTextString<std::string>::toS(T& var)
+inline std::string VaryingText<std::string>::VaryingTextString::toS(std::string& var)
 {
-    _textObj.assignText(_staticTexts[0] + _text + _staticTexts[1]);
+    return var;
 }
 template<>
-inline std::string VaryingTextString<Database::String>::toS(T& var)
+inline std::string VaryingText<Database::String>::VaryingTextString::toS(Database::String& var)
 {
-    _textObj.assignText(_staticTexts[0] + Database::toSTD(_text) + _staticTexts[1]);
+    return toSTD(var);
 }
 
-template <typename T>
-class VaryingText {
-public:
-    using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, VaryingText>;
-    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, T& text, std::array<std::string, 2> staticTexts) {
-        static id_t currentId = 0;
-        StaticText::createText(device, pos, color, scale);
-        return VaryingText{ std::move(textObj), text, staticTexts };
-    }
-
-    StaticText::id_t getId();
-    StaticText& staticText();
-private:
-    VaryingText(StaticText&& textObj, T& text, std::array<std::string, 2> staticTexts[2]) : _textObj(textObj), _text(text), _staticTexts(staticTexts) {}
-private:
-    std::array<std::string, 2> _staticTexts[2];
-    StaticText _textObj;
-    T& _text;
-};
+template<typename T>
+inline void VaryingText<T>::update()
+{
+    _textObj.assignText(_text.getString());
+}
 
 template<typename T>
 inline StaticText::id_t VaryingText<T>::getId()
@@ -253,8 +277,4 @@ inline StaticText& VaryingText<T>::staticText()
     return _textObj;
 }
 
-template<typename T>
-inline bool VaryingTextString<T>::Variable::operator>(const Variable& lhs, const Variable& rhs)
-{
-    return lhs.index > rhs.index;
-}
+
