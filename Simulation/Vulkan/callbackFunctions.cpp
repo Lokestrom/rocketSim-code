@@ -14,7 +14,11 @@
 
 void loadMainWindow(WindowInfo& window)
 {
-    auto temp = GameObject2D::createGameObject(GameObject2DType::button);
+    auto temp = GameObject2D::createGameObject(GameObject2DType::backGround);
+    temp.color = { 1,1, 223 / 255 };
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
+
+    temp = GameObject2D::createGameObject(GameObject2DType::button);
     temp.transform.translation = { .9, -.7 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
@@ -104,11 +108,41 @@ void loadFreeCamWindow(WindowInfo& window)
     }
 }
 
+void changeRelativeObject(WindowInfo& window) {
+    TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
+    String obj = lower(InputBox("Choose object:"));
+    if (rocketSearch(obj) != nullptr) {
+        info.relativeObj = rocketSearch(obj)->posRef();
+        return;
+    }
+    if (fixedOrbitPlanetSearch(obj) != nullptr) {
+        info.relativeObj = fixedOrbitPlanetSearch(obj)->posRef();
+        return;
+    }
+    if (physicsPlanetSearch(obj) != nullptr) {
+        info.relativeObj = physicsPlanetSearch(obj)->posRef();
+        return;
+    }
+    errorMsgBox("Invalid input", (obj + " is not a valid input.").cstr());
+}
+
 void loadPosTelemetryView(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
-    auto posx = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, info.rocket.posRef().x, {"x: ", ", "});
-    window.staticTexts.emplace(posx.getId(), std::move(posx));
-    
+    auto pos = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Position: x:, y:, z:");
+    pos.addVariable(info.rocket.posRef().x, 12);
+    pos.addVariable(info.rocket.posRef().y, 16);
+    pos.addVariable(info.rocket.posRef().z, 20);
+    window.varyinglds.emplace(pos.getId(), std::move(pos));
+
+    auto changeRelative = GameObject2D::createGameObject(GameObject2DType::button);
+    changeRelative.transform.translation = { .9, -.7 };
+    changeRelative.transform.scale = { .05f, .2f };
+    changeRelative.transform.rotation = 0;
+    changeRelative.setButtonFunction(changeRelativeObject);
+    window.gameObjects2d.emplace(changeRelative.getId(), std::move(changeRelative));
+
+    auto changeRelativeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Change relative");
+    window.staticTexts.emplace(changeRelativeText.getId(), std::move(changeRelativeText));
 }
 
 void addTelemetry(WindowInfo& window) {
@@ -118,10 +152,25 @@ void addTelemetry(WindowInfo& window) {
         loadPosTelemetryView(window);
 }
 
-void changeRocketInViewTelemetry(WindowInfo& window) {
+void changeObjectInViewTelemetry(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
-    String newRocket = lower(InputBox("Choose rocket:"));
-    info.rocket = *rocketSearch(newRocket);
+    String obj = lower(InputBox("Choose object:"));
+    if (rocketSearch(obj) != nullptr) {
+        info.type = TelemetryType::Rocket;
+        info.rocket = *rocketSearch(obj);
+        return;
+    }
+    if (fixedOrbitPlanetSearch(obj) != nullptr) {
+        info.type = TelemetryType::FixedOrbitPlanet;
+        info.fixedOrbitPlanet = *fixedOrbitPlanetSearch(obj);
+        return;
+    }
+    if (physicsPlanetSearch(obj) != nullptr) {
+        info.type = TelemetryType::PhysicsPlanet;
+        info.physicsPlanet = *physicsPlanetSearch(obj);
+        return;
+    }
+    errorMsgBox("Invalid input", (obj + " is not a valid input.").cstr());
 }
 
 void loadTelemetryWindow(WindowInfo& window)
@@ -140,7 +189,7 @@ void loadTelemetryWindow(WindowInfo& window)
     rocketInView.transform.translation = { 0,0 };
     rocketInView.transform.scale = { 1,1 };
     rocketInView.transform.rotation = 0;
-    rocketInView.setButtonFunction(changeRocketInViewTelemetry);
+    rocketInView.setButtonFunction(changeObjectInViewTelemetry);
     window.gameObjects2d.emplace(rocketInView.getId(), std::move(rocketInView));
 }
 
@@ -162,10 +211,19 @@ void loadPauseWindow(WindowInfo& window)
 
 void loadTimeWindow(WindowInfo& window)
 {
-    auto timeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::currentTime);
+    auto timeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "s");
+    timeText.addVariable(timeObjects::currentTime, 0);
     window.varyinglds.emplace(timeText.getId(), std::move(timeText));
-    auto deltaTimeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, timeObjects::dt);
+    auto deltaTimeText = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "s");
+    deltaTimeText.addVariable(timeObjects::dt, 0);
     window.varyinglds.emplace(deltaTimeText.getId(), std::move(deltaTimeText));
+
+    auto changeCurrentT = GameObject2D::createGameObject(GameObject2DType::button);
+    changeCurrentT.transform.translation = { 0,0 };
+    changeCurrentT.transform.scale = { 1,1 };
+    changeCurrentT.transform.rotation = 0;
+    changeCurrentT.setButtonFunction(setSimulationTime);
+    window.gameObjects2d.emplace(changeCurrentT.getId(), std::move(changeCurrentT));
 }
 
 void openOptionsWindow(WindowInfo& window)
@@ -203,12 +261,20 @@ void openTimeWindow(WindowInfo& window)
     Vulkan::addWindow(WindowInfo::createWindowInfo("Time"), loadOptionsWindow);
 }
 
-void setSimulationTime(ld newTime)
+void setSimulationTime(WindowInfo& window)
 {
-    timeObjects::currentTime = newTime;
+    String time = InputBox("Set time:");
+    timeObjects::currentTime = STold(time);
 }
 
-void changeSimulationDeltaTime(ld newDT)
+void changeSimulationDeltaTime(WindowInfo& window)
 {
-    timeObjects::dt = newDT;
+    String dt = InputBox("Set delta time:");
+    timeObjects::dt = STold(dt);
+}
+
+void changePlaybackSpeed(WindowInfo& window)
+{
+    String Multiplier = InputBox("Set playback multiplier:");
+    timeObjects::dt = STold(Multiplier);
 }

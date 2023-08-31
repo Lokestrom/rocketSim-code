@@ -71,7 +71,7 @@ public:
     GameObject2DType type;
 
     //mouse pos has values in the range [-1, 1]
-    bool isClicked(glm::vec2 mousePos, glm::vec2 res);
+    bool isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& window);
 
 private:
     GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{ objType } {}

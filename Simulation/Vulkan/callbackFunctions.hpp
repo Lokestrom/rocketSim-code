@@ -37,9 +37,9 @@ void submitChanges(WindowInfo& window);
 void RevertChanges(WindowInfo& window);
 
 /*Time window functions*/
-void setSimulationTime(ld newTime);
-void changeSimulationDeltaTime(ld newDT);
-void changePlaybackSpeed(ld multyplyer);
+void setSimulationTime(WindowInfo& window);
+void changeSimulationDeltaTime(WindowInfo& window);
+void changePlaybackSpeed(WindowInfo& window);
 
 /*Map view window functions*/
 void changeMapView(WindowInfo& window);

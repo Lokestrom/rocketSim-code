@@ -52,7 +52,7 @@ struct WindowInfo {
 
 	void* typeSpecificInfo;
 
-	static WindowInfo createWindowInfo(std::string name, WindowType type, void* typeSpecificInfo) {
+	static WindowInfo createWindowInfo(std::string name, WindowType type, void* typeSpecificInfo = nullptr) {
 		static unsigned int currentId = 0;
 		return WindowInfo{ currentId++, name, type, typeSpecificInfo };
 	}
@@ -83,7 +83,7 @@ public:
 	static void startup();
 	static bool update();
 
-	static void addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&));
+	static void addWindow(const WindowInfo& window, void (*loadFunction)(WindowInfo&));
 
 private:
 

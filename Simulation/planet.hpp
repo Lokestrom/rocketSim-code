@@ -68,12 +68,9 @@ public:
 	//Vector3 point(geographicCoordinate cord) const noexcept;
 	//Vector3 velosityAtPoint(geographicCoordinate cord) const noexcept;
 	//Quaternion getUpAtpoint(geographicCoordinate cord) const noexcept;
-	
-	void virtual earlyUpdate() = 0;
-	void virtual update() = 0;
 };
 
-class PhysicsPlanet : public Planet 
+class PhysicsPlanet : public Planet
 {
 public:
 	PhysicsPlanet();
@@ -90,7 +87,7 @@ private:
 	Vector3 acc;
 };
 
-class FixedOrbitPlanet : public Planet 
+class FixedOrbitPlanet : public Planet
 {
 public:
 	FixedOrbitPlanet();
@@ -103,5 +100,5 @@ public:
 	void update();
 };
 
-const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept;
-const FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept;
+PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept;
+FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept;

@@ -3,6 +3,7 @@
 #include "frameInfo.hpp"
 #include "PeripheralInputDevice.hpp"
 #include "WindowTypeSpecificInfo.hpp"
+#include "callbackFunctions.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -133,64 +134,9 @@ WindowInfo::~WindowInfo()
     delete typeSpecificInfo;
 }
 
-void loadShit(WindowInfo& window) {
-    std::shared_ptr<Model3D> model = Model3D::createModelFromFile(*window.device, "D:\\code\\codeProjects\\VulkanTest\\models\\colored_cube.obj");
-    auto flatVase = GameObject3D::createGameObject();
-    flatVase.model = model;
-    flatVase.transform.translation = { 0.f, -.1f, 0.f };
-    flatVase.transform.scale = { .2f, .2f, .2f };
-    window.gameObjects3d.emplace(flatVase.getId(), std::move(flatVase));
-}
-
-void shitButtonFunction() {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("shit"), loadShit);
-    std::cout << "shit button was pressed!\n";
-}
-
-void loadWin1(WindowInfo& window)
-{
-    std::shared_ptr<Model3D> model = Model3D::createModelFromFile(*window.device, "D:\\code\\codeProjects\\VulkanTest\\models\\colored_cube.obj");
-    auto flatVase = GameObject3D::createGameObject();
-    flatVase.model = model;
-    flatVase.transform.translation = { 0.f, -.1f, 0.f };
-    flatVase.transform.scale = { .2f, .2f, .2f };
-    window.gameObjects3d.emplace(flatVase.getId(), std::move(flatVase));
-
-    model = Model3D::createModelFromFile(*window.device, "D:\\code\\codeProjects\\VulkanTest\\models\\colored_cube.obj");
-    auto floor = GameObject3D::createGameObject();
-    floor.model = model;
-    floor.transform.translation = { 0.f, .5f, 0.f };
-    floor.transform.scale = { 3.f, 1.f, 3.f };
-    window.gameObjects3d.emplace(floor.getId(), std::move(floor));
-
-    std::vector<glm::vec3> lightColors{
-        {1.f, 0.f, .1f},
-        {1.f, .1f, 1.f},
-        {.1f, .1f, 1.f},
-        {.1f, 1.f, .1f},
-        {1.f, 1.f, .1f},
-        {.1f, 1.f, 1.f},
-        {1.f, 1.f, 1.f}
-    };
-
-    for (int j = 0; j < lightColors.size(); j++) {
-        auto pointLight = GameObject3D::makePointLight(.2f);
-        pointLight.color = lightColors[j];
-        auto rotateLight = glm::rotate(
-            glm::mat4(1.f),
-            (j * glm::two_pi<float>()) / lightColors.size(),
-            { 0.f, -1.f, 0.f });
-        pointLight.transform.translation = toVector3(glm::vec3(rotateLight * glm::vec4(-1.f, -1.0f, .5f, 1.f)));
-        window.gameObjects3d.emplace(pointLight.getId(), std::move(pointLight));
-    }
-    
-    auto text = StaticText::createText(*window.device, {-1,0}, {1,1,1,1 }, 0.0001, "H             e\neo");
-    window.staticTexts.emplace(text.getId(), std::move(text));
-}
-
 Vulkan::Vulkan() 
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("win1"), loadWin1);
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Main", WindowType::Menu), loadMainWindow);
 }
 
 Vulkan::~Vulkan() {
@@ -277,7 +223,7 @@ bool Vulkan::update() {
     return true;
 }
 
-void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
+void Vulkan::addWindow(const WindowInfo& window, void (*loadFunction)(WindowInfo&))
 {
     unsigned int id = window.ID;
     _windows.emplace(id, std::make_unique<WindowInfo>(std::move(window)));
@@ -286,46 +232,6 @@ void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
     keyBoardInput(_windows[id]->window->getGLFWwindow(), 0, 0, 0, 0);
     loadFunction(*_windows[id]);
 }
-
-/*void App::loadGameObjects() {
-    for (int i = 0; i < _windows.size(); i++) {
-        _gameObjects.push_back(std::make_unique<GameObject::Map>());
-        std::shared_ptr<Model> model = Model::createModelFromFile(*_devices[i], "D:\\code\\codeProjects\\VulkanTest\\models\\colored_cube.obj");
-        auto flatVase = GameObject::createGameObject();
-        flatVase.model = model;
-        flatVase.transform.translation = { 0.f, -.1f, 0.f };
-        flatVase.transform.scale = { .2f, .2f, .2f };
-        _gameObjects[i]->emplace(flatVase.getId(), std::move(flatVase));
-
-        model = Model::createModelFromFile(*_devices[i], "D:\\code\\codeProjects\\VulkanTest\\models\\quad.obj");
-        auto floor = GameObject::createGameObject();
-        floor.model = model;
-        floor.transform.translation = { 0.f, .5f, 0.f };
-        floor.transform.scale = { 3.f, 1.f, 3.f };
-        _gameObjects[i]->emplace(floor.getId(), std::move(floor));
-
-        std::vector<glm::vec3> lightColors{
-            {1.f, 0.f, .1f},
-            {1.f, .1f, 1.f},
-            {.1f, .1f, 1.f},
-            {.1f, 1.f, .1f},
-            {1.f, 1.f, .1f},
-            {.1f, 1.f, 1.f},
-            {1.f, 1.f, 1.f}
-        };
-
-        for (int j = 0; j < lightColors.size(); j++) {
-            auto pointLight = GameObject::makePointLight(.2f);
-            pointLight.color = lightColors[j];
-            auto rotateLight = glm::rotate(
-                glm::mat4(1.f),
-                (j * glm::two_pi<float>()) / lightColors.size(),
-                { 0.f, -1.f, 0.f });
-            pointLight.transform.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.0f, .5f, 1.f));
-            _gameObjects[i]->emplace(pointLight.getId(), std::move(pointLight));
-        }
-    }
-}*/
 
 
 void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)

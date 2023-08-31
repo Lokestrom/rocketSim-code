@@ -174,13 +174,15 @@ private:
 public:
     using id_t = unsigned int;
     using Map = std::unordered_map<id_t, VaryingText>;
-    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string& text) {
+    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, const std::string& text) {
         static id_t currentId = 0;
         StaticText::createText(device, pos, color, scale);
         return VaryingText{ std::move(textObj), text, staticTexts };
     }
 
     void update();
+    void addVariable(T& var, sizeT index);
+    void assignText(std::string text);
 
     StaticText::id_t getId();
     StaticText& staticText();
@@ -264,6 +266,18 @@ template<typename T>
 inline void VaryingText<T>::update()
 {
     _textObj.assignText(_text.getString());
+}
+
+template<typename T>
+inline void VaryingText<T>::addVariable(T& var, sizeT index)
+{
+    _text.addVariable(var, index);
+}
+
+template<typename T>
+inline void VaryingText<T>::assignText(std::string text)
+{
+    _text.assignText(text);
 }
 
 template<typename T>

@@ -217,7 +217,7 @@ void FixedOrbitPlanet::update()
 }
 
 /*non-Member fungtions*/
-const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
+PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
 {
 	for (auto i : objectLists::physicsPlanets)
 		if (i->ID() == planetID)
@@ -226,7 +226,7 @@ const PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
 	return nullptr;
 }
 
-const FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept
+FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept
 {
 	for (auto i : objectLists::fixedOrbitPlanets)
 		if (i->ID() == planetID)
