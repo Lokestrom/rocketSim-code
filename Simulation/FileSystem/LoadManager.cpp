@@ -281,8 +281,8 @@ namespace fileSystem {
 			fuelTanks[i].setID(i);
 			fuelTanks[i].setPos(returnVector3(returnArgs(data["fueltanks"][toS(i)])[0]));
 		}
-
-		return RocketStage(0, { 0,0,0 }, STold(data["setup"]["drymass"]), returnVector3(data["setup"]["centerofmass"]), engines, reactionThrusters, fuelTanks, mesh);
+		std::shared_ptr<GameObject3D> rocketStage = std::make_shared<GameObject3D>(GameObject3D::createGameObject());
+		return RocketStage(0, { 0,0,0 }, STold(data["setup"]["drymass"]), returnVector3(data["setup"]["centerofmass"]), engines, reactionThrusters, fuelTanks, mesh, rocketStage);
 	}
 
 	void validatePlanetFileVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {

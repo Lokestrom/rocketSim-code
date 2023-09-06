@@ -6,6 +6,8 @@
 
 #include "vulkan/vulkan.hpp"
 
+class GameObject3D;
+
 struct PointLight {
 	glm::vec4 position{};  // ignore w
 	glm::vec4 color{};     // w is intensity

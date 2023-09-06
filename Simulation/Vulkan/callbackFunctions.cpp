@@ -25,7 +25,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openOptionsWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto OptionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Options");
+    auto OptionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Options");
     window.staticTexts.emplace(OptionsText.getId(), std::move(OptionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -35,7 +35,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openTelemetryWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto telemetryText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Telemetry");
+    auto telemetryText = StaticText::createText(*window.device, { -1,0 }, { 1,1,1,1 }, 0.0001, "Telemetry");
     window.staticTexts.emplace(telemetryText.getId(), std::move(telemetryText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -45,7 +45,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openInstructionsWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto InstructionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Instructions");
+    auto InstructionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Instructions");
     window.staticTexts.emplace(InstructionsText.getId(), std::move(InstructionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -55,7 +55,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openMapViewWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto MapViewText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Map view");
+    auto MapViewText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Map view");
     window.staticTexts.emplace(MapViewText.getId(), std::move(MapViewText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -65,7 +65,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openFreeCamWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto FreeCamText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Free cam");
+    auto FreeCamText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Free cam");
     window.staticTexts.emplace(FreeCamText.getId(), std::move(FreeCamText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -75,7 +75,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openAlarmsWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto AlarmsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Alarms");
+    auto AlarmsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Alarms");
     window.staticTexts.emplace(AlarmsText.getId(), std::move(AlarmsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
@@ -85,7 +85,7 @@ void loadMainWindow(WindowInfo& window)
     temp.setButtonFunction(openTimeWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Time");
+    auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Time");
     window.staticTexts.emplace(TimeText.getId(), std::move(TimeText));
 }
 
@@ -112,15 +112,15 @@ void changeRelativeObject(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
     String obj = lower(InputBox("Choose object:"));
     if (rocketSearch(obj) != nullptr) {
-        info.relativeObj = rocketSearch(obj)->posRef();
+        info.relativeObj = std::make_shared<Vector3>(rocketSearch(obj)->posRef());
         return;
     }
     if (fixedOrbitPlanetSearch(obj) != nullptr) {
-        info.relativeObj = fixedOrbitPlanetSearch(obj)->posRef();
+        info.relativeObj = std::make_shared<Vector3>(fixedOrbitPlanetSearch(obj)->posRef());
         return;
     }
     if (physicsPlanetSearch(obj) != nullptr) {
-        info.relativeObj = physicsPlanetSearch(obj)->posRef();
+        info.relativeObj = std::make_shared<Vector3>(physicsPlanetSearch(obj)->posRef());
         return;
     }
     errorMsgBox("Invalid input", (obj + " is not a valid input.").cstr());
@@ -129,9 +129,9 @@ void changeRelativeObject(WindowInfo& window) {
 void loadPosTelemetryView(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
     auto pos = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Position: x:, y:, z:");
-    pos.addVariable(info.rocket.posRef().x, 12);
-    pos.addVariable(info.rocket.posRef().y, 16);
-    pos.addVariable(info.rocket.posRef().z, 20);
+    pos.addVariable(info.rocket->posRef().x, 12);
+    pos.addVariable(info.rocket->posRef().y, 16);
+    pos.addVariable(info.rocket->posRef().z, 20);
     window.varyinglds.emplace(pos.getId(), std::move(pos));
 
     auto changeRelative = GameObject2D::createGameObject(GameObject2DType::button);
@@ -157,17 +157,17 @@ void changeObjectInViewTelemetry(WindowInfo& window) {
     String obj = lower(InputBox("Choose object:"));
     if (rocketSearch(obj) != nullptr) {
         info.type = TelemetryType::Rocket;
-        info.rocket = *rocketSearch(obj);
+        info.rocket = rocketSearch(obj);
         return;
     }
     if (fixedOrbitPlanetSearch(obj) != nullptr) {
         info.type = TelemetryType::FixedOrbitPlanet;
-        info.fixedOrbitPlanet = *fixedOrbitPlanetSearch(obj);
+        info.fixedOrbitPlanet = fixedOrbitPlanetSearch(obj);
         return;
     }
     if (physicsPlanetSearch(obj) != nullptr) {
         info.type = TelemetryType::PhysicsPlanet;
-        info.physicsPlanet = *physicsPlanetSearch(obj);
+        info.physicsPlanet = physicsPlanetSearch(obj);
         return;
     }
     errorMsgBox("Invalid input", (obj + " is not a valid input.").cstr());
@@ -228,37 +228,44 @@ void loadTimeWindow(WindowInfo& window)
 
 void openOptionsWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Options"), loadOptionsWindow);
+    OptionsWindowInfo* info = new OptionsWindowInfo();
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Options", WindowType::Options, info), loadOptionsWindow);
 }
 
 void openTelemetryWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Telemetry"), loadOptionsWindow);
+    TelemetryWindowInfo* info = new TelemetryWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Telemetry", WindowType::Telemetry, info), loadOptionsWindow);
 }
 
 void openInstructionsWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Instructions"), loadOptionsWindow);
+    InstructionsWindowInfo* info = new InstructionsWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Instructions", WindowType::Instructions, info), loadOptionsWindow);
 }
 
 void openMapViewWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Map view"), loadOptionsWindow);
+    MapViewWindowInfo* info = new MapViewWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Map view", WindowType::MapView, info), loadOptionsWindow);
 }
 
 void openFreeCamWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Free cam"), loadOptionsWindow);
+    FreeCamWindowInfo* info = new FreeCamWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Free cam", WindowType::FreeCam, info), loadOptionsWindow);
 }
 
 void openAlarmsWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Alarms"), loadOptionsWindow);
+    AlarmWindowInfo* info = new AlarmWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Alarms", WindowType::Alarms, info), loadOptionsWindow);
 }
 
 void openTimeWindow(WindowInfo& window)
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Time"), loadOptionsWindow);
+    TimeWindowInfo* info = new TimeWindowInfo;
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Time", WindowType::Time, info), loadOptionsWindow);
 }
 
 void setSimulationTime(WindowInfo& window)

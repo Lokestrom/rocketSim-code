@@ -9,12 +9,15 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/RenderSystem2D.hpp"
 #include "systems/TextSystem.hpp"
+#include "WindowTypeSpecificInfo.hpp"
 
 #include "PeripheralInputDevice.hpp"
 
 // std
 #include <chrono>
 #include <memory>
+
+class GameObject3D;
 
 enum class CameraSettings {
 	normal,
@@ -57,7 +60,7 @@ struct WindowInfo {
 		return WindowInfo{ currentId++, name, type, typeSpecificInfo };
 	}
 	
-	WindowInfo(const WindowInfo& windowInfo) = delete;
+	WindowInfo(const WindowInfo&) = delete;
 	WindowInfo(WindowInfo&& window) noexcept;
 
 	~WindowInfo();
@@ -83,7 +86,7 @@ public:
 	static void startup();
 	static bool update();
 
-	static void addWindow(const WindowInfo& window, void (*loadFunction)(WindowInfo&));
+	static void addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&));
 
 private:
 

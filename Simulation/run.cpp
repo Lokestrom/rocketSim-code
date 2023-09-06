@@ -45,17 +45,25 @@ void run(String folder, String runName) {
 	objectLists::instructions = Vector<fileSystem::Instructions*>();
 
 	fileSystem::loadInObjects();
+	std::cout << "Loaded in Objects\n";
 	fileSystem::loggingStartup();
+	std::cout << "Started logging\n";
 
-	Vulkan::startup();
+	Vulkan vulkanRenderer;
+	vulkanRenderer.startup();
+	std::cout << "Started vulkan\n";
 
 	while (true){
 		if (!update())
 			break;
-		if (!Vulkan::update())
+		if (!vulkanRenderer.update())
 			break;
 	}
+	std::cout << "Simulation loop ended\n";
 
 	fileSystem::loggingEnd();
+	std::cout << "Ended logging\n";
 	objectLists::deleteObjectLists();
+	std::cout << "Deleted objects\n";
+	std::cout << "Program ended\n";
 }

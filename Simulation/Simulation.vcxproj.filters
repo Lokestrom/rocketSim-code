@@ -239,5 +239,11 @@
     <ClInclude Include="Vulkan\WindowTypeSpecificInfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Vulkan\external\tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Rocket simulation.txt" />
   </ItemGroup>
 </Project>

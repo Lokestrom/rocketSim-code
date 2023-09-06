@@ -12,6 +12,8 @@
 #include <map>
 #include <stdexcept>
 
+class GameObject;
+
 struct PointLightPushConstants {
     glm::vec4 position{};
     glm::vec4 color{};
@@ -82,7 +84,7 @@ void PointLightSystem::update(FrameInfo& frameInfo, GlobalUbo& ubo, bool pause) 
     auto rotateLight = glm::rotate(glm::mat4(1.f), 0.5f * frameInfo.frameTime, { 0.f, -1.f, 0.f });
     int lightIndex = 0;
     for (auto& kv : frameInfo.gameObjects3D) {
-        auto& obj = kv.second;
+        auto& obj = *kv.second;
         if (obj.pointLight == nullptr) continue;
 
         // update light position
@@ -102,7 +104,7 @@ void PointLightSystem::render(FrameInfo& frameInfo) {
     // sort lights
     std::map<float, GameObject3D::id_t> sorted;
     for (auto& kv : frameInfo.gameObjects3D) {
-        auto& obj = kv.second;
+        auto& obj = *kv.second;
         if (obj.pointLight == nullptr) continue;
 
         // calculate distance
@@ -117,7 +119,7 @@ void PointLightSystem::render(FrameInfo& frameInfo) {
     // iterate through sorted lights in reverse order
     for (auto it = sorted.rbegin(); it != sorted.rend(); ++it) {
         // use game obj id to find light object
-        auto& obj = frameInfo.gameObjects3D.at(it->second);
+        auto& obj = *frameInfo.gameObjects3D.at(it->second);
 
         PointLightPushConstants push{};
         push.position = glm::vec4(toVec4(obj.transform.translation, 1.f));

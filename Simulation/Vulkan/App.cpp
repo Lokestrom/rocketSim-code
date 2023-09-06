@@ -131,7 +131,8 @@ WindowInfo::~WindowInfo()
     window.reset();
     device.reset();
 
-    delete typeSpecificInfo;
+    if(typeSpecificInfo != nullptr)
+        delete typeSpecificInfo;
 }
 
 Vulkan::Vulkan() 
@@ -223,7 +224,7 @@ bool Vulkan::update() {
     return true;
 }
 
-void Vulkan::addWindow(const WindowInfo& window, void (*loadFunction)(WindowInfo&))
+void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
 {
     unsigned int id = window.ID;
     _windows.emplace(id, std::make_unique<WindowInfo>(std::move(window)));
@@ -268,6 +269,12 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
 
 void Vulkan::mouseInput(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        WindowInfo* parentWindowInfo;
+        for (auto& windowInfo : _windows)
+            if (windowInfo.second->window->getGLFWwindow() == window) {
+                parentWindowInfo = windowInfo.second.get();
+                break;
+            }
         glm::vec2 mousePos, res;
         double mousex, mousey;
         int w = 0, h = 0;
@@ -282,7 +289,7 @@ void Vulkan::mouseInput(GLFWwindow* window, int button, int action, int mods) {
                 if (obj.type != GameObject2DType::button)
                     continue;
                 res = glm::vec2{ val->window->getExtent().width / (double)std::max(val->window->getExtent().width, val->window->getExtent().height), val->window->getExtent().height / (double)std::max(val->window->getExtent().width, val->window->getExtent().height) };
-                if (obj.isClicked(mousePos, res))
+                if (obj.isClicked(mousePos, res, *parentWindowInfo))
                     return;
             }
             return;

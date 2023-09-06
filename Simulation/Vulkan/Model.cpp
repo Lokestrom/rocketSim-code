@@ -1,7 +1,7 @@
 #include "Model.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "otherimplementation/external/tinyobjloader/tiny_obj_loader.h"
+#include "external/tiny_obj_loader.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 

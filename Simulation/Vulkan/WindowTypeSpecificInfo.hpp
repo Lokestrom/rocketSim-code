@@ -1,5 +1,8 @@
 #pragma once
 #include "../rocket/Rocket.hpp"
+#include "GameObject.hpp"
+
+class GameObject3D;
 
 enum class WindowType {
 	General,
@@ -11,10 +14,6 @@ enum class WindowType {
 	MapView,
 	Instructions,
 	Time
-};
-
-struct generalWindowInfo {
-
 };
 
 struct MainWindowInfo {
@@ -31,12 +30,12 @@ enum class TelemetryType {
 	FixedOrbitPlanet
 };
 struct TelemetryWindowInfo {
-	PhysicsPlanet& physicsPlanet;
-	FixedOrbitPlanet& fixedOrbitPlanet;
-	Rocket& rocket;
+	PhysicsPlanet* physicsPlanet;
+	FixedOrbitPlanet* fixedOrbitPlanet;
+	Rocket* rocket;
 	TelemetryType type;
 
-	Vector3& relativeObj;
+	std::shared_ptr<Vector3> relativeObj;
 
 };
 
@@ -45,11 +44,11 @@ struct InstructionsWindowInfo {
 };
 
 struct FreeCamWindowInfo {
-	GameObject3D& followingOBJ;
+	std::shared_ptr<GameObject3D> followingOBJ;
 };
 
 struct MapViewWindowInfo {
-	GameObject3D& followingOBJ;
+	std::shared_ptr<GameObject3D> followingOBJ;
 };
 
 struct AlarmWindowInfo {

@@ -105,7 +105,7 @@ public:
 
     static StaticText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string text = "") {
         static id_t currentId = 0;
-        return StaticText{ device, currentId, pos, color, scale, text };
+        return StaticText{ device, currentId++, pos, color, scale, text };
     }
 
     StaticText(const StaticText&) = delete;
@@ -149,21 +149,31 @@ private:
 
 template <typename T>
 class VaryingText {
-private:
+public:
     class VaryingTextString {
+    public:
         struct Variable {
-            T& variable;
+            T* variable;
             sizeT index;
 
-            friend bool operator> (const Variable& lhs, const Variable& rhs);
+            friend bool operator> (const Variable& lhs, const Variable& rhs) {
+                return lhs.index > rhs.index;
+            }
         };
+        VaryingTextString(const std::string& text) : _planeText(text) {}
 
-        VaryingTextString(std::string& text) : _planeText(text) {}
+        VaryingTextString(const VaryingTextString&) = delete;
+        VaryingTextString& operator=(const VaryingTextString&) = delete;
+        VaryingTextString(VaryingTextString&& other) 
+            : _planeText(std::move(other._planeText)),
+            _variable(std::move(other._variable))
+            {};
+        VaryingTextString& operator=(VaryingTextString&&) = default;
 
         void addVariable(T& var, sizeT index);
         void assignText(std::string text);
 
-        std::string getString() const noexcept;
+        std::string getString() noexcept;
 
     private:
         std::string toS(T& var);
@@ -173,11 +183,11 @@ private:
     };
 public:
     using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, VaryingText>;
-    static VaryingText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, const std::string& text) {
+    using Map = std::unordered_map<id_t, VaryingText<T>>;
+    static VaryingText<T> createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, const std::string& text) {
         static id_t currentId = 0;
-        StaticText::createText(device, pos, color, scale);
-        return VaryingText{ std::move(textObj), text, staticTexts };
+        auto textObj = StaticText::createText(device, pos, color, scale);
+        return VaryingText<T>(textObj, text);
     }
 
     void update();
@@ -187,22 +197,16 @@ public:
     StaticText::id_t getId();
     StaticText& staticText();
 private:
-    VaryingText(StaticText&& textObj, std::string& text) : _textObj(textObj), _text(text) {}
+    VaryingText(StaticText& textObj, const std::string& text) : _textObj(std::move(textObj)), _text(text) {}
 private:
     StaticText _textObj;
     VaryingTextString _text;
 };
 
 template<typename T>
-bool operator>(const VaryingText<T>::VaryingTextString::Variable& lhs, const VaryingText<T>::VaryingTextString::Variable& rhs)
-{
-    return lhs.index > rhs.index;
-}
-
-template<typename T>
 inline void VaryingText<T>::VaryingTextString::addVariable(T& var, sizeT index)
 {
-    _variable.push_back({ var, index });
+    _variable.pushBack({ &var, index });
     _variable.bubbleSort();
 }
 
@@ -213,16 +217,16 @@ inline void VaryingText<T>::VaryingTextString::assignText(std::string text)
 }
 
 template<typename T>
-inline std::string VaryingText<T>::VaryingTextString::getString() const noexcept
+inline std::string VaryingText<T>::VaryingTextString::getString() noexcept
 {
     std::string ans;
-    ans.reserve(_planeText.size + (_variable * 5);
+    ans.reserve(_planeText.size() + (_variable.size() * 5));
 
     auto planeStringIndex = 0;
     auto variableIndex = 0;
     while (planeStringIndex <= _planeText.size()) {
         if (_variable[variableIndex].index == planeStringIndex) {
-            ans.push_back(toS(_variable[variableIndex].variable));
+            ans += (toS(*(_variable[variableIndex].variable)));
             variableIndex++;
         }
         else {

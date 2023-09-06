@@ -44,7 +44,7 @@ public:
 	//void rotate(Quaternion angle);
 	//void rotate(ld t, Quaternion angle);
 
-	void stage() noexcept;
+	void stage();
 
 	void updateCenterOfGravity() noexcept;
 

@@ -1,0 +1,307 @@
+{0,0,0} // betyr at det er en vector
+Quat{0,0,0} //betyr at det er en quaternion med euler rotasjon input, verdier i grader
+<object>{0,0,0} // betyr at vectoren blir relativ til posisjonen av object
+//alt ine i "<>" skal ikke skrives på filene. de er bare place hlders for informasjon og sier hva som skal stå der
+//alt med "//" foran er komentarer og skal heller ikke vere i filene
+//i filene så har ikke mellomrom noe å si. heller ikke kapitalisering
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+File Storage:
+Exampel simulation:
+	├>config
+	│	├>rocket
+	│	│	├>Rocket.txt
+	│	│	├>rocketStage
+	│	│	│	└><RocketStage name>.txt
+	│	│	├>engine
+	│	│	│	└><Engine name>.txt
+	│	│	└>fuelTank
+	│	│		└><FuelTank name>.txt
+	│	├>planet
+	│	│	├>used planets.txt
+	│	│	├><Planet name>.txt
+	│	│	└>atmosphereDensity
+	│	│		└><atmosphere fabb name>.db
+	│	├>mesh
+	│	│	└><Mesh name>.txt
+	│	├>Instructions.txt
+	│	└>Settings.txt
+	├>models
+	│	├>rocket
+	│	│	├>rocketStage
+	│	│	│	└><RocketStage name>.obj
+	│	│	├>engine
+	│	│	│	└><Engine name>.obj
+	│	│	└>fuelTank
+	│	│		└><FuelTank name>.obj
+	│	└>planet
+	│		└><Planet name>.obj
+	│	
+	└>run data
+		└><name>
+			├>GeneralRunInfo.txt
+			├>config 			//so that changes to the simulation can be made with out destroing the original
+			│	└>...
+			├>rocket
+			│	├><Rocket name>.db
+			│	└>rocketStage
+			│		├><RocketStage name>.db
+			│		└>engine
+			│			└><Engine name>.db
+			└>planet
+				└>Planet name>.dbt
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Examples:
+ExampelRocket.txt:
+	setup{
+		pos={0,0,0}
+		vel={0,0,0}
+		orientation=Quat{0,0,0}
+		--------eller--------------------------
+		ExamplePlanet1(latitude, longdetude)
+		orientation=<ExamplePlanet1 surface>Quat{0,0,0}
+		//later:
+		orbit(ExamplePlanet1, 200km, <other orbit shit>)
+		orientation=<ExamplePlanet1 surface>Quat{0,0,0}
+	}
+
+	stage{
+		0=ExampleStage1(<ExampelRocket>{0,0,0})
+		1=ExampleStage2(<ExampelRocket>{5,0,0})
+		2=ExampleStage3(<ExampelRocket>{10,0,0})
+	}
+
+----------------------------------------------------------------------
+
+ExampleStage1.txt:
+	setup{
+		dryMass=200
+		centerOfMass=<ExampleStage1>{0,0,0}
+		mesh=ExampleMesh1
+	}
+
+	Engine{
+		0=ExampleEngine1(<ExampleStage1>{-3,-1,0})
+		1=ExampleEngine2(<ExampleStage1>{-3,0.7,0.7})
+		2=ExampleEngine3(<ExampleStage1>{-3,0.7,-0.7})
+	}
+	ReactionThruster{
+		0=ExampleReactionThruster1(<ExampleStage1>{-3,-1,0})
+		1=ExampleReactionThruster2(<ExampleStage1>{-3,-1,0})
+		2=ExampleReactionThruster3(<ExampleStage1>{-3,-1,0})
+		3=ExampleReactionThruster4(<ExampleStage1>{-3,-1,0})
+	}
+	FuelTank{
+		0=ExampleFuelTank1(<ExampleStage1>{2,0,0})
+		1=ExampleFuelTank2(<ExampleStage1>{{-2,0,0}})
+	}
+
+----------------------------------------------------------------------
+
+ExampleEngine1.txt:
+	ReactionThruster=false
+	mass=20
+	exitVelosity=2000
+	FuelPerSecond=ExampleFuel1:1,ExampleFuel2:4
+	centerOfMass=<ExampleEngine1>{0,0,0}
+	mountPos=<ExampleEngine1>{0,0,0}
+	mesh=ExampleMesh2
+//optional:
+	maxGimblePerSecond=1
+	maxGimble=10
+
+----------------------------------------------------------------------
+
+ExampleFuelTank1.txt:
+	FuelType=ExampleFuel1
+	radius=1
+	height=2
+	FuelDensity=0.5
+	fuelmass=300
+
+----------------------------------------------------------------------
+
+ExamplePlanet1.txt:
+	setup{
+	FixedOrbit=true
+	mass=6E10
+	radius=5E3
+	spinPerSecond=Quat{0,0,0}
+	atmosphere=exampleAtmosphre1
+//FixedOrbitPlanet only:
+
+	}
+
+	obstruction{
+		0=ExampleObstruction1(latitude, longdetude, <planet surface>Quat{0,0,0}),
+		--------eller--------------------------
+		0=ExampleObstruction1(<planet>{0,0,0}, <planet surface>Quat{0,0,0}, ExampelMesh3),
+	}
+
+----------------------------------------------------------------------
+
+ExampleMesh1.txt:
+	Box({0,0,0}, {1,1,1}, Quat{0,0,0}, 0)
+	Sphere({1,0,0}, 1, 0)
+
+----------------------------------------------------------------------
+
+Settings.txt:
+	Gravity=General relativety / Newton
+	Aerodynamic=CFD / Simple
+	Randomnes=false / true
+	Edge detection=100
+	Point approximation of mesh per m2 = 100
+	delta time=0.001
+	used fuel types= ExampleFuel1, ExampleFuel2
+	colision handeling=Simple / Advanced / AutoAdvanced / AutoSimple / Auto
+//optional:
+	randomseed=1234567890
+
+----------------------------------------------------------------------
+colision handeling:
+	Simple / Advanced:
+		Hondterer colision ved bruk av mesh / model
+	Auto Simple / Advanced:
+		Hondterer colision ved bruk av mesh / model hvis den ikke har en da ved bruk av model / mesh
+	Auto:
+		Bruker mesh for simple ting som eks:
+			aerodynamic i vakium
+			når distansen er lang mellom objecter
+		og model når ting må vere nøjaktig
+
+----------------------------------------------------------------------
+
+
+Instructions.txt:
+NB: Instructions like land, orbit and other functions that uses other instructions are called heavy instructions.
+
+example:
+	0:burn(), rotate(Quat{90,0,0})
+	50:shutdown(1)
+	100:shutdown(),RCS(true)
+
+posible instructions:
+MVP:
+	burn(<no time limit provided 1E10 is deafalt value>, <engine ID to burn, no engine ID provided is all engines>)
+	shutdown(<engine ID to shutdown, no engine ID provided is all engines>)
+	stage()
+//move to alarm/pause later
+	exit()
+	pause()
+Later:
+	if statements, eks: if(altitude(ExamplePlanet) > 100km) aerodynamic = simple, shutdown()
+	rotate(<quaternion to rotate by in euler form>)
+	RCS(<true/false>, <ReactionThruster ID to turn on, no ReactionThruster ID provided is all ReactionThrusters>)
+	engineFuelTankSwitch(<new tank IDs, must contain the requierd fuel. doesent have to be on the same stage>, <engine ID to switch, no engine ID provided is all engines>)
+	ReactionThrusterFuelTankSwitch(<new tank IDs, must contain the requierd fuel. doesent have to be on the same stage>, <ReactionThruster ID to switch, no ReactionThruster ID provided is all ReactionThrusters>)
+Last:
+	land(<planet>, <cords>)
+	orbit(<altitude>)
+	extendOrbit(<altitude>)
+	injectionBurn(<planet>, <transfer method>)
+	Rotors(<angle>, <rotor ID to turn, no rotor ID provided is all rotors>)
+	hinge(<angle>, <hinge ID to turn, no hinge ID provided is all hinges>)
+
+Settings can also be altered in the instructions.txt file, eks: 500:edge detection=10.
+this is usful do to the fact that there wil be long times with only costing in space and then there doesent need to feks be on the CFD seting
+for aerodynamic
+Setting that can be changed:
+delta time,
+Gravity,
+Aerodynamic,
+Randomnes,
+edge detection,
+Point approximation of mesh per m2,
+
+dynamic variables that can be refrenced feks in if statements:
+time,
+
+dynamic functions whit return values that can be refrenced feks in if statements:
+deltaV(),
+deltaV(<stage number>), //returns the deltaV in stage if not attached to the rocket.
+altitude(<ExamplePlanet>),
+
+
+------------------------------------------------------------------------------------
+
+GeneralRunInfo.txt:
+	randomSeed=1234567890
+	totalTime=1E10
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+3d rendering using vulcan:
+
+windows:
+hub/starting menu (max 1),
+options (max 1),
+alarm/pause (max 1),
+free cam,
+map view,
+instruction view,
+telemetry view,
+time
+
+------------------------------------------------------------------------------------
+
+hub/starting menu:
+A menu for opening other windows.
+Also acts as the main window so that if it is closed the aplication ends.
+
+------------------------------------------------------------------------------------
+
+options:
+A menu for changing options like:
+FPS,
+Resilution,
+delete rocket at colision,
+end if no rockets present,
+
+------------------------------------------------------------------------------------
+
+alarm/pause:
+a window for creating alarms or pauses in the simulation.
+feks: pause when the time is 200s.
+
+200:pause() or if(ExampelRocket.altitude(ExamplePlanet) > 100km) pause().
+
+------------------------------------------------------------------------------------
+
+free cam:
+A window for moving frealy around space and may also track a rocket, planet or an obstruction on a planet.
+
+------------------------------------------------------------------------------------
+
+map view:
+a window for desplaying the predicted orbits or the exact orbit in the case of FixedOrbitPlanets.
+the predicted path of the rockets.
+
+------------------------------------------------------------------------------------
+
+instruction view:
+a window for showing and editing the instructions given to a Rocket.
+highlighting the curent loaded instruction and the loaded if statements.
+showing the sub instructions that makes up a heavy instruction.
+
+telemetry view:
+shows statistics of the rocket:
+position,
+velosity,
+accseleration,
+orientation,
+rotation,
+rotational accseleration,
+gravity,
+drag,
+thrust,
+engines that are firing and there thrust,
+engine orientation,
+fuel load in fuel tanks,
+altitude over planet,
+center of mass,
+center of lift,
+center of thrust,

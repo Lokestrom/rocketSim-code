@@ -83,8 +83,8 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>debug/database.lib;;vulkan-1.lib;glfw3.lib;debug/freetype.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;debug/database.lib;debug/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,8 +112,8 @@
       <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>debug/database.lib;;vulkan-1.lib;glfw3.lib;debug/freetype.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;debug/database.lib;debug/freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,6 +165,7 @@
     <ClCompile Include="Vulkan\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
     <ClInclude Include="Vulkan\callbackFunctions.hpp" />
     <ClInclude Include="DragSim.hpp" />
@@ -203,6 +204,9 @@
     <ClInclude Include="Vulkan\Text.hpp" />
     <ClInclude Include="Vulkan\Window.hpp" />
     <ClInclude Include="Vulkan\WindowTypeSpecificInfo.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Rocket simulation.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

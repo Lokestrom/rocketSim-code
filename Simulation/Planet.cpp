@@ -99,7 +99,7 @@ ld Planet::atmosphreDensity(ld altitude)
 	Vector<Vector<ld>> data(2);
 	for (auto i = 0; data[1][0] < altitude; i++) {
 		data[0] = data[1];
-		atmosphereCondisions.getRow(data[1], i);
+		_atmosphereCondisions.getRow(data[1], i);
 	}
 	return (data[1][1] * (altitude - data[0][0]) + data[0][1] * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
 }
@@ -113,7 +113,7 @@ Vector3 Planet::atmosphreWind(ld altitude)
 	Vector3 windTop, windBottom;
 	for (auto i = 0; data[1][0] < altitude; i++) {
 		data[0] = data[1];
-		atmosphereCondisions.getRow(data[1], i);
+		_atmosphereCondisions.getRow(data[1], i);
 	}
 	windTop = { data[1][2], data[1][3], data[1][4] };
 	windBottom = { data[0][2], data[0][3], data[0][4] };

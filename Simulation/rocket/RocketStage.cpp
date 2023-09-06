@@ -1,7 +1,6 @@
 #include "Rocket.hpp"
 #include "RocketStage.hpp"
 #include "../planet.hpp"
-#include "../Vulkan/GameObject.hpp"
 
 RocketStage::RocketStage() : _ID(-1), _pos(Vector3::null()), _dryMass(0), _centerOfMass(Vector3::null()),
 _engines(Vector<Engine>()), _reactionThrusters(Vector<ReactionThruster>()),

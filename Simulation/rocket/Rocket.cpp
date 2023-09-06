@@ -150,7 +150,7 @@ void Rocket::rotate(ld t, Quaternion angle)
 {
 }*/
 
-void Rocket::stage() noexcept 
+void Rocket::stage() 
 {
 	objectLists::rockets.pushBack(new Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
 	fileSystem::createLoggingFilesForNewRocket(*objectLists::rockets[objectLists::rockets.size() - 1]);

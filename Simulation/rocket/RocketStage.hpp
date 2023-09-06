@@ -6,6 +6,12 @@
 #include "FuelTank.hpp"
 #include "../helpers/Mesh.hpp"
 #include "Engine.hpp"
+#include "../Vulkan/GameObject.hpp"
+
+class GameObject3D;
+class Engine;
+class ReactionThruster;
+class FuelTank;
 
 using namespace Database;
 
