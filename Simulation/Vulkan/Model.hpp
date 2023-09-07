@@ -3,6 +3,8 @@
 #include "Buffer.hpp"
 #include "Device.hpp"
 
+#include "Vector.hpp"
+
 // libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -11,6 +13,8 @@
 // std
 #include <memory>
 #include <vector>
+
+using namespace Database;
 
 class Model2D
 {
@@ -42,6 +46,8 @@ public:
 
     static std::unique_ptr<Model2D> createModelFromFile(
         Device& device, const std::string& filepath);
+    std::unique_ptr<Model2D> createModelFromVertices(
+        Device& device, const std::vector<Vertex>& Vertices);
 
     void bind(vk::CommandBuffer commandBuffer);
     void draw(vk::CommandBuffer commandBuffer);

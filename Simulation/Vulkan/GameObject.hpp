@@ -75,7 +75,13 @@ public:
     bool isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& window);
 
 private:
-    GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{ objType } {}
+    GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{ objType } {
+        if (type == GameObject2DType::backGround) {
+            loadBackground();
+        }
+    }
+
+    void loadBackground();
 
     void (*clickedFunction)(WindowInfo& window) = nullptr;
     id_t id;

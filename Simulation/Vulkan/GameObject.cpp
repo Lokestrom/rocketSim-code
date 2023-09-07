@@ -100,7 +100,7 @@ void GameObject2D::setButtonFunction(void(*function)(WindowInfo& window))
 bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& window) {
     glm::mat2 rotationMat = { {cos(transform.rotation), -sin(transform.rotation)}, {sin(transform.rotation), cos(transform.rotation)} };
 
-    glm::vec2 relativePos = (mousePos - transform.translation);
+    glm::vec2 relativePos = (mousePos - glm::vec2{transform.translation.x, transform.translation.y});
     relativePos.x /= res.y;
     relativePos.y /= res.x;
 
@@ -114,4 +114,8 @@ bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& wind
         return true;
     }
     return false;
+}
+
+void loadBackground() {
+
 }

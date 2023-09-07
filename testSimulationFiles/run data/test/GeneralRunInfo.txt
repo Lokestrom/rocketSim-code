@@ -1,2 +1,2 @@
 randomSeed=3435973836
-totalTime=2649
+totalTime=188

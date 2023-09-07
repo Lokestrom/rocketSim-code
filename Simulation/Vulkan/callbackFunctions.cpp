@@ -19,7 +19,7 @@ void loadMainWindow(WindowInfo& window)
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { .9, -.7, 1};
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openOptionsWindow);

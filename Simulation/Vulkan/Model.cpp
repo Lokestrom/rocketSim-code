@@ -49,6 +49,16 @@ std::unique_ptr<Model2D> Model2D::createModelFromFile(Device& device, const std:
     return std::make_unique<Model2D>(device, builder);
 }
 
+std::unique_ptr<Model2D> Model2D::createModelFromVertices(Device& device, const std::vector<Vertex>& vertices) {
+    Builder builder{};
+    builder.vertices = vertices;
+    builder.indices.reserve(vertices.size());
+    for (size_t i = 0; i < vertices.size(); i++)
+        builder.indices.push_back(i);
+    
+    return std::make_unique<Model2D>(device, builder);
+}
+
 void Model2D::bind(vk::CommandBuffer commandBuffer)
 {
     vk::Buffer buffers[] = { _vertexBuffer->getBuffer() };
