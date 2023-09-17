@@ -15,11 +15,11 @@ public:
 	Engine();
 	Engine(int ID, ld mass, ld exitVel, 
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape,
+		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model,
 		ld maxGimblePerSecond, ld maxGimble);
 	Engine(int ID, ld mass, ld exitVel,
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape);
+		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model);
 
 	int ID() const noexcept;
 	bool active() const noexcept;
@@ -31,8 +31,10 @@ public:
 	Vector3 centerOfMass() const noexcept;
 	Quaternion orientation() const noexcept;
 	Vector<String> fuelTypes() const noexcept;
+	Model3D::Builder model() const noexcept;
 
-	std::shared_ptr<GameObject3D> object() const noexcept;
+	Vector3& posRef() noexcept;
+	Quaternion& orientationRef() noexcept;
 
 	void setID(int newID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
@@ -60,7 +62,7 @@ private:
 	bool _active, _canGimble;
 	Vector<int> _fuelTankIDs;
 
-	std::shared_ptr<GameObject3D> _object;
+	Model3D::Builder _modelBuilder;
 };
 
 
@@ -69,11 +71,11 @@ public:
 	ReactionThruster();
 	ReactionThruster(int ID, ld mass, ld exitVel,
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape,
+		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model,
 		ld maxGimblePerSecond, ld maxGimble);
 	ReactionThruster(int ID, ld mass, ld exitVel,
 		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape);
+		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model);
 	ReactionThruster(Engine engine);
 };
 

@@ -69,7 +69,7 @@ void RenderSystem3D::renderGameObjects(FrameInfo& frameInfo) {
     frameInfo.commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
     for (auto& kv : frameInfo.gameObjects3D) {
-        auto& obj = *kv.second;
+        auto& obj = kv.second;
         if (obj.model == nullptr) continue;
         PushConstantData3D push{};
         push.modelMatrix = obj.transform.mat4();

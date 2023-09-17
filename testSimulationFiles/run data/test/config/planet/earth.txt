@@ -3,4 +3,5 @@ FixedOrbit=false
 mass=6E10
 radius=53
 pos={1,1,1}
+model=cube
 }

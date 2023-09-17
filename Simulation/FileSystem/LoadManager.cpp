@@ -9,6 +9,11 @@ namespace fileSystem {
 		objects::simulationFolder += "/config/";
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "mesh")))
 			LoadManagerMaps::mesh[String(entry.path().filename().string()).split('.')[0]] = loadMesh(entry.path().string());
+		Model3D::Builder model;
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "model"))) {
+			model.loadModel(entry.path().string());
+			LoadManagerMaps::model[String(entry.path().filename().string()).split('.')[0]] = std::move(model);
+		}
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket/engine"))) {
 			bool isReactionThruster = false;
 			Engine engine = loadEngine(entry.path().string(), isReactionThruster);
@@ -44,8 +49,6 @@ namespace fileSystem {
 		}
 		loadSettings(objects::simulationFolder + "settings.txt");
 	}
-
-
 
 	Shape loadMesh(String meshFile) {
 		std::ifstream file(meshFile.cstr());
@@ -134,6 +137,7 @@ namespace fileSystem {
 		String misingValues;
 		validationLayer(map, "fuel per second", misingValues);
 		validationLayer(map, "mesh", misingValues);
+		validationLayer(map, "model", misingValues);
 		validationLayer(map, "mass", misingValues);
 		validationLayer(map, "exit velosity", misingValues);
 		validationLayer(map, "center of mass", misingValues);
@@ -141,7 +145,9 @@ namespace fileSystem {
 		if (misingValues != "")
 			throw error("There is mising values in the Engine file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 		if (!LoadManagerMaps::mesh.count(map["mesh"]))
-			throw error("The mesh: " + map["mesh"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
+			throw error("The mesh: " + map["mesh"] + " has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
+		if (!LoadManagerMaps::model.count(map["model"]))
+			throw error("The model: " + map["model"] + " has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
 			validateThatValueIsNotNegative(map, "mass");
@@ -178,9 +184,10 @@ namespace fileSystem {
 		}
 		file.close();
 		Shape mesh = LoadManagerMaps::mesh[map["mesh"]];
+		Model3D::Builder model = LoadManagerMaps::model[map["model"]];
 		if (!map.count("maxgimblepersecond") && !map.count("maxgimble"))
-			return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), Vector3::null(), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, mesh);
-		return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), Vector3::null(), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, mesh, degToRad(STold(map["maxgimblepersecond"])), degToRad(STold(map["maxgimble"])));
+			return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), Vector3::null(), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, std::move(mesh), std::move(model));
+		return Engine(0, STold(map["mass"]), STold(map["exitvelosity"]), Vector3::null(), returnVector3(map["centerofmass"]), returnVector3(map["mountpos"]), fuelPerSecond, std::move(mesh), std::move(model), degToRad(STold(map["maxgimblepersecond"])), degToRad(STold(map["maxgimble"])));
 	}
 
 	void validateFuelTankVariables(std::unordered_map<String, String> map) {
@@ -190,8 +197,11 @@ namespace fileSystem {
 		validationLayer(map, "height", misingValues);
 		validationLayer(map, "fuel density", misingValues);
 		validationLayer(map, "fuelmass", misingValues);
+		validationLayer(map, "model", misingValues);
 		if (misingValues != "")
 			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
+		if (!LoadManagerMaps::model.count(map["model"]))
+			throw error("The model: " + map["model"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
 			validateThatValueIsNotNegative(map, "fuelmass");
@@ -219,7 +229,8 @@ namespace fileSystem {
 			e.what = "Error in file: " + FuelTankFile + ":\n" + e.what;
 			throw e;
 		}
-		return FuelTank(0, map["fueltype"], STold(map["fuelmass"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]));
+		Model3D::Builder model = LoadManagerMaps::model[map["model"]];
+		return FuelTank(0, map["fueltype"], STold(map["fuelmass"]), STold(map["radius"]), STold(map["height"]), STold(map["fueldensity"]), std::move(model));
 	}
 
 	void validateRocketStageVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {
@@ -235,11 +246,13 @@ namespace fileSystem {
 		validationLayer(map["setup"], "center of mass", misingValues);
 		validationLayer(map["setup"], "mesh", misingValues);
 		validationLayer(map["setup"], "dry mass", misingValues);
+		validationLayer(map["setup"], "model", misingValues);
 		if (misingValues != "")
 			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 		if (!LoadManagerMaps::mesh.count(map["setup"]["mesh"]))
 			throw error("The mesh: " + map["setup"]["mesh"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
-
+		if (!LoadManagerMaps::model.count(map["setup"]["model"]))
+			throw error("The model: " + map["setup"]["model"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 		try {
 			validateThatValueIsNotNegative(map["setup"], "drymass");
 		}
@@ -262,6 +275,7 @@ namespace fileSystem {
 		validateRocketStageVariables(data);
 
 		Shape mesh = LoadManagerMaps::mesh[data["setup"]["mesh"]];
+		Model3D::Builder model = LoadManagerMaps::model[data["setup"]["model"]];
 
 		Vector<Engine> engines;
 		for (auto i = 0; i < data["engines"].size(); i++) {
@@ -281,8 +295,7 @@ namespace fileSystem {
 			fuelTanks[i].setID(i);
 			fuelTanks[i].setPos(returnVector3(returnArgs(data["fueltanks"][toS(i)])[0]));
 		}
-		std::shared_ptr<GameObject3D> rocketStage = std::make_shared<GameObject3D>(GameObject3D::createGameObject());
-		return RocketStage(0, { 0,0,0 }, STold(data["setup"]["drymass"]), returnVector3(data["setup"]["centerofmass"]), engines, reactionThrusters, fuelTanks, mesh, rocketStage);
+		return RocketStage(0, { 0,0,0 }, STold(data["setup"]["drymass"]), returnVector3(data["setup"]["centerofmass"]), std::move(engines), std::move(reactionThrusters), std::move(fuelTanks), std::move(mesh), std::move(model));
 	}
 
 	void validatePlanetFileVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {

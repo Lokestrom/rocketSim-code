@@ -14,32 +14,30 @@
 
 void loadMainWindow(WindowInfo& window)
 {
-    auto temp = GameObject2D::createGameObject(GameObject2DType::backGround);
-    temp.color = { 1,1, 223 / 255 };
-    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
-
-    temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7, 1};
-    temp.transform.scale = { .05f, .2f };
-    temp.transform.rotation = 0;
+    auto temp = GameObject2D::createGameObject(GameObject2DType::button);
+    temp.transform.translation = { 0.4, 0.8, 0};
+    temp.transform.scale = { .6f, .3f };
     temp.setButtonFunction(openOptionsWindow);
+    temp.loadButton(*window.device);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto OptionsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Options");
     window.staticTexts.emplace(OptionsText.getId(), std::move(OptionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
-    temp.transform.scale = { .05f, .2f };
+    temp.transform.translation = { -.4, -.6, 0 };
+    temp.transform.scale = { .45f, .2f };
     temp.transform.rotation = 0;
+    temp.color = { 0.f,1.f,0.f };
     temp.setButtonFunction(openTelemetryWindow);
+    temp.loadButton(*window.device);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
     auto telemetryText = StaticText::createText(*window.device, { -1,0 }, { 1,1,1,1 }, 0.0001, "Telemetry");
     window.staticTexts.emplace(telemetryText.getId(), std::move(telemetryText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { .9, -.7, 0 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openInstructionsWindow);
@@ -49,7 +47,7 @@ void loadMainWindow(WindowInfo& window)
     window.staticTexts.emplace(InstructionsText.getId(), std::move(InstructionsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { .9, -.7, 0 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openMapViewWindow);
@@ -59,27 +57,27 @@ void loadMainWindow(WindowInfo& window)
     window.staticTexts.emplace(MapViewText.getId(), std::move(MapViewText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { -.45, -.3, 0 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openFreeCamWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto FreeCamText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Free cam");
+    auto FreeCamText = StaticText::createText(*window.device, { -.45, -.3 }, { 1,1,1,1 }, 0.00005, "Free cam");
     window.staticTexts.emplace(FreeCamText.getId(), std::move(FreeCamText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
-    temp.transform.scale = { .05f, .2f };
+    temp.transform.translation = { .4, .0, 0 };
+    temp.transform.scale = { .5f, .3f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openAlarmsWindow);
     window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 
-    auto AlarmsText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Alarms");
+    auto AlarmsText = StaticText::createText(*window.device, { .4,.2 }, { 1,1,1,1 }, 0.00005, "Alarms");
     window.staticTexts.emplace(AlarmsText.getId(), std::move(AlarmsText));
 
     temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { .9, -.7, 0 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(openTimeWindow);
@@ -87,24 +85,61 @@ void loadMainWindow(WindowInfo& window)
 
     auto TimeText = StaticText::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 0.0005, "Time");
     window.staticTexts.emplace(TimeText.getId(), std::move(TimeText));
+
+    temp = GameObject2D::createGameObject(GameObject2DType::backGround);
+    temp.color = { 1,1, 150 / 255 };
+    temp.loadBackground(*window.device);
+    window.gameObjects2d.emplace(temp.getId(), std::move(temp));
 }
 
 void loadFreeCamWindow(WindowInfo& window)
 {
+    std::unique_ptr<GameObject3D> obj;
+    Transform3DComponent transform;
     for (auto& rocket : objectLists::rockets) {
+        transform.translation.pushBack(&rocket->posRef());
+        transform.rotation.pushBack(&rocket->orientationRef());
         for (auto& rocketStage : rocket->stages()) {
-            window.gameObjects3d.emplace(rocketStage.object()->getId(), rocketStage.object());
-            for(auto& engine : rocketStage.engines())
-                window.gameObjects3d.emplace(engine.object()->getId(), engine.object());
-            for (auto& fuelTank : rocketStage.fuelTanks())
-                window.gameObjects3d.emplace(fuelTank.object()->getId(), fuelTank.object());
+            transform.translation.pushBack(&rocketStage.posRef());
+            *obj = GameObject3D::createGameObject(transform);
+            obj->model = std::make_unique<Model3D>(*window.device, rocketStage.model());
+            window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
+            for (auto& engine : rocketStage.engines()) {
+                transform.translation.pushBack(&engine.posRef());
+                transform.rotation.pushBack(&engine.orientationRef());
+                *obj = GameObject3D::createGameObject(transform);
+                obj->model = std::make_unique<Model3D>(*window.device, engine.model());
+                window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
+                transform.translation.popBack();
+                transform.rotation.popBack();
+            }
+            for (auto& fuelTank : rocketStage.fuelTanks()) {
+                transform.translation.pushBack(&fuelTank.posRef());
+                transform.rotation.pushBack(&fuelTank.orientationRef());
+                *obj = GameObject3D::createGameObject(transform);
+                obj->model = std::make_unique<Model3D>(*window.device, fuelTank.model());
+                window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
+                transform.translation.popBack();
+                transform.rotation.popBack();
+            }
+            transform.translation.popBack();
         }
+        transform.translation.popBack();
+        transform.rotation.popBack();
     }
     for (auto& planet : objectLists::physicsPlanets) {
-        window.gameObjects3d.emplace(planet->object()->getId(), planet->object());
+        transform.translation.pushBack(&planet->posRef());
+        transform.rotation.pushBack(&planet->orientationRef());
+        *obj = GameObject3D::createGameObject(transform);
+        obj->model = std::make_unique<Model3D>(*window.device, planet->model());
+        window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
     }
     for (auto& planet : objectLists::fixedOrbitPlanets) {
-        window.gameObjects3d.emplace(planet->object()->getId(), planet->object());
+        transform.translation.pushBack(&planet->posRef());
+        transform.rotation.pushBack(&planet->orientationRef());
+        *obj = GameObject3D::createGameObject(transform);
+        obj->model = std::make_unique<Model3D>(*window.device, planet->model());
+        window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
     }
 }
 
@@ -135,7 +170,7 @@ void loadPosTelemetryView(WindowInfo& window) {
     window.varyinglds.emplace(pos.getId(), std::move(pos));
 
     auto changeRelative = GameObject2D::createGameObject(GameObject2DType::button);
-    changeRelative.transform.translation = { .9, -.7 };
+    changeRelative.transform.translation = { .9, -.7, 0 };
     changeRelative.transform.scale = { .05f, .2f };
     changeRelative.transform.rotation = 0;
     changeRelative.setButtonFunction(changeRelativeObject);
@@ -176,7 +211,7 @@ void changeObjectInViewTelemetry(WindowInfo& window) {
 void loadTelemetryWindow(WindowInfo& window)
 {
     auto temp = GameObject2D::createGameObject(GameObject2DType::button);
-    temp.transform.translation = { .9, -.7 };
+    temp.transform.translation = { .9, -.7, 0 };
     temp.transform.scale = { .05f, .2f };
     temp.transform.rotation = 0;
     temp.setButtonFunction(addTelemetry);
@@ -186,7 +221,7 @@ void loadTelemetryWindow(WindowInfo& window)
     window.staticTexts.emplace(createTelemetryText.getId(), std::move(createTelemetryText));
     
     auto rocketInView = GameObject2D::createGameObject(GameObject2DType::button);
-    rocketInView.transform.translation = { 0,0 };
+    rocketInView.transform.translation = { 0, 0, 0 };
     rocketInView.transform.scale = { 1,1 };
     rocketInView.transform.rotation = 0;
     rocketInView.setButtonFunction(changeObjectInViewTelemetry);
@@ -219,7 +254,7 @@ void loadTimeWindow(WindowInfo& window)
     window.varyinglds.emplace(deltaTimeText.getId(), std::move(deltaTimeText));
 
     auto changeCurrentT = GameObject2D::createGameObject(GameObject2DType::button);
-    changeCurrentT.transform.translation = { 0,0 };
+    changeCurrentT.transform.translation = { 0,0, 0 };
     changeCurrentT.transform.scale = { 1,1 };
     changeCurrentT.transform.rotation = 0;
     changeCurrentT.setButtonFunction(setSimulationTime);

@@ -24,9 +24,9 @@ struct Transform2DComponent {
 };
 
 struct Transform3DComponent {
-    Vector3 translation;
+    Vector<Vector3*> translation;
     Vector3 scale{ 1.f, 1.f, 1.f };
-    Quaternion rotation;
+    Vector<Quaternion*> rotation;
 
     glm::mat4 mat4();
 
@@ -62,6 +62,8 @@ public:
     id_t getId() { return id; }
 
     void setButtonFunction(void (*function)(WindowInfo& window));
+    void loadButton(Device& device);
+    void loadBackground(Device& device);
 
     glm::vec3 color{};
     Transform2DComponent transform{};
@@ -76,12 +78,9 @@ public:
 
 private:
     GameObject2D(id_t objId, GameObject2DType objType) : id{ objId }, type{ objType } {
-        if (type == GameObject2DType::backGround) {
-            loadBackground();
-        }
+        if (type == GameObject2DType::backGround)
+            transform.translation = { 0,0,0.1 };
     }
-
-    void loadBackground();
 
     void (*clickedFunction)(WindowInfo& window) = nullptr;
     id_t id;
@@ -91,15 +90,15 @@ class GameObject3D
 {
 public:
     using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, std::shared_ptr<GameObject3D>>;
+    using Map = std::unordered_map<id_t, GameObject3D>;
 
-    static GameObject3D createGameObject() {
+    static GameObject3D createGameObject(Transform3DComponent transform) {
         static id_t currentId = 0;
-        return GameObject3D{ currentId++ };
+        return GameObject3D{ currentId++, transform };
     }
 
     static GameObject3D makePointLight(
-        float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+        Transform3DComponent transform, float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
 
     GameObject3D(const GameObject3D&) = delete;
     GameObject3D& operator=(const GameObject3D&) = delete;
@@ -107,6 +106,7 @@ public:
     GameObject3D& operator=(GameObject3D&&) = default;
 
     id_t getId() { return id; }
+    Vector3 translation();
 
     glm::vec3 color{};
     Transform3DComponent transform;
@@ -116,7 +116,7 @@ public:
     std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
 private:
-    GameObject3D(id_t objId) : id{ objId } {}
+    GameObject3D(id_t objId, Transform3DComponent transform) : id{ objId }, transform{ transform } {}
 
     id_t id;
 };

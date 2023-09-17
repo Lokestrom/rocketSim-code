@@ -48,7 +48,6 @@ struct WindowInfo {
 	std::unique_ptr<TextRenderer> textRenderSystem;
 
 	std::unique_ptr<Camera> camera;
-	std::unique_ptr<GameObject3D> viewerObject;
 	CameraSettings cameraSetting;
 
 	std::chrono::steady_clock::time_point currentTime;

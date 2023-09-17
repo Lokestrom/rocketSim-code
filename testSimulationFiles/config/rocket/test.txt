@@ -4,5 +4,5 @@ vel={0,0,0}
 orientation=Quat{0,0,0}
 }
 stage{
-0=stage1({4,6,80})
+0=stage1({4,6,0})
 }

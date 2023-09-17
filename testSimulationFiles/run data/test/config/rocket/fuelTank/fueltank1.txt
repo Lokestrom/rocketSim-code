@@ -3,3 +3,4 @@ radius=4
 height=6
 FuelDensity=10000
 fuelmass=10000
+model=cube

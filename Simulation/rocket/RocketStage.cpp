@@ -9,10 +9,10 @@ _fuelTanks(Vector<FuelTank>()), _mesh(Shape())
 
 RocketStage::RocketStage(int ID, Vector3 pos, ld dryMass, Vector3 centerOfMass, 
 	Vector<Engine> engines, Vector<ReactionThruster> reactionThrusters, 
-	Vector<FuelTank> fuelTanks, Shape mesh, std::shared_ptr<GameObject3D> object)
+	Vector<FuelTank> fuelTanks, Shape mesh, const Model3D::Builder& model)
 	: _ID(ID), _pos(pos), _dryMass(dryMass), _centerOfMass(centerOfMass),
 	_engines(engines), _reactionThrusters(reactionThrusters),
-	_fuelTanks(fuelTanks), _mesh(mesh), _object(object)
+	_fuelTanks(fuelTanks), _mesh(mesh), _modelBuilder(model)
 {
 }
 
@@ -80,13 +80,17 @@ Vector<int> RocketStage::fuelTankIDs() const noexcept
 	return fID;
 }
 
-std::shared_ptr<GameObject3D> RocketStage::object() const noexcept
+Model3D::Builder RocketStage::model() const noexcept
 {
-	return _object;
+	return _modelBuilder;
+}
+
+Vector3& RocketStage::posRef() noexcept
+{
+	return _pos;
 }
 
 /*setters*/
-
 void RocketStage::setID(int newID) noexcept
 {
 	_ID = newID;

@@ -33,7 +33,7 @@ public:
 	Vector<Obstruction> _obstructions;
 	ReadFile<ld> _atmosphereCondisions;
 
-	std::shared_ptr<GameObject3D> _object;
+	Model3D::Builder _model;
 
 	Planet();
 	Planet(String ID, ld mass, ld radius, Vector3 pos);
@@ -48,8 +48,7 @@ public:
 	ld radius() const noexcept;
 	Sphere mesh() const noexcept;
 	Vector<Obstruction> obstructions() const noexcept;
-
-	std::shared_ptr<GameObject3D> object() const noexcept;
+	Model3D::Builder model() const noexcept;
 
 	Vector3& posRef() noexcept;
 	Quaternion& orientationRef() noexcept;

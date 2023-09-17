@@ -2,11 +2,11 @@
 #include "../Vulkan/GameObject.hpp"
 
 FuelTank::FuelTank()
-	: _ID(-1), _fuel(Fuelmap()), density(0), _mesh(Cylinder())
+	: _ID(-1), _fuel(Fuelmap()), _density(0), _mesh(Cylinder())
 {}
 
-FuelTank::FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity)
-	: _ID(ID), _fuel(fuelType, fuelLoad), density(fuelDensity) {
+FuelTank::FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity, const Model3D::Builder& model)
+	: _ID(ID), _fuel(fuelType, fuelLoad), _density(fuelDensity), _modelBuilder(model) {
 	_mesh.radius = radius;
 	_mesh.height = height;
 	_pos = { 0,0,0 };
@@ -32,9 +32,19 @@ String FuelTank::fuelType() const noexcept
 	return _fuel.fuelTypes()[0];
 }
 
-std::shared_ptr<GameObject3D> FuelTank::object() const noexcept
+Model3D::Builder FuelTank::model() const noexcept
 {
-	return _object;
+	return _modelBuilder;
+}
+
+Vector3& FuelTank::posRef() noexcept
+{
+	return _pos;
+}
+
+Quaternion& FuelTank::orientationRef() noexcept
+{
+	return _orientation;
 }
 
 void FuelTank::setID(int newID) noexcept
@@ -48,7 +58,7 @@ void FuelTank::setPos(Vector3 newPos) noexcept
 
 Vector3 FuelTank::centerOfMass() const noexcept
 {
-	return { _pos.x * ((fuelMass() / density) / _mesh.volum()), _pos.y, _pos.z };
+	return { _pos.x * ((fuelMass() / _density) / _mesh.volum()), _pos.y, _pos.z };
 }
 
 void FuelTank::removeFuel(Fuelmap outFuel) noexcept

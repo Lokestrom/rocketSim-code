@@ -65,7 +65,7 @@ void RenderSystem2D::renderGameObjects(FrameInfo& frameInfo) {
         auto& obj = kv.second;
         if (obj.model == nullptr) continue;
         RenderSystem2DPushConstants push{};
-        push.position = { obj.transform.translation, obj.transform.rotation, 1};
+        push.position = { obj.transform.translation, obj.transform.rotation};
         push.scale = obj.transform.scale;
 
         frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(RenderSystem2DPushConstants), &push);

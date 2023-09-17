@@ -20,16 +20,16 @@ void Keyboard::deleteTarget()
 }
 
 void Keyboard::move(
-    GLFWwindow* window, double dt, GameObject3D& gameObject) {
+    GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation) {
     if (glfwGetWindowAttrib(window, GLFW_FOCUSED) != 1)
         return;
-    Vector3 forwardDir = gameObject.transform.rotation.rotate(Vector3{ 0, 0, 1 });
-    Vector3 rightDir = gameObject.transform.rotation.rotate(Vector3{ 1, 0, 0 });
-    Vector3 upDir = gameObject.transform.rotation.rotate(Vector3{ 0, -1, 0 });
+    Vector3 forwardDir = objectRotation.rotate(Vector3{ 0, 0, 1 });
+    Vector3 rightDir = objectRotation.rotate(Vector3{ 1, 0, 0 });
+    Vector3 upDir = objectRotation.rotate(Vector3{ 0, 1, 0 });
 
     Vector3 moveDir;
     if (_currentTarget.has_value()) {
-        trackingMove(window, dt, gameObject);
+        trackingMove(window, dt, objectTranslation, objectRotation);
     }
     if (glfwGetKey(window, _keys.moveForward) == GLFW_PRESS)
         moveDir += forwardDir;
@@ -47,11 +47,11 @@ void Keyboard::move(
     }
 
     if (moveDir.length() > std::numeric_limits<float>::epsilon()) {
-        gameObject.transform.translation += _moveSpeed * dt * moveDir.normal();
+        objectTranslation += _moveSpeed * dt * moveDir.normal();
     }
 }
 
-void Keyboard::rotate(GLFWwindow* window, double dt, GameObject3D& gameObject)
+void Keyboard::rotate(GLFWwindow* window, double dt, Quaternion& objectRotation)
 {
     if (glfwGetWindowAttrib(window, GLFW_FOCUSED) != 1)
         return;
@@ -75,8 +75,8 @@ void Keyboard::rotate(GLFWwindow* window, double dt, GameObject3D& gameObject)
         rotation -= rollRotate;
 
     if (rotation != Vector3::null()) {
-        gameObject.transform.rotation += getStepQuaternion(gameObject.transform.rotation, gameObject.transform.rotation * toQuaternion(rotation), (int)(1 / (dt * _lookSpeed)), 2 * glm::pi<double>());
-        gameObject.transform.rotation = gameObject.transform.rotation.normalized();
+        objectRotation += getStepQuaternion(objectRotation, objectRotation * toQuaternion(rotation), (int)(1 / (dt * _lookSpeed)), 2 * glm::pi<double>());
+        objectRotation = objectRotation.normalized();
     }
 }
 
@@ -85,10 +85,10 @@ bool Keyboard::pausePressed(GLFWwindow* window)
     return glfwGetKey(window, _keys.pause) == GLFW_PRESS;
 }
 
-void Keyboard::trackingMove(GLFWwindow* window, double dt, GameObject3D& gameObject)
+void Keyboard::trackingMove(GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation)
 {
-    Vector3 rightDir = gameObject.transform.rotation.rotate(Vector3{ 1, 0, 0 });
-    Vector3 upDir = gameObject.transform.rotation.rotate(Vector3{ 0, -1, 0 });
+    Vector3 rightDir = objectRotation.rotate(Vector3{ 1, 0, 0 });
+    Vector3 upDir = objectRotation.rotate(Vector3{ 0, -1, 0 });
 
     Vector3 moveDir;
     if (glfwGetKey(window, _keys.moveRight) == GLFW_PRESS)
@@ -100,12 +100,12 @@ void Keyboard::trackingMove(GLFWwindow* window, double dt, GameObject3D& gameObj
     if (glfwGetKey(window, _keys.moveDown) == GLFW_PRESS)
         moveDir -= upDir;
 
-    Vector3 direction = (_currentTarget.value() - gameObject.transform.translation);
+    Vector3 direction = (_currentTarget.value() - objectTranslation);
 
     direction = (direction + (moveDir * dt * _moveSpeed)).normal() * direction.length();
 
     const glm::vec3 w = glm::normalize(glm::vec3{ direction.normal().x, direction.normal().y, direction.normal().z});
-    const glm::vec3 u{ glm::normalize(glm::cross(w, toVec3(gameObject.transform.rotation.rotate({0,-1,0}))))};
+    const glm::vec3 u{ glm::normalize(glm::cross(w, toVec3(objectRotation.rotate({0,-1,0}))))};
     const glm::vec3 v{ glm::cross(w, u) };
 
     glm::mat4 viewMatrix = glm::mat4{ 0.f };
@@ -125,9 +125,9 @@ void Keyboard::trackingMove(GLFWwindow* window, double dt, GameObject3D& gameObj
     double y = (viewMatrix[0][2] - viewMatrix[2][0]) / (4.0 * a);
     double z = (viewMatrix[1][0] - viewMatrix[0][1]) / (4.0 * a);
 
-    gameObject.transform.translation = (direction + 2 * gameObject.transform.translation) - _currentTarget.value();
-    gameObject.transform.rotation = Quaternion{ a,x,y,z };
-    gameObject.transform.rotation = gameObject.transform.rotation.normalized();
+    objectTranslation = (direction + 2 * objectTranslation) - _currentTarget.value();
+    objectRotation = Quaternion{ a,x,y,z };
+    objectRotation = objectRotation.normalized();
 }
 
 /*--------------------------Mouse------------------------------*/
@@ -141,7 +141,7 @@ void Mouse::deleteTarget()
     _currentTarget.reset();
 }
 
-void Mouse::rotate(Window& window, GameObject3D& gameObject)
+void Mouse::rotate(Window& window, Quaternion& objectRoatation)
 {
     if (glfwGetWindowAttrib(window.getGLFWwindow(), GLFW_FOCUSED) != 1 || _currentTarget.has_value())
         return;
@@ -173,8 +173,8 @@ void Mouse::rotate(Window& window, GameObject3D& gameObject)
     }
 
     if (rotation != Vector3::null() || rotation.length() > std::numeric_limits<float>::epsilon()) {
-        gameObject.transform.rotation += getStepQuaternion(gameObject.transform.rotation, gameObject.transform.rotation * toQuaternion(rotation), 1, 2 * glm::pi<double>());
-        gameObject.transform.rotation = gameObject.transform.rotation.normalized();
+        objectRoatation += getStepQuaternion(objectRoatation, objectRoatation * toQuaternion(rotation), 1, 2 * glm::pi<double>());
+        objectRoatation = objectRoatation.normalized();
     }
 
     glfwSetCursorPos(window.getGLFWwindow(), centerX, centerY);

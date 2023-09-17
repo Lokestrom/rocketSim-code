@@ -76,8 +76,6 @@ WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType,
         renderer->getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout()));
     camera = std::make_unique<Camera>();
-
-    viewerObject = std::make_unique<GameObject3D>(GameObject3D::createGameObject());
 }
 
 WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
@@ -100,7 +98,6 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     textRenderSystem.swap(windowInfo.textRenderSystem);
     camera.swap(windowInfo.camera);
     cameraSetting = windowInfo.cameraSetting;
-    viewerObject.swap(windowInfo.viewerObject);
     currentTime = windowInfo.currentTime;
     typeSpecificInfo = windowInfo.typeSpecificInfo;
     windowInfo.typeSpecificInfo = nullptr;
@@ -118,7 +115,6 @@ WindowInfo::~WindowInfo()
     renderSystem2D.reset();
     pointLightSystem.reset();
     textRenderSystem.reset();
-    viewerObject.reset();
     camera.reset();
 
     gameObjects3d.clear();
@@ -175,11 +171,11 @@ bool Vulkan::update() {
         window->currentTime = newTime;
 
         if (!_pause) {
-            _mouse.rotate(*window->window, *window->viewerObject);
-            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
-            _keyboard.move(window->window->getGLFWwindow(), deltaTime, *window->viewerObject);
+            _mouse.rotate(*window->window, window->camera->getRotation());
+            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, window->camera->getRotation());
+            _keyboard.move(window->window->getGLFWwindow(), deltaTime, window->camera->getTranslation(), window->camera->getRotation());
         }
-        window->camera->setViewYXZ(toVec3(window->viewerObject->transform.translation), window->viewerObject->transform.rotation);
+        window->camera->setViewYXZ(toVec3(window->camera->getTranslation()), window->camera->getRotation());
 
         double aspect = window->renderer->getAspectRatio();
         window->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
@@ -203,8 +199,7 @@ bool Vulkan::update() {
             ubo.projection = window->camera->getProjection();
             ubo.view = window->camera->getView();
             ubo.inverseView = window->camera->getInverseView();
-            ubo.resolution = glm::vec4{ window->window->getExtent().width / (float)std::max(window->window->getExtent().width, window->window->getExtent().height), window->window->getExtent().height / (float)std::max(window->window->getExtent().width, window->window->getExtent().height),0,0};
-            window->pointLightSystem->update(frameInfo, ubo, _pause);
+            ubo.resolution = glm::vec4{ window->window->getExtent().width / (double)std::max(window->window->getExtent().width, window->window->getExtent().height), window->window->getExtent().height / (double)std::max(window->window->getExtent().width, window->window->getExtent().height),0,0};
             window->uboBuffer[frameIndex]->writeToBuffer(&ubo);
             window->uboBuffer[frameIndex]->flush();
 

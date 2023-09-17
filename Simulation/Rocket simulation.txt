@@ -25,18 +25,10 @@ Exampel simulation:
 	│	│		└><atmosphere fabb name>.db
 	│	├>mesh
 	│	│	└><Mesh name>.txt
+	│	├>models
+	│	│	└><model name>.obj
 	│	├>Instructions.txt
 	│	└>Settings.txt
-	├>models
-	│	├>rocket
-	│	│	├>rocketStage
-	│	│	│	└><RocketStage name>.obj
-	│	│	├>engine
-	│	│	│	└><Engine name>.obj
-	│	│	└>fuelTank
-	│	│		└><FuelTank name>.obj
-	│	└>planet
-	│		└><Planet name>.obj
 	│	
 	└>run data
 		└><name>

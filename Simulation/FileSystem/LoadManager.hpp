@@ -32,6 +32,7 @@ namespace fileSystem {
 
 	namespace LoadManagerMaps {
 		inline std::unordered_map<String, Shape> mesh;
+		inline std::unordered_map<String, Model3D::Builder> model;
 
 		inline std::unordered_map<String, Engine> engine;
 		inline std::unordered_map<String, ReactionThruster> reactionThruster;

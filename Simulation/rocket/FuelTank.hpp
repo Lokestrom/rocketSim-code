@@ -13,15 +13,17 @@ using namespace Database;
 class FuelTank {
 public:
 	FuelTank();
-	FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity);
+	FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity, const Model3D::Builder& model);
 
 	int ID() const noexcept;
 
 	ld fuelMass() const noexcept;
 	Fuelmap fuelmap() const noexcept;
 	String fuelType() const noexcept;
+	Model3D::Builder model() const noexcept;
 
-	std::shared_ptr<GameObject3D> object() const noexcept;
+	Vector3& posRef() noexcept;
+	Quaternion& orientationRef() noexcept;
 
 	void setID(int newID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
@@ -35,8 +37,9 @@ private:
 	Fuelmap _fuel;
 	Cylinder _mesh;
 	Vector3 _pos;
-	ld density;
+	Quaternion _orientation;
+	ld _density;
 
-	std::shared_ptr<GameObject3D> _object;
+	Model3D::Builder _modelBuilder;
 };
 

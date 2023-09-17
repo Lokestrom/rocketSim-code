@@ -25,13 +25,13 @@ public:
     void setTarget(Vector3 target);
     void deleteTarget();
 
-    void move(GLFWwindow* window, double dt, GameObject3D& gameObject);
-    void rotate(GLFWwindow* window, double dt, GameObject3D& gameObject);
+    void move(GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation);
+    void rotate(GLFWwindow* window, double dt, Quaternion& objectRotation);
     bool pausePressed(GLFWwindow* window);
 
 private:
 
-    void trackingMove(GLFWwindow* window, double dt, GameObject3D& gameObject);
+    void trackingMove(GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation);
 
     KeyMappings _keys{};
     double _lookSpeed{ 1.5 };
@@ -44,7 +44,7 @@ public:
     void setTarget(Vector3 target);
     void deleteTarget();
 
-    void rotate(Window& window, GameObject3D& gameObject);
+    void rotate(Window& window, Quaternion& objectRotation);
 
     double _lookSpeed{ 0.005 };
     std::optional<Vector3> _currentTarget;

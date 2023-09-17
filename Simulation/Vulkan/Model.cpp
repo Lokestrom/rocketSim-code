@@ -53,7 +53,7 @@ std::unique_ptr<Model2D> Model2D::createModelFromVertices(Device& device, const 
     Builder builder{};
     builder.vertices = vertices;
     builder.indices.reserve(vertices.size());
-    for (size_t i = 0; i < vertices.size(); i++)
+    for (uint32_t i = 0; i < vertices.size(); i++)
         builder.indices.push_back(i);
     
     return std::make_unique<Model2D>(device, builder);
@@ -179,7 +179,7 @@ void Model2D::Builder::loadModel(const std::string& filepath) {
             if (index.vertex_index >= 0) {
                 vertex.position = {
                     attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 1]
                 };
 
                 vertex.color = {

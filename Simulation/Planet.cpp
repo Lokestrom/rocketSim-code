@@ -69,9 +69,9 @@ Vector<Obstruction> Planet::obstructions() const noexcept
 	return _obstructions;
 }
 
-std::shared_ptr<GameObject3D> Planet::object() const noexcept
+Model3D::Builder Planet::model() const noexcept
 {
-	return _object;
+	return _model;
 }
 
 Vector3& Planet::posRef() noexcept
