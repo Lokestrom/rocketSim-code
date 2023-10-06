@@ -127,6 +127,8 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="helpers\TransformComponent3D.cpp" />
+    <ClCompile Include="ObjectRenderingCashing.cpp" />
     <ClCompile Include="Vulkan\UI.cpp" />
     <ClCompile Include="Vulkan\callbackFunctions.cpp" />
     <ClCompile Include="DragSim.cpp" />
@@ -165,6 +167,8 @@
     <ClCompile Include="Vulkan\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="helpers\TransformComponent3D.hpp" />
+    <ClInclude Include="ObjectRenderingCashing.hpp" />
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
     <ClInclude Include="Vulkan\callbackFunctions.hpp" />

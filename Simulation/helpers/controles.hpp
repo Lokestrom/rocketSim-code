@@ -80,21 +80,77 @@ geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos);
 ld gravityFormulaNewton(ld m, ld M, ld r);
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos);
 
+struct ID
+{
+	using ID_T = sizeT;
+	using GlobaleID_T = sizeT;
+
+	static ID createID(String name, ID_T localID) {
+		static ID_T currentID = 1;
+		return ID{ currentID++, localID, name };
+	}
+
+	ID()
+		: _name(""), _id(0), _localID(0)
+	{}
+
+	ID_T getID() { return _id; }
+	String getName() { return _name; }
+	ID_T getLocalID() { return _localID; }
+
+	void setName(const String& newName) { _name = newName; }
+	void setLocalID(const ID::ID_T& newLocalID) { _localID = newLocalID; }
+
+	ID(const ID&) = delete;
+	ID& operator=(const ID&) = delete;
+	ID(ID&&) = default;
+	ID& operator=(ID&&) = default;
+
+private:
+	ID(ID_T id, ID_T localID, String name)
+		: _name(name), _id(id), _localID(localID)
+	{}
+	String _name;
+	GlobaleID_T _id;
+	ID_T _localID;
+
+	friend class IDview;
+};
+
+class IDview {
+public:
+	IDview() = default;
+	IDview(const ID& id)
+		: _name(&id._name),
+		_id(&id._id),
+		_localID(&id._localID)
+	{}
+
+	ID::GlobaleID_T getID() const noexcept { return *_id; }
+	String getName() const noexcept { return *_name; }
+	ID::ID_T getLocalID() const noexcept { return *_localID; }
+
+private:
+	const String* _name;
+	const ID::GlobaleID_T* _id;
+	const ID::ID_T* _localID;
+};
+
 namespace objectLists
 {
-	inline Vector<FixedOrbitPlanet*> fixedOrbitPlanets;
-	inline Vector<PhysicsPlanet*> physicsPlanets;
-	inline Vector<Rocket*> rockets;
-	inline Vector<fileSystem::Instructions*> instructions;
-
-	void deleteObjectLists() noexcept;
+	inline Vector<std::shared_ptr<FixedOrbitPlanet>> fixedOrbitPlanets;
+	inline Vector<std::shared_ptr<PhysicsPlanet>> physicsPlanets;
+	inline Vector<std::shared_ptr<Rocket>> rockets;
+	inline Vector<std::shared_ptr<fileSystem::Instructions>> instructions;
 }
-
 
 namespace timeObjects {
 	inline ld currentTime = 0;
 	inline ld dt = 0;
 	inline sizeT dtInstancesSinceLastLogging = 0;
+
+	inline ld realStartTime;
+	inline ld realCurrentTime;
 
 	void updateTime() noexcept;
 }
@@ -103,6 +159,6 @@ namespace options
 {
 	inline sizeT edgeDetectionIterations = 0;
 	inline sizeT pointApproximationOfMeshesPerM2 = 0;
-	inline sizeT dtInstancesPerLogging = 1;
+	inline sizeT dtInstancesPerLogging = 2;
 	inline unsigned randomSeed;
 }

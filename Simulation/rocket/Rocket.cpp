@@ -1,30 +1,28 @@
 #include "Rocket.hpp"
 
-#include "../helpers/controles.hpp"
 #include "../planet.hpp"
 #include "../FileSystem/fileSystem.hpp"
 #include "../FileSystem/logging.hpp"
 #include "../FileSystem/Instructions.hpp"
 
-Rocket::Rocket() 
-	: _ID(""), _pos(Vector3::null()), _vel(Vector3::null()), _acc(Vector3::null()), _orientation(Quaternion()), _rocketStages()
+
+Rocket::Rocket(const Builder& builder)
+	: _id(ID::createID(builder.name, builder.localID)),
+	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
+	_vel(builder.velosity), _acc(builder.accseleration)
 {
-	
+	for (const auto& i : builder.stages)
+		_rocketStages.pushBack(std::make_shared<RocketStage>(i));
 }
 
-Rocket::Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages) 
-	: _ID(name), _pos(pos), _vel(vel), _acc(acc), _orientation(rotation), _rocketStages(rocketStages)
+IDview Rocket::getID() const noexcept
 {
-	updateCenterOfGravity();
+	return _id;
 }
 
-String Rocket::ID() const noexcept 
+Vector3 Rocket::pos() const noexcept
 {
-	return _ID;
-}
-Vector3 Rocket::pos() const noexcept 
-{
-	return _pos;
+	return _transform->translation;
 }
 Vector3 Rocket::vel() const noexcept 
 {
@@ -36,7 +34,7 @@ Vector3 Rocket::acc() const noexcept
 }
 Quaternion Rocket::orientation() const noexcept 
 {
-	return  _orientation;
+	return  _transform->rotation;
 }
 Quaternion Rocket::rotationVel() const noexcept
 {
@@ -49,8 +47,8 @@ Quaternion Rocket::rotationAcc() const noexcept
 ld Rocket::mass() const noexcept 
 {
 	ld m = 0;
-	for (RocketStage& i : _rocketStages) {
-		m += i.mass();
+	for (auto& i : _rocketStages) {
+		m += i->getMass();
 	}
 	return m;
 }
@@ -58,24 +56,19 @@ bool Rocket::RCS() const noexcept
 {
 	return _RCS;
 }
-Vector<RocketStage> Rocket::stages() const noexcept
+Vector<std::shared_ptr<RocketStage>> Rocket::stages() const noexcept
 {
 	return _rocketStages;
 }
 
-Vector3& Rocket::posRef() noexcept
+std::shared_ptr<TransformComponent3D> Rocket::transform() noexcept
 {
-	return _pos;
-}
-
-Quaternion& Rocket::orientationRef() noexcept
-{
-	return _orientation;
+	return _transform;
 }
 
 void Rocket::setPos(Vector3 newPos) noexcept
 {
-	_pos = newPos;
+	_transform->translation = newPos;
 }
 
 void Rocket::setVel(Vector3 newVel) noexcept
@@ -85,7 +78,7 @@ void Rocket::setVel(Vector3 newVel) noexcept
 
 void Rocket::setOrientation(Quaternion newOrientation) noexcept
 {
-	_orientation = newOrientation;
+	_transform->rotation = newOrientation;
 }
 
 void Rocket::update() noexcept 
@@ -102,42 +95,40 @@ void Rocket::update() noexcept
 
 	newAcc = (t + g) / currmMass;
 	newRotationAcc = toQuaternion(rt);
-	
-	Vector3 withoutRotationPos = -_orientation.rotate(_centerOfMass);
 
-	_orientation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
-	_orientation = _orientation.normalized();
+	Vector3 withoutRotationPos = -_transform->rotation.rotate(_centerOfMass);
+
+	_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
+	_transform->rotation = _transform->rotation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
 	_rotationVel = _rotationVel.normalized();
 
-	Vector3 withRotationPos = -_orientation.rotate(_centerOfMass);
-
-	_pos += (withRotationPos - withoutRotationPos) + vel() * timeObjects::dt + acc() * (timeObjects::dt * timeObjects::dt * 0.5);
-	_vel += (acc() + newAcc) * (timeObjects::dt * 0.5);
+	Vector3 withRotationPos = -_transform->rotation.rotate(_centerOfMass);
+	_transform->translation += vel()*timeObjects::dt + (withRotationPos - withoutRotationPos) + acc() * (timeObjects::dt * timeObjects::dt * 0.5);
+	_vel += (_acc + newAcc) * timeObjects::dt * 0.5;
 
 	_acc = newAcc;
 	_rotationAcc = newRotationAcc;
-
-	if (isColliding())
-		objectLists::rockets.pop(rocketSearchIndex(ID()));
 }
 
-void Rocket::burn(ld burnTime, Vector<int> engines) noexcept
+void Rocket::burn(ld burnTime, Vector<ID::ID_T> engines) noexcept
 {
 	if (engines.empty())
-		engines = _rocketStages[0].engineIDs();
+		for (const auto& i : _rocketStages[0]->getEngineIDs())
+			engines.pushBack(i.getLocalID());
 	for (auto& i : engines) {
 		engineShutDownTime[i] = burnTime + timeObjects::currentTime;
-		_rocketStages[0].engineSearch(i)->toggle(true);
+		_rocketStages[0]->engineSearch(i)->toggle(true);
 	}
 }
-void Rocket::shutdown(Vector<int> engines) noexcept 
+void Rocket::shutdown(Vector<ID::ID_T> engines) noexcept 
 {
 	if (engines.empty())
-		engines = _rocketStages[0].engineIDs();
+		for (const auto& i : _rocketStages[0]->getEngineIDs())
+			engines.pushBack(i.getLocalID());
 	for (auto& i : engines) {
 		engineShutDownTime[i] = timeObjects::currentTime;
-		_rocketStages[0].engineSearch(i)->toggle(false);
+		_rocketStages[0]->engineSearch(i)->toggle(false);
 	}
 }
 
@@ -152,21 +143,29 @@ void Rocket::rotate(ld t, Quaternion angle)
 
 void Rocket::stage() 
 {
-	objectLists::rockets.pushBack(new Rocket(ID() + _rocketStages[0].ID(), _rocketStages[0].pos() + this->pos(), this->vel(), this->acc(), this->orientation(), {_rocketStages[0]}));
-	fileSystem::createLoggingFilesForNewRocket(*objectLists::rockets[objectLists::rockets.size() - 1]);
+	Rocket::Builder newRocket;
+	newRocket.name = _id.getName() + " " + _rocketStages[0]->getID().getName();
+	newRocket.localID = objectLists::rockets.size();
+	newRocket.transform.translation = _rocketStages[0]->getTransform()->getTotalTranslation();
+	newRocket.transform.rotation = orientation();
+	newRocket.velosity = vel();
+	newRocket.accseleration = acc();
+
+	objectLists::rockets.pushBack(std::make_unique<Rocket>(newRocket));
+	fileSystem::createLoggingFilesForNewRocket(objectLists::rockets[objectLists::rockets.size() - 1]);
 	try {
-		objectLists::instructions.pushBack(new fileSystem::Instructions(objectLists::rockets[objectLists::rockets.size() - 1]));
+		objectLists::instructions.pushBack(std::make_unique<fileSystem::Instructions>(objectLists::rockets[objectLists::rockets.size() - 1]));
 	}
 	catch (const error& e) {
-		throw error("When staging the stage: " + toS(_rocketStages[0].ID()) + "from the rocket: " + ID() + "an error apeared:\n" + e.what, e.code);
+		throw error("When staging the stage: " + _rocketStages[0]->getID().getName() + "from the rocket: " + _id.getName() + "an error apeared:\n" + e.what, e.code);
 	}
 }
 
 void Rocket::updateCenterOfGravity() noexcept 
 {
 	_centerOfMass = Vector3::null();
-	for (RocketStage i : _rocketStages)
-		_centerOfMass += i.centerOfGravity() + i.pos();
+	for (auto& i : _rocketStages)
+		_centerOfMass += i->getCenterOfGravity() + i->getPos(); 
 	_centerOfMass = _centerOfMass / _rocketStages.size();
 }
 
@@ -176,34 +175,34 @@ ld Rocket::deltaV() const noexcept
 	ld deltaV = 0;
 	for (auto& i : _rocketStages) {
 		ld averageExitVel = 0;
-		for (auto& e : i.engines())
-			averageExitVel += e.exitVel();
-		averageExitVel /= i.engines().size();
-		deltaV += averageExitVel * log((__mass + (i.dryMass() - i.mass())) / __mass);
-		__mass -= i.mass();
+		for (auto& e : i->getEngines())
+			averageExitVel += e->getExitVel();
+		averageExitVel /= i->getEngines().size();
+		deltaV += averageExitVel * log((__mass + (i->getDryMass() - i->getMass())) / __mass);
+		__mass -= i->getMass();
 	}
 	return deltaV;
 }
-ld Rocket::deltaV(const int& stageID) const 
+ld Rocket::deltaV(const String& name) const 
 {
 	for (auto& i : _rocketStages)
-		if (stageID == i.ID())
-			return i.deltaV();
+		if (i->getID().getName() == name)
+			return i->deltaV();
 	throw error("Rocket does not have a stage with that ID", exitCodes::badUserBehavior);
 }
 ld Rocket::altitude(const String& planetID) const 
 {
-	const FixedOrbitPlanet* fp = fixedOrbitPlanetSearch(planetID);
+	auto fp = fixedOrbitPlanetSearch(planetID);
 	if (fp != nullptr) {
-		ld alt = (this->pos() - fp->pos()).length();
-		alt = abs(alt) - fp->radius();
+		ld alt = (this->pos() - fp->getPos()).length();
+		alt = abs(alt) - fp->getRadius();
 		return alt;
 	}
 
-	const PhysicsPlanet* pp = physicsPlanetSearch(planetID);
+	auto pp = physicsPlanetSearch(planetID);
 	if (pp != nullptr) {
-		ld alt = (this->pos() - pp->pos()).length();
-		alt = abs(alt) - pp->radius();
+		ld alt = (this->pos() - pp->getPos()).length();
+		alt = abs(alt) - pp->getRadius();
 		return alt;
 	}
 	throw error(("The planet: " + planetID + " does not excist").cstr(), exitCodes::badUserBehavior);
@@ -214,15 +213,15 @@ ld Rocket::altitude(const String& planetID) const
 bool Rocket::isColliding() noexcept
 {
 	for (auto& i : _rocketStages)
-		if (i.isColliding())
+		if (i->isColliding())
 			return true;
 	return false;
 }
 bool Rocket::pointInside(Vector3 point) noexcept
 {
 	point = pos() - point;
-	for (RocketStage i : _rocketStages)
-		if (i.pointInside(point))
+	for (auto& i : _rocketStages)
+		if (i->pointInside(point))
 			return true;
 	return false;
 }
@@ -267,19 +266,19 @@ void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geograp
 	rocket.setOrientation(orientation);
 }*/
 
-Rocket* rocketSearch(String ID) noexcept
+std::shared_ptr<Rocket> rocketSearch(const String& name) noexcept
 {
 	for (auto i : objectLists::rockets)
-		if (i->ID() == ID)
+		if (i->getID().getName() == name)
 			return i;
 	return nullptr;
 }
 
-int rocketSearchIndex(String ID) noexcept
+int rocketSearchIndex(const String& name) noexcept
 {
 	int index = 0;
 	for (auto& i : objectLists::rockets) {
-		if (i->ID() == ID)
+		if (i->getID().getName() == name)
 			return index;
 		index++;
 	}
@@ -289,23 +288,23 @@ int rocketSearchIndex(String ID) noexcept
 /*private fungtions*/
 void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noexcept
 {
-	thrust = _rocketStages[0].thrust(rotationalAcc, _centerOfMass - _rocketStages[0].pos(), orientation(), mass, ID());
+	thrust = _rocketStages[0]->thrust(rotationalAcc, _centerOfMass - _rocketStages[0]->getPos(), orientation(), mass);
 }
 
 void Rocket::gravity(Vector3& gravity) const noexcept
 {
 	gravity = Vector3::null();
 	for (auto i : objectLists::fixedOrbitPlanets) {
-		gravity += generateGravity(this->mass(), i->mass(), this->pos() + this->_centerOfMass, i->pos());
+		gravity += generateGravity(this->mass(), i->getMass(), this->pos() + this->_centerOfMass, i->getPos());
 	}
 	for (auto i : objectLists::physicsPlanets) {
-		gravity += generateGravity(this->mass(), i->mass(), this->pos() + this->_centerOfMass, i->pos());
+		gravity += generateGravity(this->mass(), i->getMass(), this->pos() + this->_centerOfMass, i->getPos());
 	}
 }
 
 void Rocket::engineShutdownChecker() noexcept
 {
-	for (auto i : _rocketStages[0].engineIDs())
-		if (engineShutDownTime[i] <= timeObjects::currentTime)
-			_rocketStages[0].engineSearch(i)->toggle(false);
+	for (auto i : _rocketStages[0]->getEngineIDs())
+		if (engineShutDownTime[i.getLocalID()] <= timeObjects::currentTime)
+			_rocketStages[0]->engineSearch(i.getLocalID())->toggle(false);
 }

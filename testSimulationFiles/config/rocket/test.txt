@@ -1,8 +1,9 @@
 setup{
-pos={0,0,0}
-vel={0,0,0}
+pos={0,20,0}
+vel={5.77680708,0,0}
+acc={0,0,0}
 orientation=Quat{0,0,0}
 }
 stage{
-0=stage1({4,6,0})
+0=stage1({0,0,0})
 }

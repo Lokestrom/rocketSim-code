@@ -6,8 +6,8 @@ namespace fileSystem {
 	class Instructions {
 	public:
 		Instructions();
-		Instructions(Rocket* rocket);
-		Instructions(String fileName, Rocket* rocket);
+		Instructions(std::shared_ptr<Rocket> rocket);
+		Instructions(String fileName, std::shared_ptr<Rocket> rocket);
 
 		void run(bool& exitSimulation);
 	
@@ -21,9 +21,9 @@ namespace fileSystem {
 		std::ifstream _file;
 		ld _nextInstructionTime;
 		Vector<String> _nextInstruction;
-		Rocket* _rocket;
+		std::shared_ptr<Rocket> _rocket;
 	};
 
-	void assignRocketInstructions(Rocket* rocket);
+	void assignRocketInstructions(std::shared_ptr<Rocket> rocket);
 
 } // fileSystem

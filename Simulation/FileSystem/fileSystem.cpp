@@ -52,6 +52,17 @@ namespace fileSystem {
 		}
 		return ans;
 	}
+	Vector<ID::ID_T> returnVectorID(String arg) {
+		arg.popBack();
+		arg.remove(' ');
+		arg.pop(0);
+		Vector<String> vec = std::move(arg.split(','));
+		Vector<ID::ID_T> ans(vec.size());
+		for (const auto& i : vec) {
+			ans.pushBack(SToi(i));
+		}
+		return ans;
+	}
 
 	Vector3 returnVector3(String arg) {
 		if (arg.split('{').size() != 1) {

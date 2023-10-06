@@ -94,51 +94,39 @@ void loadMainWindow(WindowInfo& window)
 
 void loadFreeCamWindow(WindowInfo& window)
 {
+    window.camera->translation.x = 20;
     std::unique_ptr<GameObject3D> obj;
-    Transform3DComponent transform;
     for (auto& rocket : objectLists::rockets) {
-        transform.translation.pushBack(&rocket->posRef());
-        transform.rotation.pushBack(&rocket->orientationRef());
         for (auto& rocketStage : rocket->stages()) {
-            transform.translation.pushBack(&rocketStage.posRef());
-            *obj = GameObject3D::createGameObject(transform);
-            obj->model = std::make_unique<Model3D>(*window.device, rocketStage.model());
+            obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(rocketStage->getID().getID()));
+            obj->model = std::make_shared<Model3D>(*window.device, rocketStage->getModel());
             window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
-            for (auto& engine : rocketStage.engines()) {
-                transform.translation.pushBack(&engine.posRef());
-                transform.rotation.pushBack(&engine.orientationRef());
-                *obj = GameObject3D::createGameObject(transform);
-                obj->model = std::make_unique<Model3D>(*window.device, engine.model());
+            for (auto& engine : rocketStage->getEngines()) {
+                obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(engine->getID().getID()));
+                obj->model = std::make_shared<Model3D>(*window.device, engine->getModel());
                 window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
-                transform.translation.popBack();
-                transform.rotation.popBack();
             }
-            for (auto& fuelTank : rocketStage.fuelTanks()) {
-                transform.translation.pushBack(&fuelTank.posRef());
-                transform.rotation.pushBack(&fuelTank.orientationRef());
-                *obj = GameObject3D::createGameObject(transform);
-                obj->model = std::make_unique<Model3D>(*window.device, fuelTank.model());
+            for (auto& fuelTank : rocketStage->getFuelTanks()) {
+                obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(fuelTank->getID().getID()));
+                obj->model = std::make_shared<Model3D>(*window.device, fuelTank->getModel());
                 window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
-                transform.translation.popBack();
-                transform.rotation.popBack();
             }
-            transform.translation.popBack();
         }
-        transform.translation.popBack();
-        transform.rotation.popBack();
     }
+
     for (auto& planet : objectLists::physicsPlanets) {
-        transform.translation.pushBack(&planet->posRef());
-        transform.rotation.pushBack(&planet->orientationRef());
-        *obj = GameObject3D::createGameObject(transform);
-        obj->model = std::make_unique<Model3D>(*window.device, planet->model());
+        if (planet->getModel().vertices.empty())
+            continue;
+        obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(planet->getID().getID()));
+        obj->model = std::make_shared<Model3D>(*window.device, planet->getModel());
         window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
     }
+
     for (auto& planet : objectLists::fixedOrbitPlanets) {
-        transform.translation.pushBack(&planet->posRef());
-        transform.rotation.pushBack(&planet->orientationRef());
-        *obj = GameObject3D::createGameObject(transform);
-        obj->model = std::make_unique<Model3D>(*window.device, planet->model());
+        if (planet->getModel().vertices.empty())
+            continue;
+        obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(planet->getID().getID()));
+        obj->model = std::make_shared<Model3D>(*window.device, planet->getModel());
         window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
     }
 }
@@ -147,15 +135,15 @@ void changeRelativeObject(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
     String obj = lower(InputBox("Choose object:"));
     if (rocketSearch(obj) != nullptr) {
-        info.relativeObj = std::make_shared<Vector3>(rocketSearch(obj)->posRef());
+        info.relativeObj = rocketSearch(obj)->transform();
         return;
     }
     if (fixedOrbitPlanetSearch(obj) != nullptr) {
-        info.relativeObj = std::make_shared<Vector3>(fixedOrbitPlanetSearch(obj)->posRef());
+        info.relativeObj = fixedOrbitPlanetSearch(obj)->getTransform();
         return;
     }
     if (physicsPlanetSearch(obj) != nullptr) {
-        info.relativeObj = std::make_shared<Vector3>(physicsPlanetSearch(obj)->posRef());
+        info.relativeObj = physicsPlanetSearch(obj)->getTransform();
         return;
     }
     errorMsgBox("Invalid input", (obj + " is not a valid input.").cstr());
@@ -164,9 +152,9 @@ void changeRelativeObject(WindowInfo& window) {
 void loadPosTelemetryView(WindowInfo& window) {
     TelemetryWindowInfo& info = *((TelemetryWindowInfo*)window.typeSpecificInfo);
     auto pos = VaryingText<ld>::createText(*window.device, { 1,1 }, { 1,1,1,1 }, 1, "Position: x:, y:, z:");
-    pos.addVariable(info.rocket->posRef().x, 12);
-    pos.addVariable(info.rocket->posRef().y, 16);
-    pos.addVariable(info.rocket->posRef().z, 20);
+    pos.addVariable(info.rocket->transform()->translation.x, 12);
+    pos.addVariable(info.rocket->transform()->translation.y, 16);
+    pos.addVariable(info.rocket->transform()->translation.z, 20);
     window.varyinglds.emplace(pos.getId(), std::move(pos));
 
     auto changeRelative = GameObject2D::createGameObject(GameObject2DType::button);
@@ -288,7 +276,7 @@ void openMapViewWindow(WindowInfo& window)
 void openFreeCamWindow(WindowInfo& window)
 {
     FreeCamWindowInfo* info = new FreeCamWindowInfo;
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Free cam", WindowType::FreeCam, info), loadOptionsWindow);
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Free cam", WindowType::FreeCam, info), loadFreeCamWindow);
 }
 
 void openAlarmsWindow(WindowInfo& window)

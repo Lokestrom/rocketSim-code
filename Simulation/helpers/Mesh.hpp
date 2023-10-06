@@ -49,7 +49,7 @@ struct Cylinder : public Mesh
 	ld radius, height;
 	Quaternion orientation;
 	Cylinder() : Mesh({ 0,0,0 }, 0), radius(0), height(0) {}
-	Cylinder(Vector3 pos, sizeT radius, sizeT height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
+	Cylinder(Vector3 pos, ld radius, ld height, bool solid = 1) : Mesh(pos, solid), radius(radius), height(height) {}
 
 	ld surfaceArea() const noexcept;
 	ld volum() const noexcept{

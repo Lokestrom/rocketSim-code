@@ -1,17 +1,17 @@
 setup{
-dryMass=200
+dryMass=80
 centerOfMass={0,0,0}
 mesh=a
 model=cube
 }
 
 Engines{
-0=Engine1({-3,-1,0})
+0=Engine1({0,0,0})
 }
 
 reaction thrusters{
 }
 
 FuelTanks{
-0=FuelTank1({2,0,0})
+0=FuelTank1({0,0,0})
 }

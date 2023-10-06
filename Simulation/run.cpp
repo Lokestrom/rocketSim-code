@@ -6,6 +6,7 @@
 #include "FileSystem/LoadManager.hpp"
 #include "FileSystem/logging.hpp"
 #include "Vulkan/App.hpp"
+#include "ObjectRenderingCashing.hpp"
 
 
 bool update()
@@ -31,6 +32,7 @@ bool update()
 
 	if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging) {
 		fileSystem::loggCurrentState();
+		addSimulationTransforms();
 	}
 	timeObjects::updateTime();
 	return true;
@@ -39,10 +41,10 @@ bool update()
 void run(String folder, String runName) {
 	fileSystem::objects::simulationFolder = folder + '/';
 	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
-	objectLists::physicsPlanets = Vector<PhysicsPlanet*>();
-	objectLists::fixedOrbitPlanets = Vector<FixedOrbitPlanet*>();
-	objectLists::rockets = Vector<Rocket*>();
-	objectLists::instructions = Vector<fileSystem::Instructions*>();
+	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
+	objectLists::fixedOrbitPlanets = Vector< std::shared_ptr<FixedOrbitPlanet>>();
+	objectLists::rockets = Vector< std::shared_ptr<Rocket>>();
+	objectLists::instructions = Vector<std::shared_ptr<fileSystem::Instructions>>();
 
 	fileSystem::loadInObjects();
 	std::cout << "Loaded in Objects\n";
@@ -53,17 +55,19 @@ void run(String folder, String runName) {
 	vulkanRenderer.startup();
 	std::cout << "Started vulkan\n";
 
+	timeObjects::realStartTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 	while (true){
-		if (!update())
-			break;
-		if (!vulkanRenderer.update())
-			break;
+		timeObjects::realCurrentTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - timeObjects::realStartTime;
+		if (objectLists::objectCash.getSize() < 10)
+			if (!update())
+				break;
+		if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging)
+			if (!vulkanRenderer.update())
+				break;
 	}
 	std::cout << "Simulation loop ended\n";
 
 	fileSystem::loggingEnd();
 	std::cout << "Ended logging\n";
-	objectLists::deleteObjectLists();
-	std::cout << "Deleted objects\n";
 	std::cout << "Program ended\n";
 }

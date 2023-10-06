@@ -6,6 +6,8 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include "../helpers/Quaternion.hpp"
+#include "../helpers/TransformComponent3D.hpp"
+#include "../helpers/controles.hpp"
 
 // std
 #include <memory>
@@ -34,6 +36,7 @@ struct Transform3DComponent {
 };
 
 struct PointLightComponent {
+    float radius;
     float lightIntensity = 1.0f;
 };
 
@@ -89,36 +92,33 @@ private:
 class GameObject3D
 {
 public:
-    using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, GameObject3D>;
+    using Map = std::unordered_map<ID::ID_T, GameObject3D>;
 
-    static GameObject3D createGameObject(Transform3DComponent transform) {
-        static id_t currentId = 0;
-        return GameObject3D{ currentId++, transform };
+    static GameObject3D createGameObject(ID::ID_T id) {
+        return GameObject3D{ id };
     }
 
-    static GameObject3D makePointLight(
-        Transform3DComponent transform, float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
+    static GameObject3D makePointLight(ID::ID_T id,
+       float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
 
     GameObject3D(const GameObject3D&) = delete;
     GameObject3D& operator=(const GameObject3D&) = delete;
     GameObject3D(GameObject3D&&) = default;
     GameObject3D& operator=(GameObject3D&&) = default;
 
-    id_t getId() { return id; }
-    Vector3 translation();
+    ID::ID_T getId() { return id; }
 
     glm::vec3 color{};
-    Transform3DComponent transform;
+    TotalTransformComponent3D transform;
 
     // Optional pointer components
     std::shared_ptr<Model3D> model{};
     std::unique_ptr<PointLightComponent> pointLight = nullptr;
 
 private:
-    GameObject3D(id_t objId, Transform3DComponent transform) : id{ objId }, transform{ transform } {}
+    GameObject3D(ID::ID_T objId) : id{ objId } {}
 
-    id_t id;
+    ID::ID_T id;
 };
 
 

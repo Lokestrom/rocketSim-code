@@ -1,1 +1,3 @@
+0:burn()
+10:shutdown()
 9999:exit()

@@ -3,22 +3,34 @@
 
 #include "Vector.hpp"
 
+#include "../helpers/controles.hpp"
 #include "../helpers/Vector3.hpp"
 #include "../helpers/Quaternion.hpp"
+#include "../helpers/TransformComponent3D.hpp"
+
 #include "rocketStage.hpp"
+
+class RocketStage;
 
 using namespace Database;
 
 class Rocket 
 {
 public:
+	struct Builder
+	{
+		String name;
+		ID::ID_T localID;
+		TransformComponent3D transform;
+		Vector3 velosity;
+		Vector3 accseleration;
+		Vector<RocketStage::Builder> stages;
+	};
+public:
+	Rocket(const Builder& builder);
+	~Rocket() {}
 
-	Rocket();
-	Rocket(String name, Vector3 pos, Vector3 vel, Vector3 acc, Quaternion rotation, Vector<RocketStage> rocketStages);
-
-	~Rocket(){}
-
-	String ID() const noexcept;
+	IDview getID() const noexcept;
 	Vector3 pos() const noexcept;
 	Vector3 vel() const noexcept;
 	Vector3 acc() const noexcept;
@@ -27,10 +39,9 @@ public:
 	Quaternion rotationAcc() const noexcept;
 	ld mass() const noexcept;
 	bool RCS() const noexcept;
-	Vector<RocketStage> stages() const noexcept;
 
-	Vector3& posRef() noexcept;
-	Quaternion& orientationRef() noexcept;
+	Vector<std::shared_ptr<RocketStage>> stages() const noexcept;
+	std::shared_ptr<TransformComponent3D> transform() noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;
@@ -38,8 +49,8 @@ public:
 
 	void update() noexcept;
 
-	void burn(ld burnTime = 1E100, Vector<int> engines = {}) noexcept;
-	void shutdown(Vector<int> engines = {}) noexcept;
+	void burn(ld burnTime = 1E100, Vector<ID::ID_T> engines = {}) noexcept;
+	void shutdown(Vector<ID::ID_T> engines = {}) noexcept;
 
 	//void rotate(Quaternion angle);
 	//void rotate(ld t, Quaternion angle);
@@ -49,7 +60,7 @@ public:
 	void updateCenterOfGravity() noexcept;
 
 	ld deltaV() const noexcept;
-	ld deltaV(const int& stageID) const;
+	ld deltaV(const String& stageID) const;
 	ld altitude(const String& planetID) const;
 
 	bool isColliding() noexcept;
@@ -58,19 +69,22 @@ public:
 	ld determenRadius(Vector3 edgePoint, Vector3 edgeToCm) noexcept;
 
 private:
-	//rocket name
-	String _ID;
 
-	Vector<RocketStage> _rocketStages;
 
-	Vector3 _pos, _vel, _acc;
-	Quaternion _orientation, _rotationVel, _rotationAcc,
+	ID _id;
+
+	Vector<std::shared_ptr<RocketStage>> _rocketStages;
+
+	std::shared_ptr<TransformComponent3D> _transform;
+
+	Vector3 _vel, _acc;
+	Quaternion _rotationVel, _rotationAcc,
 		_desierdOrientation;
 	Vector3 _centerOfMass;
 
 	bool _RCS;
 
-	std::unordered_map<int, ld> engineShutDownTime;
+	std::unordered_map<ID::ID_T, ld> engineShutDownTime;
 
 private:
 	void thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noexcept;
@@ -78,5 +92,5 @@ private:
 	void engineShutdownChecker() noexcept;
 };
 
-Rocket* rocketSearch(String ID) noexcept;
-int rocketSearchIndex(String ID) noexcept;
+std::shared_ptr<Rocket> rocketSearch(const String& name) noexcept;
+int rocketSearchIndex(const String& name) noexcept;

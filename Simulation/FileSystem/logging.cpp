@@ -5,29 +5,30 @@
 #include "WriteFile.hpp"
 
 #include "fileSystem.hpp"
+#include "../ObjectRenderingCashing.hpp"
 
 namespace fs = std::filesystem;
 namespace fileSystem {
 	void loggingStartup() {
 		fs::remove_all(objects::runFolder.cstr());
 		fs::create_directories(objects::runFolder.cstr());
-		fs::create_directories((objects::runFolder + "config/").cstr());
+		fs::create_directories((objects::runFolder + "config\\").cstr());
 
 
-		fs::copy(objects::simulationFolder.cstr(), (objects::runFolder + "config/").cstr(), fs::copy_options::update_existing | fs::copy_options::recursive);
+		fs::copy(objects::simulationFolder.cstr(), (objects::runFolder + "config\\").cstr(), fs::copy_options::update_existing | fs::copy_options::recursive);
 
-		fs::create_directories((objects::runFolder + "rocket/").cstr());
-		fs::create_directories((objects::runFolder + "rocket/rocketStage/").cstr());
-		fs::create_directories((objects::runFolder + "rocket/rocketStage/engine/").cstr());
-		fs::create_directories((objects::runFolder + "rocket/rocketStage/fuelTank/").cstr());
-		fs::create_directories((objects::runFolder + "planet/").cstr());
+		fs::create_directories((objects::runFolder + "rocket\\").cstr());
+		fs::create_directories((objects::runFolder + "rocket\\rocketStage\\").cstr());
+		fs::create_directories((objects::runFolder + "rocket\\rocketStage\\engine\\").cstr());
+		fs::create_directories((objects::runFolder + "rocket\\rocketStage\\fuelTank\\").cstr());
+		fs::create_directories((objects::runFolder + "planet\\").cstr());
 
 		for (const auto rocket : objectLists::rockets)
-			createLoggingFilesForNewRocket(*rocket);
+			createLoggingFilesForNewRocket(rocket);
 		for (const auto planet : objectLists::fixedOrbitPlanets)
-			createNewPlanetLoggingFile(planet->ID());
+			createNewPlanetLoggingFile(planet->getID());
 		for (const auto planet : objectLists::physicsPlanets)
-			createNewPlanetLoggingFile(planet->ID());
+			createNewPlanetLoggingFile(planet->getID());
 		loggCurrentState();
 	}
 
@@ -58,21 +59,21 @@ namespace fileSystem {
 		file.close();
 	}
 
-	void createLoggingFilesForNewRocket(const Rocket& rocket) {
-		createNewRocketLoggingFile(rocket.ID());
-		for (const auto& rocketStage : rocket.stages()) {
-			createNewRocketStageLoggingFile(rocket.ID() + toS(rocketStage.ID()));
-			for (const auto& engine : rocketStage.engineIDs())
-				createNewEngineLoggingFile(rocket.ID() + toS(rocketStage.ID()) + toS(engine));
-			for (const auto& fuelTank : rocketStage.fuelTankIDs())
-				createNewFuelTankLoggingFile(rocket.ID() + toS(rocketStage.ID()) + toS(fuelTank));
+	void createLoggingFilesForNewRocket(const std::shared_ptr<Rocket> rocket) {
+		createNewRocketLoggingFile(rocket->getID());
+		for (auto& rocketStage : rocket->stages()) {
+			createNewRocketStageLoggingFile(rocketStage->getID());
+			for (const auto& engine : rocketStage->getEngineIDs())
+				createNewEngineLoggingFile(engine);
+			for (const auto& fuelTank : rocketStage->getFuelTankIDs())
+				createNewFuelTankLoggingFile(fuelTank);
 		}
 	}
 
-	void createNewRocketLoggingFile(const String& ID)
+	void createNewRocketLoggingFile(const IDview& id)
 	{
-		objects::rocketFiles.insert({ ID,  WriteFile<ld>(objects::runFolder + "rocket/" + ID + ".db") });
-		objects::rocketFiles[ID].addcolumns({ "time",
+		objects::rocketFiles.insert({ id.getID(),  WriteFile<ld>(objects::runFolder + "rocket\\" + id.getName() + "." + id.getLocalID() + ".db")});
+		objects::rocketFiles[id.getID()].addcolumns({"time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",
 			"acc.x", "acc.y", "acc.z",
@@ -83,33 +84,33 @@ namespace fileSystem {
 			});
 	}
 
-	void createNewRocketStageLoggingFile(const String& ID)
+	void createNewRocketStageLoggingFile(const IDview& id)
 	{
-		objects::rocketStageFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/" + ID + ".db") });
-		objects::rocketStageFiles[ID].addcolumns({ "time", "staged"});
+		objects::rocketStageFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\" + id.getName() + "." + id.getLocalID() + ".db")});
+		objects::rocketStageFiles[id.getID()].addcolumns({ "time", "staged"});
 	}
 
-	void createNewEngineLoggingFile(const String& ID)
+	void createNewEngineLoggingFile(const IDview& id)
 	{
-		objects::engineFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/engine/" + ID + ".db") });
-		objects::engineFiles[ID].addcolumns({ "time",
+		objects::engineFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\engine\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::engineFiles[id.getID()].addcolumns({ "time",
 			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
 			"active", "thrustPercent"
 			});
 	}
 
-	void createNewFuelTankLoggingFile(const String& ID)
+	void createNewFuelTankLoggingFile(const IDview& id)
 	{
-		objects::fuelTankFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "rocket/rocketStage/fuelTank/" + ID + ".db") });
-		objects::fuelTankFiles[ID].addcolumns({ "time",
+		objects::fuelTankFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\fuelTank\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::fuelTankFiles[id.getID()].addcolumns({ "time",
 			"fuelMass"
 			});
 	}
 
-	void createNewPlanetLoggingFile(const String& ID)
+	void createNewPlanetLoggingFile(const IDview& id)
 	{
-		objects::planetFiles.insert({ ID, WriteFile<ld>(objects::runFolder + "planet/" + ID + ".db") });
-		objects::planetFiles[ID].addcolumns({ "time",
+		objects::planetFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "planet\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::planetFiles[id.getID()].addcolumns({ "time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",
 			});
@@ -121,26 +122,36 @@ namespace fileSystem {
 	*/
 
 	void loggCurrentState() {
+		SimulationTimeCash simCash;
+		simCash.time = timeObjects::currentTime;
 		for (const auto& rocket : objectLists::rockets) {
 			loggRocket(*rocket);
-			for (const auto& rocketStage : rocket->stages()) {
-				loggRocketStage(rocketStage, rocket->ID() + toS(rocketStage.ID()));
-				for (const auto& engine : rocketStage.engines())
-					loggEngine(engine, rocket->ID() + toS(rocketStage.ID()) + toS(engine.ID()));
-				for (const auto& fuelTank : rocketStage.fuelTanks())
-					loggFuelTank(fuelTank, rocket->ID() + toS(rocketStage.ID()) + toS(fuelTank.ID()));
+			for (auto& rocketStage : rocket->stages()) {
+				loggRocketStage(*rocketStage);
+				simCash.objects[rocketStage->getID().getID()] = *rocketStage->getTransform();
+				for (auto& engine : rocketStage->getEngines()) {
+					loggEngine(*engine);
+					simCash.objects[engine->getID().getID()] = *engine->getTransform();
+				}
+				for (auto& fuelTank : rocketStage->getFuelTanks()) {
+					loggFuelTank(*fuelTank);
+					simCash.objects[fuelTank->getID().getID()] = *fuelTank->getTransform();
+				}
 			}
 		}
-		for (const auto planet : objectLists::physicsPlanets)
+		for (const auto planet : objectLists::physicsPlanets) {
 			loggPlanet(*planet);
-		for (const auto planet : objectLists::fixedOrbitPlanets)
+			simCash.objects[planet->getID().getID()] = *planet->getTransform();
+		}
+		for (const auto planet : objectLists::fixedOrbitPlanets) {
 			loggPlanet(*planet);
+		}
 
 		timeObjects::dtInstancesSinceLastLogging = 0;
 	}
 
 	void loggRocket(const Rocket& rocket) {
-		objects::rocketFiles[rocket.ID()].addData({ timeObjects::currentTime,
+		objects::rocketFiles[rocket.getID().getID()].addData({ timeObjects::currentTime,
 			rocket.pos().x, rocket.pos().y, rocket.pos().z,
 			rocket.vel().x, rocket.vel().y, rocket.vel().z,
 			rocket.acc().x, rocket.acc().y, rocket.acc().z,
@@ -151,35 +162,35 @@ namespace fileSystem {
 			});
 	}
 
-	void loggRocketStage(const RocketStage& rocketStage, const String& globalID) {
-		objects::rocketStageFiles[globalID].addData({ timeObjects::currentTime,
+	void loggRocketStage(const RocketStage& rocketStage) {
+		objects::rocketStageFiles[rocketStage.getID().getID()].addData({ timeObjects::currentTime,
 			});
 	}
 
-	void loggEngine(const Engine& engine, const String& globalID) {
-		objects::engineFiles[globalID].addData({ timeObjects::currentTime,
-			engine.orientation().w, engine.orientation().x, engine.orientation().y, engine.orientation().z,
-			(engine.active()) ? 1.0l : 0.0l, engine.thrustPercent()
+	void loggEngine(const Engine& engine) {
+		objects::engineFiles[engine.getID().getID()].addData({timeObjects::currentTime,
+			engine.getOrientation().w, engine.getOrientation().x, engine.getOrientation().y, engine.getOrientation().z,
+			(engine.active()) ? 1.0l : 0.0l, engine.getThrustPercent()
 			});
 	}
 
-	void loggFuelTank(const FuelTank& fuelTank, const String& globalID) {
-		objects::fuelTankFiles[globalID].addData({ timeObjects::currentTime,
-			fuelTank.fuelMass()
+	void loggFuelTank(const FuelTank& fuelTank) {
+		objects::fuelTankFiles[fuelTank.getID().getID()].addData({ timeObjects::currentTime,
+			fuelTank.getFuelMass()
 			});
 	}
 
 	void loggPlanet(const PhysicsPlanet& planet) {
-		objects::planetFiles[planet.ID()].addData({ timeObjects::currentTime,
-			planet.pos().x, planet.pos().y, planet.pos().z,
-			planet.vel().x, planet.vel().y, planet.vel().z
+		objects::planetFiles[planet.getID().getID()].addData({ timeObjects::currentTime,
+			planet.getPos().x, planet.getPos().y, planet.getPos().z,
+			planet.getVel().x, planet.getVel().y, planet.getVel().z
 			});
 	}
 
 	void loggPlanet(const FixedOrbitPlanet& planet) {
-		objects::planetFiles[planet.ID()].addData({ timeObjects::currentTime,
-			planet.pos().x, planet.pos().y, planet.pos().z,
-			planet.vel().x, planet.vel().y, planet.vel().z,
+		objects::planetFiles[planet.getID().getID()].addData({ timeObjects::currentTime,
+			planet.getPos().x, planet.getPos().y, planet.getPos().z,
+			planet.getVel().x, planet.getVel().y, planet.getVel().z,
 			});
 	}
 }

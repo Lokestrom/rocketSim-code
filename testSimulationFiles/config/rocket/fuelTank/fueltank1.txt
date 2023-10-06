@@ -1,6 +1,6 @@
 FuelType=ch4
-radius=4
-height=6
+radius=1
+height=1
 FuelDensity=10000
-fuelmass=10000
+fuelmass=10
 model=cube

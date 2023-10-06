@@ -80,5 +80,3 @@ void RenderSystem3D::renderGameObjects(FrameInfo& frameInfo) {
         obj.model->draw(frameInfo.commandBuffer);
     }
 }
-
-

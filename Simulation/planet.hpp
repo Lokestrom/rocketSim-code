@@ -13,7 +13,8 @@ struct Obstruction
 	Shape mesh;
 	Vector3 pos;
 	Quaternion orientation;
-	std::shared_ptr<GameObject3D> object;
+	std::shared_ptr<TransformComponent3D> transform;
+	Model3D::Builder model;
 
 	Obstruction();
 	Obstruction(Shape mesh, geographicCoordinate geoCord);
@@ -25,33 +26,30 @@ struct Obstruction
 class Planet 
 {
 public:
-	String _ID;
+	ID _id;
 	ld _mass;
 	Sphere _mesh;
-	Vector3 _pos, _vel;
-	Quaternion _orientation, _spin;
+	std::shared_ptr<TransformComponent3D> _transform;
+	Vector3 _vel;
+	Quaternion _spin;
 	Vector<Obstruction> _obstructions;
 	ReadFile<ld> _atmosphereCondisions;
 
 	Model3D::Builder _model;
 
-	Planet();
-	Planet(String ID, ld mass, ld radius, Vector3 pos);
+	Planet(const String& name, ID::ID_T lockalID, ld mass, ld radius, 
+		const TransformComponent3D& transform, const Model3D::Builder& model);
 
-	Planet& operator=(Planet& other);
-	
-	String ID() const noexcept;
-	Vector3 pos() const noexcept;
-	Vector3 vel() const noexcept;
-	Quaternion orientation() const noexcept;
-	ld mass() const noexcept;
-	ld radius() const noexcept;
-	Sphere mesh() const noexcept;
-	Vector<Obstruction> obstructions() const noexcept;
-	Model3D::Builder model() const noexcept;
-
-	Vector3& posRef() noexcept;
-	Quaternion& orientationRef() noexcept;
+	IDview getID() const noexcept;
+	Vector3 getPos() const noexcept;
+	Vector3 getVel() const noexcept;
+	Quaternion getOrientation() const noexcept;
+	ld getMass() const noexcept;
+	ld getRadius() const noexcept;
+	Sphere getMesh() const noexcept;
+	Vector<Obstruction> getObstructions() const noexcept;
+	Model3D::Builder getModel() const noexcept;
+	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;
@@ -72,11 +70,21 @@ public:
 class PhysicsPlanet : public Planet
 {
 public:
-	PhysicsPlanet();
-	PhysicsPlanet(const PhysicsPlanet& planet);
-	PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos);
-
-	PhysicsPlanet& operator=(const PhysicsPlanet& planet);
+	struct Builder
+	{
+		String name;
+		ID::ID_T localID;
+		ld radius;
+		ld mass;
+		TransformComponent3D transform;
+		String _atmosphereCondisionsFile;
+		Vector<Obstruction> obstructions;
+		Model3D::Builder model;
+		Quaternion Spin;
+		Vector3 velosity;
+	};
+public:
+	PhysicsPlanet(const Builder& builder);
 
 	void earlyUpdate();
 	void update();
@@ -89,15 +97,25 @@ private:
 class FixedOrbitPlanet : public Planet
 {
 public:
-	FixedOrbitPlanet();
-	FixedOrbitPlanet(const FixedOrbitPlanet& planet);
-	FixedOrbitPlanet(String ID, ld mass, ld radius);
-
-	FixedOrbitPlanet& operator=(const FixedOrbitPlanet& planet);
+	struct Builder
+	{
+		String name;
+		ID::ID_T localID;
+		ld radius;
+		ld mass;
+		TransformComponent3D transform;
+		String _atmosphereCondisionsFile;
+		Vector<Obstruction> obstructions;
+		Model3D::Builder model;
+		Quaternion Spin;
+		Vector3 velosity;
+	};
+public:
+	FixedOrbitPlanet(const Builder& builder);
 
 	void earlyUpdate();
 	void update();
 };
 
-PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept;
-FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept;
+std::shared_ptr<PhysicsPlanet> physicsPlanetSearch(const String& planetID) noexcept;
+std::shared_ptr<FixedOrbitPlanet> fixedOrbitPlanetSearch(const String& planetID) noexcept;

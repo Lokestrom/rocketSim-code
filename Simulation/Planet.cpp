@@ -18,75 +18,62 @@ bool Obstruction::pointInside(const Vector3& point) noexcept
 }
 
 /*Planet*/
-Planet::Planet() {
-	_mass = 0;
-	_ID = "";
-}
 
-Planet::Planet(String ID, ld mass, ld radius, Vector3 pos)
-	: _ID(ID), _mass(mass), _pos(pos), _vel({0,0,0}), _mesh({0,0,0}, radius) {}
-
-Planet& Planet::operator=(Planet& other)
+Planet::Planet(const String& name, ID::ID_T lockalID, ld mass, ld radius, 
+	const TransformComponent3D& transform, const Model3D::Builder& model)
+	: _id(ID::createID(name, lockalID)), _mass(mass), _mesh({ 0,0,0 }, radius),
+	_transform(std::make_shared<TransformComponent3D>(transform)),
+	_model(model)
 {
-	this->_ID = other._ID;
-	this->_mass = other._mass;
-	this->_mesh = other._mesh;
-	this->_pos = other._pos;
-	return *this;
 }
 
-String Planet::ID() const noexcept
+IDview Planet::getID() const noexcept
 {
-	return _ID;
+	return _id;
 }
 
-Vector3 Planet::pos() const noexcept 
+Vector3 Planet::getPos() const noexcept 
 {
-	return this->_pos;
+	return this->_transform->translation;
 }
-Vector3 Planet::vel() const noexcept 
+Vector3 Planet::getVel() const noexcept 
 {
 	return this->_vel;
 }
-Quaternion Planet::orientation() const noexcept
+Quaternion Planet::getOrientation() const noexcept
 {
-	return _orientation;
+	return _transform->rotation;
 }
-ld Planet::mass() const noexcept 
+ld Planet::getMass() const noexcept 
 {
 	return this->_mass;
 }
-ld Planet::radius() const noexcept 
+ld Planet::getRadius() const noexcept 
 {
 	return this->_mesh.radius;
 }
-Sphere Planet::mesh() const noexcept 
+Sphere Planet::getMesh() const noexcept 
 {
 	return _mesh;
 }
-Vector<Obstruction> Planet::obstructions() const noexcept 
+Vector<Obstruction> Planet::getObstructions() const noexcept 
 {
 	return _obstructions;
 }
 
-Model3D::Builder Planet::model() const noexcept
+Model3D::Builder Planet::getModel() const noexcept
 {
 	return _model;
 }
 
-Vector3& Planet::posRef() noexcept
+std::shared_ptr<TransformComponent3D> Planet::getTransform() noexcept
 {
-	return _pos;
-}
-
-Quaternion& Planet::orientationRef() noexcept
-{
-	return _orientation;
+	return _transform;
 }
 
 void Planet::setPos(Vector3 newPos) noexcept
 {
-	_pos = newPos;
+	_transform->translation = newPos;
 }
 void Planet::setVel(Vector3 newVel) noexcept
 {
@@ -131,82 +118,47 @@ void Planet::addObstruction(Vector<Obstruction> obj) noexcept
 
 bool Planet::checkIfPointInside(const Vector3& point) const noexcept 
 {
-	if (_mesh.pointInside(point - pos()))
+	if (_mesh.pointInside(point - getPos()))
 		return true;
 	for (auto& i : _obstructions)
-		if (i.pointInside(point - pos()))
+		if (i.pointInside(point - getPos()))
 			return true;
 	return false;
 }
 
-PhysicsPlanet::PhysicsPlanet()
-	: Planet()
-{}
-
-PhysicsPlanet::PhysicsPlanet(const PhysicsPlanet& planet)
-	: Planet(planet.ID(), planet.mass(), planet.radius(), planet.pos())
-{
-}
-
-PhysicsPlanet::PhysicsPlanet(String ID, ld mass, ld radius, Vector3 pos)
-	: Planet(ID, mass, radius, pos)
-{
-}
-
-PhysicsPlanet& PhysicsPlanet::operator=(const PhysicsPlanet& planet)
-{
-	this->_ID = planet.ID();
-	this->_mass = planet.mass();
-	this->_mesh = planet.mesh();
-	this->_pos = planet.pos();
-	return *this;
-}
-
 /*PhysicsPlanet*/
+
+PhysicsPlanet::PhysicsPlanet(const Builder& builder)
+	: Planet(builder.name, builder.localID, builder.mass, builder.radius, builder.transform, builder.model)
+{
+}
+
 void PhysicsPlanet::earlyUpdate() 
 {
 	this->gravity = Vector3::null();
-	for (PhysicsPlanet* i : objectLists::physicsPlanets) {
-		this->gravity += generateGravity(this->mass(), i->mass(), this->pos(), i->pos());
+	for (auto i : objectLists::physicsPlanets) {
+		this->gravity += generateGravity(this->getMass(), i->getMass(), this->getPos(), i->getPos());
 	}
-	for (FixedOrbitPlanet* i : objectLists::fixedOrbitPlanets) {
-		this->gravity += generateGravity(this->mass(), i->mass(), this->pos(), i->pos());
+	for (auto i : objectLists::fixedOrbitPlanets) {
+		this->gravity += generateGravity(this->getMass(), i->getMass(), this->getPos(), i->getPos());
 	}
 }
 
 void PhysicsPlanet::update() 
 {
-	Vector3 new_acc = gravity / this->mass();
+	Vector3 new_acc = gravity / this->getMass();
 
-	setPos(pos() + vel() * timeObjects::dt + acc * (timeObjects::dt * timeObjects::dt * 0.5));
-	setVel(vel() + (acc + new_acc) * (timeObjects::dt * 0.5));
+	setPos(getPos() + getVel() * timeObjects::dt + acc * (timeObjects::dt * timeObjects::dt * 0.5));
+	setVel(getVel() + (acc + new_acc) * (timeObjects::dt * 0.5));
 	acc = new_acc;
 }
 
-FixedOrbitPlanet::FixedOrbitPlanet()
-	: Planet()
-{
-}
-
-FixedOrbitPlanet::FixedOrbitPlanet(const FixedOrbitPlanet& planet)
-	: Planet(planet.ID(), planet.mass(), planet.radius(), planet.pos())
-{
-}
-
 /*FixedOrbitPlanet*/
-FixedOrbitPlanet::FixedOrbitPlanet(String ID, ld mass, ld radius)
-	: Planet(ID, mass, radius, { 0,0,0 })
-{}
 
-FixedOrbitPlanet& FixedOrbitPlanet::operator=(const FixedOrbitPlanet& planet)
+FixedOrbitPlanet::FixedOrbitPlanet(const Builder& builder)
+	: Planet(builder.name, builder.localID, builder.mass, builder.radius, builder.transform, builder.model)
 {
-	this->_ID = planet.ID();
-	this->_mass = planet.mass();
-	this->_mesh = planet.mesh();
-	this->_pos = planet.pos();
-	return *this;
 }
-
 
 void FixedOrbitPlanet::earlyUpdate()
 {
@@ -217,19 +169,19 @@ void FixedOrbitPlanet::update()
 }
 
 /*non-Member fungtions*/
-PhysicsPlanet* physicsPlanetSearch(const String& planetID) noexcept
+std::shared_ptr<PhysicsPlanet> physicsPlanetSearch(const String& name) noexcept
 {
 	for (auto i : objectLists::physicsPlanets)
-		if (i->ID() == planetID)
+		if (i->getID().getName() == name)
 			return i;
 
 	return nullptr;
 }
 
-FixedOrbitPlanet* fixedOrbitPlanetSearch(const String& planetID) noexcept
+std::shared_ptr<FixedOrbitPlanet> fixedOrbitPlanetSearch(const String& name) noexcept
 {
 	for (auto i : objectLists::fixedOrbitPlanets)
-		if (i->ID() == planetID)
+		if (i->getID().getName() == name)
 			return i;
 
 	return nullptr;

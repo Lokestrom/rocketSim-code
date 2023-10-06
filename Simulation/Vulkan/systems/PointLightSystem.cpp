@@ -82,13 +82,13 @@ void PointLightSystem::createPipeline(vk::RenderPass renderPass) {
 
 void PointLightSystem::render(FrameInfo& frameInfo) {
     // sort lights
-    std::map<float, GameObject3D::id_t> sorted;
+    std::map<float, ID::ID_T> sorted;
     for (auto& kv : frameInfo.gameObjects3D) {
         auto& obj = kv.second;
         if (obj.pointLight == nullptr) continue;
 
         // calculate distance
-        auto offset = frameInfo.camera.getPosition() - toVec3(obj.translation());
+        auto offset = frameInfo.camera.getPosition() - toVec3(obj.transform.translation);
         float disSquared = glm::dot(offset, offset);
         sorted[disSquared] = obj.getId();
     }
@@ -102,9 +102,9 @@ void PointLightSystem::render(FrameInfo& frameInfo) {
         auto& obj = frameInfo.gameObjects3D.at(it->second);
 
         PointLightPushConstants push{};
-        push.position = glm::vec4(toVec4(obj.translation(), 1.f));
+        push.position = glm::vec4(toVec4(obj.transform.translation, 1.f));
         push.color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
-        push.radius = obj.transform.scale.x;
+        push.radius = obj.pointLight->radius;
 
         frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(PointLightPushConstants), &push);
         frameInfo.commandBuffer.draw(6, 1, 0, 0);

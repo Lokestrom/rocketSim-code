@@ -18,6 +18,8 @@
 #include <stdexcept>
 #include <iostream>
 
+#include "../ObjectRenderingCashing.hpp"
+
 glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
@@ -134,6 +136,7 @@ WindowInfo::~WindowInfo()
 Vulkan::Vulkan() 
 {
     Vulkan::addWindow(WindowInfo::createWindowInfo("Main", WindowType::Menu), loadMainWindow);
+    Vulkan::addWindow(WindowInfo::createWindowInfo("Freecam", WindowType::FreeCam), loadFreeCamWindow);
 }
 
 Vulkan::~Vulkan() {
@@ -154,7 +157,12 @@ void Vulkan::startup() {
 bool Vulkan::update() {
     if (_windows.empty())
         return false;
+    SimulationTimeCash cash = objectLists::objectCash.getsimulationTimeCash(timeObjects::realCurrentTime);
     for (auto& [key, window] : _windows) {
+        for (auto& [key, object] : window->gameObjects3d) {
+            object.transform = cash.objects[key];
+        }
+
         glfwPollEvents();
         if (window->window->shouldClose()) {
             _windows.erase(key);
@@ -171,11 +179,11 @@ bool Vulkan::update() {
         window->currentTime = newTime;
 
         if (!_pause) {
-            _mouse.rotate(*window->window, window->camera->getRotation());
-            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, window->camera->getRotation());
-            _keyboard.move(window->window->getGLFWwindow(), deltaTime, window->camera->getTranslation(), window->camera->getRotation());
+            _mouse.rotate(*window->window, window->camera->rotation);
+            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, window->camera->rotation);
+            _keyboard.move(window->window->getGLFWwindow(), deltaTime, window->camera->translation, window->camera->rotation);
         }
-        window->camera->setViewYXZ(toVec3(window->camera->getTranslation()), window->camera->getRotation());
+        window->camera->setViewYXZ(toVec3(window->camera->translation), window->camera->rotation);
 
         double aspect = window->renderer->getAspectRatio();
         window->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);

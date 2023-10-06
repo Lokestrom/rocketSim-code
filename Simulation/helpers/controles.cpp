@@ -99,16 +99,6 @@ Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos) {
 }
 
 namespace objectLists {
-    void deleteObjectLists() noexcept {
-        for (auto& i : physicsPlanets)
-            delete i;
-        for (auto& i : fixedOrbitPlanets)
-            delete i;
-        for (auto& i : rockets)
-            delete i;
-        for (auto& i : instructions)
-            delete i;
-    }
 }
 
 namespace timeObjects{

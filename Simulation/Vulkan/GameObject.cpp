@@ -94,21 +94,14 @@ glm::mat2 Transform2DComponent::normalMatrix() {
     return rotMat * scaleMat;
 }
 
-GameObject3D GameObject3D::makePointLight(Transform3DComponent transform, float intensity, float radius, glm::vec3 color) {
-    GameObject3D gameObj = GameObject3D::createGameObject(transform);
+GameObject3D GameObject3D::makePointLight(ID::ID_T id,
+    float intensity, float radius, glm::vec3 color) {
+    GameObject3D gameObj = GameObject3D::createGameObject(id);
     gameObj.color = color;
-    gameObj.transform.scale.x = radius;
     gameObj.pointLight = std::make_unique<PointLightComponent>();
     gameObj.pointLight->lightIntensity = intensity;
+    gameObj.pointLight->radius = radius;
     return gameObj;
-}
-
-Vector3 GameObject3D::translation()
-{
-    Vector3 total;
-    for (auto i : transform.translation)
-        total += *i;
-    return total;
 }
 
 void GameObject2D::setButtonFunction(void(*function)(WindowInfo& window))

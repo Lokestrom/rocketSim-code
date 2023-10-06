@@ -1,67 +1,64 @@
 #include "FuelTank.hpp"
-#include "../Vulkan/GameObject.hpp"
+#include "../helpers/controles.hpp"
 
-FuelTank::FuelTank()
-	: _ID(-1), _fuel(Fuelmap()), _density(0), _mesh(Cylinder())
-{}
-
-FuelTank::FuelTank(int ID, String fuelType, ld fuelLoad, ld radius, ld height, ld fuelDensity, const Model3D::Builder& model)
-	: _ID(ID), _fuel(fuelType, fuelLoad), _density(fuelDensity), _modelBuilder(model) {
-	_mesh.radius = radius;
-	_mesh.height = height;
-	_pos = { 0,0,0 };
-}
-
-int FuelTank::ID() const noexcept
+FuelTank::FuelTank(const Builder& builder)
+	: _id(ID::createID(builder.name, builder.localID)),
+	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
+	_fuel(builder.fuelType, builder.fuelLoad), _density(builder.fuelDensity),
+	_mesh({0,0,0}, builder.radius, builder.height, true), 
+	_modelBuilder(builder.model)
 {
-	return _ID;
 }
 
-ld FuelTank::fuelMass() const noexcept
+IDview FuelTank::getID() const noexcept
+{
+	return IDview(_id);
+}
+
+ld FuelTank::getFuelMass() const noexcept
 {
 	return _fuel.totalMass();
 }
 
-Fuelmap FuelTank::fuelmap() const noexcept 
+Fuelmap FuelTank::getFuelmap() const noexcept 
 {
 	return _fuel;
 }
 
-String FuelTank::fuelType() const noexcept
+String FuelTank::getFuelType() const noexcept
 {
 	return _fuel.fuelTypes()[0];
 }
 
-Model3D::Builder FuelTank::model() const noexcept
+Model3D::Builder FuelTank::getModel() const noexcept
 {
 	return _modelBuilder;
 }
 
-Vector3& FuelTank::posRef() noexcept
+void FuelTank::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {
-	return _pos;
+	_id.setName(newName);
+	_id.setLocalID(newLocalID);
 }
-
-Quaternion& FuelTank::orientationRef() noexcept
+void FuelTank::setName(const String& newName) noexcept
 {
-	return _orientation;
+	_id.setName(newName);
 }
-
-void FuelTank::setID(int newID) noexcept
+void FuelTank::setLocalD(ID::ID_T newLocalID) noexcept
 {
-	_ID = newID;
+	_id.setLocalID(newLocalID);
 }
 void FuelTank::setPos(Vector3 newPos) noexcept
 {
-	_pos = newPos;
+	_transform->translation = newPos;
 }
 
-Vector3 FuelTank::centerOfMass() const noexcept
+Vector3 FuelTank::getCenterOfMass() const noexcept
 {
-	return { _pos.x * ((fuelMass() / _density) / _mesh.volum()), _pos.y, _pos.z };
+	return { _transform->translation.x * ((getFuelMass() / _density) / _mesh.volum()), _transform->translation.y, _transform->translation.z };
 }
 
-void FuelTank::removeFuel(Fuelmap outFuel) noexcept
+void FuelTank::removeFuel(const Fuelmap& outFuel) noexcept
 {
 	_fuel -= outFuel;
 }

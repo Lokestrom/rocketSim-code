@@ -1,3 +1,25 @@
+Code style:
+
+functions:
+T verb + substantiv()
+starts with small letter
+no inline definisjons
+
+class:
+starts with capitaliced letter
+member variables start with "_"
+classes start with
+
+namespace:
+starts with small letter
+
+Getters:
+T get<variableName>() const noexcept;
+
+setters:
+T set<variableName>(T new<variableName>) noexcept;
+
+
 {0,0,0} // betyr at det er en vector
 Quat{0,0,0} //betyr at det er en quaternion med euler rotasjon input, verdier i grader
 <object>{0,0,0} // betyr at vectoren blir relativ til posisjonen av object
@@ -150,6 +172,8 @@ Settings.txt:
 	delta time=0.001
 	used fuel types= ExampleFuel1, ExampleFuel2
 	colision handeling=Simple / Advanced / AutoAdvanced / AutoSimple / Auto
+	cashing=3sec
+	logging delta time=0.1
 //optional:
 	randomseed=1234567890
 

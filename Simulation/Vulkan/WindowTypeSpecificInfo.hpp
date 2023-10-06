@@ -30,12 +30,12 @@ enum class TelemetryType {
 	FixedOrbitPlanet
 };
 struct TelemetryWindowInfo {
-	PhysicsPlanet* physicsPlanet;
-	FixedOrbitPlanet* fixedOrbitPlanet;
-	Rocket* rocket;
+	std::shared_ptr<PhysicsPlanet> physicsPlanet;
+	std::shared_ptr<FixedOrbitPlanet> fixedOrbitPlanet;
+	std::shared_ptr<Rocket> rocket;
 	TelemetryType type;
 
-	std::shared_ptr<Vector3> relativeObj;
+	std::shared_ptr<TransformComponent3D> relativeObj;
 
 };
 

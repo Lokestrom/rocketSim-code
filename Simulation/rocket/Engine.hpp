@@ -6,37 +6,48 @@
 #include "../helpers/Mesh.hpp"
 #include "Fuelmap.hpp"
 
-#include "../Vulkan/App.hpp"
+#include "../helpers/TransformComponent3D.hpp"
+#include "../Vulkan/Model.hpp"
 
 using namespace Database;
 
 class Engine {
 public:
-	Engine();
-	Engine(int ID, ld mass, ld exitVel, 
-		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model,
-		ld maxGimblePerSecond, ld maxGimble);
-	Engine(int ID, ld mass, ld exitVel,
-		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model);
+	struct Builder {
+		String name;
+		ID::ID_T localID;
+		TransformComponent3D transform;
+		ld mass;
+		ld exitVel;
+		Vector3 centerOfMass;
+		Vector3 mountPos;
+		Fuelmap fuelPerSecond;
+		Shape shape;
+		Model3D::Builder model;
+		ld maxGimblePerSecond;
+		ld maxGimble;
+	};
 
-	int ID() const noexcept;
-	bool active() const noexcept;
-	ld mass() const noexcept;
-	ld exitVel() const noexcept;
-	ld thrustPercent() const noexcept;
+public:
+	Engine(const Builder& builder);
+
+	IDview getID() const noexcept;
+	ld getMass() const noexcept;
+	ld getExitVel() const noexcept;
+	ld getThrustPercent() const noexcept;
+	Vector3 getMountPos() const noexcept;
+	Vector3 getCenterOfMass() const noexcept;
+	Quaternion getOrientation() const noexcept;
+	Fuelmap getFuelUsage() const noexcept;
+	Model3D::Builder getModel() const noexcept;
+	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
+
 	bool canGimble() const noexcept;
-	Vector3 mountPos() const noexcept;
-	Vector3 centerOfMass() const noexcept;
-	Quaternion orientation() const noexcept;
-	Vector<String> fuelTypes() const noexcept;
-	Model3D::Builder model() const noexcept;
+	bool active() const noexcept;
 
-	Vector3& posRef() noexcept;
-	Quaternion& orientationRef() noexcept;
-
-	void setID(int newID) noexcept;
+	void setID(const String& newName, ID::ID_T newLocalID) noexcept;
+	void setID(const String& newName) noexcept;
+	void setID(ID::ID_T newLocalID) noexcept;
 	void setPos(Vector3 newPos) noexcept;
 	void toggle(bool newState) noexcept;
 
@@ -50,15 +61,17 @@ public:
 	bool pointInside(Vector3& point) noexcept;
 	bool isColliding() noexcept;
 private:
+	std::shared_ptr<TransformComponent3D> _transform;
+
 	ld _mass,
 		_exitVel, _thrustPercent,
 		_maxGimblePerSecond, _maxGimble;
-	Quaternion _orientation, _desierdOrientation;
+	Quaternion _desierdOrientation;
 	Fuelmap _fuelPerSecond;
-	Vector3 _pos, _centerOfMass, _mountPos;
+	Vector3 _centerOfMass, _mountPos;
 	Shape _shape;
-	int _ID,
-		_gimbletime;
+	ID _id;
+	int _gimbletime;
 	bool _active, _canGimble;
 	Vector<int> _fuelTankIDs;
 
@@ -68,14 +81,6 @@ private:
 
 class ReactionThruster : public Engine{
 public:
-	ReactionThruster();
-	ReactionThruster(int ID, ld mass, ld exitVel,
-		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model,
-		ld maxGimblePerSecond, ld maxGimble);
-	ReactionThruster(int ID, ld mass, ld exitVel,
-		Vector3 pos, Vector3 centerOfMass, Vector3 mountPos,
-		Fuelmap fuelPerSecond, Shape shape, const Model3D::Builder& model);
-	ReactionThruster(Engine engine);
+	ReactionThruster(const Builder& builder);
 };
 

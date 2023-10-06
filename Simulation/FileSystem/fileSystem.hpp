@@ -23,11 +23,11 @@ namespace fileSystem {
 	{
 		inline String simulationFolder;
 		inline String runFolder;
-		inline std::unordered_map<String, WriteFile<ld>> rocketFiles;
-		inline std::unordered_map<String, WriteFile<ld>> rocketStageFiles;
-		inline std::unordered_map<String, WriteFile<ld>> engineFiles;
-		inline std::unordered_map<String, WriteFile<ld>> fuelTankFiles;
-		inline std::unordered_map<String, WriteFile<ld>> planetFiles;
+		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> rocketFiles;
+		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> rocketStageFiles;
+		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> engineFiles;
+		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> fuelTankFiles;
+		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> planetFiles;
 #ifndef _DEBUG
 		inline std::ofstream errorLogFile;
 #endif // !debug
@@ -38,6 +38,7 @@ namespace fileSystem {
 	Vector<String> returnArgs(String args);
 
 	Vector<int> returnVectori(String arg);
+	Vector<ID::ID_T> returnVectorID(String arg);
 
 	Vector3 returnVector3(String arg);
 	Quaternion returnQuaternion(String arg);

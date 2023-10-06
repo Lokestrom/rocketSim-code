@@ -6,14 +6,14 @@ namespace fileSystem {
 	Instructions::Instructions() {
 		_rocket = nullptr;
 	}
-	Instructions::Instructions(Rocket* rocket) {
-		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + rocket->ID() + ".txt"));
+	Instructions::Instructions(std::shared_ptr<Rocket> rocket) {
+		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + rocket->getID().getName() + ".txt"));
 		if (!_file.is_open())
-			throw error("File \"" + rocket->ID() + ".txt" + "\" couldn't be opened.", exitCodes::fileFault);
+			throw error("File \"" + rocket->getID().getName() + ".txt" + "\" couldn't be opened.", exitCodes::fileFault);
 		_rocket = rocket;
 		getInstruction();
 	}
-	Instructions::Instructions(String fileName, Rocket* rocket) {
+	Instructions::Instructions(String fileName, std::shared_ptr<Rocket> rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
 		if (!_file.is_open())
 			throw error("File \"" + fileName + "\" couldn't be opened.", exitCodes::fileFault);
@@ -45,7 +45,7 @@ namespace fileSystem {
 			}
 		}
 		catch (const error& e) {
-			throw error("While runing instructions for rocket: \"" + _rocket->ID() + "\" an error apeared:\n" + e.what, e.code);
+			throw error("While runing instructions for rocket: \"" + _rocket->getID().getName() + "\" an error apeared:\n" + e.what, e.code);
 		}
 
 	}
@@ -115,7 +115,7 @@ namespace fileSystem {
 				_rocket->burn(STold(args[0]));
 				break;
 			case 2:
-				_rocket->burn(STold(args[0]), returnVectori(args[1]));
+				_rocket->burn(STold(args[0]), returnVectorID(args[1]));
 				break;
 			default:
 				throw error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
@@ -129,7 +129,7 @@ namespace fileSystem {
 				_rocket->shutdown();
 				break;
 			case 1:
-				_rocket->shutdown(returnVectori(args[0]));
+				_rocket->shutdown(returnVectorID(args[0]));
 				break;
 			default:
 				throw error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
@@ -148,12 +148,12 @@ namespace fileSystem {
 		exitSimulation = false;
 	}
 
-	void assignRocketInstructions(Rocket* rocket) {
+	void assignRocketInstructions(std::shared_ptr<Rocket> rocket) {
 		try {
-			objectLists::instructions.pushBack(new Instructions(rocket->ID() + ".txt", rocket));
+			objectLists::instructions.pushBack(std::make_shared<Instructions>(rocket->getID().getName() + ".txt", rocket));
 		}
 		catch (error& e) {
-			throw error("When assigning instructions to rocket \"" + rocket->ID() + "\" an error has acured:\n\t" + e.what, e.code);
+			throw error("When assigning instructions to rocket \"" + rocket->getID().getName() + "\" an error has acured:\n\t" + e.what, e.code);
 		}
 	}
 } //fileSystem
