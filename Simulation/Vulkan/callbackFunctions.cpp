@@ -11,6 +11,7 @@
 #include "../rocket/Rocket.hpp"
 #include "../planet.hpp"
 #include "../FileSystem/fileSystem.hpp"
+#include "../helpers/simulationObjects.hpp"
 
 void loadMainWindow(WindowInfo& window)
 {

@@ -1,5 +1,7 @@
 #include "planet.hpp"
 #include "Vulkan/GameObject.hpp"
+#include "helpers/physics.hpp"
+#include "helpers/simulationObjects.hpp"
 
 /*Obstruction*/
 Obstruction::Obstruction()

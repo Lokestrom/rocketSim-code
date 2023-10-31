@@ -9,7 +9,6 @@
 #include "WriteFile.hpp"
 
 #include "../helpers/controles.hpp"
-#include "../helpers/flags.hpp"
 #include "../helpers/Mesh.hpp"
 #include "../rocket/Rocket.hpp"
 #include "../planet.hpp"

@@ -1,6 +1,8 @@
 #include "Instructions.hpp"
 
 #include "fileSystem.hpp"
+#include "../helpers/simulationObjects.hpp"
+
 using namespace Database;
 namespace fileSystem {
 	Instructions::Instructions() {
@@ -22,7 +24,6 @@ namespace fileSystem {
 	}
 
 	void Instructions::run(bool& exitSimulation) {
-		
 		try {
 			while (timeObjects::currentTime >= _nextInstructionTime) {
 				for (auto& i : _nextInstruction) {
@@ -96,7 +97,7 @@ namespace fileSystem {
 		else if (variable == "pointapproximationofmeshesperm2")
 			options::pointApproximationOfMeshesPerM2 = SToull(value);
 		else if (variable == "dtinstancesperlogging")
-			options::dtInstancesPerLogging = SToull(value);
+			options::physicsTimestepSize = SToull(value);
 
 		else
 			throw error("The variable \"" + variable + "\" is not a valid variable.", exitCodes::badUserBehavior);

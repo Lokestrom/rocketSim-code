@@ -8,6 +8,7 @@
 
 #include "../helpers/TransformComponent3D.hpp"
 #include "../Vulkan/Model.hpp"
+#include "../helpers/ID.hpp"
 
 using namespace Database;
 

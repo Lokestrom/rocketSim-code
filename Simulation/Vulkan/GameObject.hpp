@@ -5,9 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "../helpers/Quaternion.hpp"
+#include "../helpers/math.hpp"
 #include "../helpers/TransformComponent3D.hpp"
 #include "../helpers/controles.hpp"
+#include "../helpers/ID.hpp"
 
 // std
 #include <memory>

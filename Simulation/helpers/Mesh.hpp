@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
+#include "math.hpp"
 #include "controles.hpp"
+#include "options.hpp"
 
 struct Mesh 
 {

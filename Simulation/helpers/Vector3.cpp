@@ -1,11 +1,13 @@
 #include "Vector3.hpp"
 
-#include "controles.hpp"
+#include <math.h>
+
+Vector3::Vector3() : x(0), y(0), z(0) {}
 
 Vector3::Vector3(ld x, ld y, ld z)
 	: x(x),
 	y(y),
-	z(z) 
+	z(z)
 {}
 
 /*operators*/
@@ -144,5 +146,5 @@ Vector3 Vector3::null() noexcept
 /*non-member function*/
 Vector3 abs(const Vector3& v) noexcept
 {
-	return { abs(v.x), abs(v.y), abs(v.z) };
+	return { fabs(v.x), fabs(v.y), fabs(v.z) };
 }

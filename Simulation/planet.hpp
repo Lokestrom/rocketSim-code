@@ -7,6 +7,8 @@
 #include "helpers/Mesh.hpp"
 
 #include "Vulkan/GameObject.hpp"
+#include "helpers/math.hpp"
+#include "helpers/ID.hpp"
 
 struct Obstruction 
 {

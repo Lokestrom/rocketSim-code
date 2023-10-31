@@ -32,7 +32,7 @@ void SwapChain::init() {
 }
 
 SwapChain::~SwapChain() {
-    for (auto imageView : _swapChainImageViews) {
+    for (auto& imageView : _swapChainImageViews) {
         _device.device().destroyImageView(imageView);
     }
     _swapChainImageViews.clear();
@@ -54,7 +54,7 @@ SwapChain::~SwapChain() {
         _device.device().freeMemory(_textImageMemorys[i]);
     }
 
-    for (auto framebuffer : _swapChainFramebuffers) {
+    for (auto& framebuffer : _swapChainFramebuffers) {
         _device.device().destroyFramebuffer(framebuffer);
     }
 

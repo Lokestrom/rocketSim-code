@@ -6,6 +6,7 @@
 
 #include "fileSystem.hpp"
 #include "../ObjectRenderingCashing.hpp"
+#include "../helpers/simulationObjects.hpp"
 
 namespace fs = std::filesystem;
 namespace fileSystem {

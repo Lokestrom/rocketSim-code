@@ -127,8 +127,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="helpers\ID.cpp" />
+    <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\TransformComponent3D.cpp" />
     <ClCompile Include="ObjectRenderingCashing.cpp" />
+    <ClCompile Include="helpers\physics.cpp" />
+    <ClCompile Include="helpers\simulationObjects.cpp" />
     <ClCompile Include="Vulkan\UI.cpp" />
     <ClCompile Include="Vulkan\callbackFunctions.cpp" />
     <ClCompile Include="DragSim.cpp" />
@@ -167,8 +171,12 @@
     <ClCompile Include="Vulkan\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="helpers\ID.hpp" />
+    <ClInclude Include="helpers\math.hpp" />
     <ClInclude Include="helpers\TransformComponent3D.hpp" />
     <ClInclude Include="ObjectRenderingCashing.hpp" />
+    <ClInclude Include="helpers\physics.hpp" />
+    <ClInclude Include="helpers\simulationObjects.hpp" />
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
     <ClInclude Include="Vulkan\callbackFunctions.hpp" />
@@ -178,7 +186,7 @@
     <ClInclude Include="FileSystem\LoadManager.hpp" />
     <ClInclude Include="FileSystem\logging.hpp" />
     <ClInclude Include="helpers\controles.hpp" />
-    <ClInclude Include="helpers\flags.hpp" />
+    <ClInclude Include="helpers\options.hpp" />
     <ClInclude Include="helpers\Mesh.hpp" />
     <ClInclude Include="helpers\Quaternion.hpp" />
     <ClInclude Include="run.hpp" />

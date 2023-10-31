@@ -1,6 +1,8 @@
 #include "Rocket.hpp"
 #include "RocketStage.hpp"
 #include "../planet.hpp"
+#include "../helpers/physics.hpp"
+#include "../helpers/simulationObjects.hpp"
 
 RocketStage::RocketStage(const Builder& builder)
 	: _id(ID::createID(builder.name, builder.localID)),

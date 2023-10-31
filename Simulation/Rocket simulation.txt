@@ -41,7 +41,6 @@ Exampel simulation:
 	│	│	└>fuelTank
 	│	│		└><FuelTank name>.txt
 	│	├>planet
-	│	│	├>used planets.txt
 	│	│	├><Planet name>.txt
 	│	│	└>atmosphereDensity
 	│	│		└><atmosphere fabb name>.db
@@ -64,7 +63,7 @@ Exampel simulation:
 			│		└>engine
 			│			└><Engine name>.db
 			└>planet
-				└>Planet name>.dbt
+				└>Planet name>.db
 
 ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -171,9 +170,11 @@ Settings.txt:
 	Point approximation of mesh per m2 = 100
 	delta time=0.001
 	used fuel types= ExampleFuel1, ExampleFuel2
+	used rockets= ExampleRocket1
+	used planets= ExamplePlanet1
 	colision handeling=Simple / Advanced / AutoAdvanced / AutoSimple / Auto
-	cashing=3sec
-	logging delta time=0.1
+	cash size=3sec/180frames
+	physics timestep size=4
 //optional:
 	randomseed=1234567890
 

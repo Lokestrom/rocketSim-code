@@ -1,11 +1,10 @@
 #pragma once
-#include <math.h>
 
 using ld = long double;
 
 struct Vector3 {
 	ld x, y, z;
-	Vector3() : x(0), y(0), z(0){}
+	Vector3();
 	Vector3(ld x, ld y, ld z);
 
 	/*operators*/
@@ -17,7 +16,7 @@ struct Vector3 {
 
 	friend Vector3 operator*(Vector3 l, const ld& r) noexcept;
 	friend Vector3 operator*(const ld& l, Vector3 r) noexcept;
-	friend Vector3 operator*(Vector3 l, Vector3 r) noexcept;
+	friend Vector3 operator*(Vector3 l, const Vector3& r) noexcept;
 	friend Vector3 operator/(Vector3 l, const ld r) noexcept;
 
 	friend bool operator==(const Vector3& l, const Vector3& r);

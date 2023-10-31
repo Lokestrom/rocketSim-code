@@ -4,6 +4,8 @@
 #include "../FileSystem/fileSystem.hpp"
 #include "../FileSystem/logging.hpp"
 #include "../FileSystem/Instructions.hpp"
+#include "../helpers/simulationObjects.hpp"
+#include "../helpers/physics.hpp"
 
 
 Rocket::Rocket(const Builder& builder)

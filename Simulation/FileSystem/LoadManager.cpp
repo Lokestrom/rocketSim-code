@@ -1,5 +1,8 @@
 #include "LoadManager.hpp"
+
 #include "Instructions.hpp"
+#include "../helpers/simulationObjects.hpp"
+#include "../helpers/options.hpp"
 
 #include <iostream>
 
@@ -32,11 +35,10 @@ namespace fileSystem {
 		}
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket\\rocketStage")))
 			LoadManagerMaps::rocketStage[String(entry.path().filename().string()).split('.')[0]] = loadRocketStage(entry.path().string());
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket")))
-			if (!entry.is_directory()) {
+		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket\\rocket"))) {
 				objectLists::rockets.pushBack(std::make_shared<Rocket>(loadRocket(entry.path().string())));
 				objectLists::instructions.pushBack(std::make_shared<Instructions>(objectLists::rockets.at(objectLists::rockets.size() - 1)->getID().getName() + ".txt", objectLists::rockets.at(objectLists::rockets.size() - 1)));
-			}
+		}
 		for (const auto& [key, val] : LoadManagerMaps::fixedOrbitPlanet) {
 			objectLists::fixedOrbitPlanets.pushBack(std::make_shared<FixedOrbitPlanet>(val));
 		}
@@ -394,6 +396,11 @@ namespace fileSystem {
 		validationLayer(map, "point approximation of mesh per m2", misingValues);
 		validationLayer(map, "delta time", misingValues);
 		validationLayer(map, "used fuel types", misingValues);
+		validationLayer(map, "used rockets", misingValues);
+		validationLayer(map, "used planets", misingValues);
+		validationLayer(map, "physics timestep size", misingValues);
+		validationLayer(map, "cash size", misingValues);
+
 		if (misingValues != "")
 			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
 	}
@@ -423,19 +430,21 @@ namespace fileSystem {
 			throw e;
 		}
 		if (settings["gravity"] == "newton")
-			flags::gravitySimulation = flags::newton;
+			flags::gravitySimulation = flags::gravitySimulationTypes::newton;
 		if (settings["gravity"] == "generalrelativity")
-			flags::gravitySimulation = flags::generalRelativity;
+			flags::gravitySimulation = flags::gravitySimulationTypes::generalRelativity;
 
 		if (settings["aerodynamic"] == "simple")
-			flags::gravitySimulation = flags::simple;
+			flags::aerodynamicSimulation = flags::aerodynamicSimulationTypes::simple;
 		if (settings["aerodynamic"] == "cfd")
-			flags::gravitySimulation = flags::CFD;
+			flags::aerodynamicSimulation = flags::aerodynamicSimulationTypes::CFD;
 
 		flags::random = (settings["random"] == "true") ? true : false;
 		options::randomSeed = STou(settings["seed"]);
 		timeObjects::dt = STold(settings["deltatime"]);
 		options::edgeDetectionIterations = STold(settings["edgedetection"]);
+		options::physicsTimestepSize = STold(settings["physicstimestepsize"]);
+		options::cashSize = STold(settings["cashsize"]);
 
 		validateAllLoadedObjects(settings);
 	}
@@ -458,10 +467,6 @@ namespace fileSystem {
 			}
 			transformComponents.popBack();
 		}
-	}
-
-	void createObjects() {
-
 	}
 
 	std::unordered_map<String, String> loadVariablesAndValuesInToMap(std::ifstream& file) {

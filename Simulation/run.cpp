@@ -1,5 +1,7 @@
+
 #include <iostream>
 #include <math.h>
+#include <thread>
 
 #include "rocket/Rocket.hpp"
 #include "FileSystem/Instructions.hpp"
@@ -8,6 +10,10 @@
 #include "Vulkan/App.hpp"
 #include "ObjectRenderingCashing.hpp"
 
+#include "helpers/simulationObjects.hpp"
+
+
+bool programStillRunning;
 
 bool update()
 {
@@ -30,7 +36,7 @@ bool update()
 		i->update();
 	}
 
-	if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging) {
+	if (timeObjects::dtInstancesSinceLastLogging == options::physicsTimestepSize) {
 		fileSystem::loggCurrentState();
 		addSimulationTransforms();
 	}
@@ -38,7 +44,17 @@ bool update()
 	return true;
 }
 
+void simulationLoop() {
+	while (programStillRunning) {
+		if (objectLists::objectCash.getSize() > options::cashSize)
+			continue;
+		if (!update())
+			programStillRunning = false;
+	}
+}
+
 void run(String folder, String runName) {
+	programStillRunning = true;
 	fileSystem::objects::simulationFolder = folder + '/';
 	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
 	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
@@ -56,15 +72,36 @@ void run(String folder, String runName) {
 	std::cout << "Started vulkan\n";
 
 	timeObjects::realStartTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-	while (true){
+
+	std::cout << "Starting sim loop\n";
+
+	std::thread simThread(simulationLoop);
+
+	while (programStillRunning) {
+		timeObjects::realCurrentTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - timeObjects::realStartTime;
+		if (objectLists::objectCash.getSize() == 0)
+			continue;
+		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realCurrentTime)
+			continue;
+		if (!vulkanRenderer.update())
+			programStillRunning = false;
+	}
+
+	/*while (true) {
 		timeObjects::realCurrentTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - timeObjects::realStartTime;
 		if (objectLists::objectCash.getSize() < 10)
 			if (!update())
 				break;
-		if (timeObjects::dtInstancesSinceLastLogging == options::dtInstancesPerLogging)
-			if (!vulkanRenderer.update())
-				break;
-	}
+
+		if (objectLists::objectCash.getSize() == 0)
+			continue;
+		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realCurrentTime)
+			continue;
+		if (!vulkanRenderer.update())
+			break;
+	}*/
+
+	simThread.join();
 	std::cout << "Simulation loop ended\n";
 
 	fileSystem::loggingEnd();

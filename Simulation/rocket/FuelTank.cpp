@@ -1,5 +1,6 @@
 #include "FuelTank.hpp"
 #include "../helpers/controles.hpp"
+#include "../helpers/ID.hpp"
 
 FuelTank::FuelTank(const Builder& builder)
 	: _id(ID::createID(builder.name, builder.localID)),

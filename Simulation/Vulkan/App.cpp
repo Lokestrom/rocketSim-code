@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "../ObjectRenderingCashing.hpp"
+#include "../helpers/simulationObjects.hpp"
 
 glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
@@ -158,71 +159,74 @@ bool Vulkan::update() {
     if (_windows.empty())
         return false;
     SimulationTimeCash cash = objectLists::objectCash.getsimulationTimeCash(timeObjects::realCurrentTime);
-    for (auto& [key, window] : _windows) {
-        for (auto& [key, object] : window->gameObjects3d) {
+    for (auto it = _windows.begin(); it != _windows.end();) {
+        glfwPollEvents();
+        if (it->second->window->shouldClose()) {
+            it = _windows.erase(it);
+            continue;
+        }
+
+        for (auto& [key, object] : it->second->gameObjects3d) {
             object.transform = cash.objects[key];
         }
 
-        glfwPollEvents();
-        if (window->window->shouldClose()) {
-            _windows.erase(key);
-            break;
-        }
-        for (auto& [key, text] : window->varyinglds) {
+        for (auto& [key, text] : it->second->varyinglds) {
             text.update();
-            window->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
+            it->second->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
         }
 
         auto newTime = std::chrono::high_resolution_clock::now();
         float deltaTime =
-            std::chrono::duration<float, std::chrono::seconds::period>(newTime - window->currentTime).count();
-        window->currentTime = newTime;
+            std::chrono::duration<float, std::chrono::seconds::period>(newTime - it->second->currentTime).count();
+        it->second->currentTime = newTime;
 
         if (!_pause) {
-            _mouse.rotate(*window->window, window->camera->rotation);
-            _keyboard.rotate(window->window->getGLFWwindow(), deltaTime, window->camera->rotation);
-            _keyboard.move(window->window->getGLFWwindow(), deltaTime, window->camera->translation, window->camera->rotation);
+            _mouse.rotate(*it->second->window, it->second->camera->rotation);
+            _keyboard.rotate(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->rotation);
+            _keyboard.move(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->translation, it->second->camera->rotation);
         }
-        window->camera->setViewYXZ(toVec3(window->camera->translation), window->camera->rotation);
+        it->second->camera->setViewYXZ(toVec3(it->second->camera->translation), it->second->camera->rotation);
 
-        double aspect = window->renderer->getAspectRatio();
-        window->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+        double aspect = it->second->renderer->getAspectRatio();
+        it->second->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
 
-        if (auto commandBuffer = window->renderer->beginFrame()) {
-            int frameIndex = window->renderer->getFrameIndex();
+        if (auto commandBuffer = it->second->renderer->beginFrame()) {
+            int frameIndex = it->second->renderer->getFrameIndex();
             FrameInfo frameInfo{
                 frameIndex,
                 deltaTime,
                 commandBuffer,
-                *window->camera,
-                window->globalDescriptorSet[frameIndex],
-                window->gameObjects2d,
-                window->gameObjects3d,
-                window->staticTexts,
-                window->varyingldsStaticTextRefs
+                *it->second->camera,
+                it->second->globalDescriptorSet[frameIndex],
+                it->second->gameObjects2d,
+                it->second->gameObjects3d,
+                it->second->staticTexts,
+                it->second->varyingldsStaticTextRefs
             };
 
             // update
             GlobalUbo ubo{};
-            ubo.projection = window->camera->getProjection();
-            ubo.view = window->camera->getView();
-            ubo.inverseView = window->camera->getInverseView();
-            ubo.resolution = glm::vec4{ window->window->getExtent().width / (double)std::max(window->window->getExtent().width, window->window->getExtent().height), window->window->getExtent().height / (double)std::max(window->window->getExtent().width, window->window->getExtent().height),0,0};
-            window->uboBuffer[frameIndex]->writeToBuffer(&ubo);
-            window->uboBuffer[frameIndex]->flush();
+            ubo.projection = it->second->camera->getProjection();
+            ubo.view = it->second->camera->getView();
+            ubo.inverseView = it->second->camera->getInverseView();
+            ubo.resolution = glm::vec4{ it->second->window->getExtent().width / (double)std::max(it->second->window->getExtent().width, it->second->window->getExtent().height),
+                it->second->window->getExtent().height / (double)std::max(it->second->window->getExtent().width, it->second->window->getExtent().height),0,0};
+            it->second->uboBuffer[frameIndex]->writeToBuffer(&ubo);
+            it->second->uboBuffer[frameIndex]->flush();
 
             // render
-            window->renderer->beginSwapChainRenderPass(commandBuffer);
+            it->second->renderer->beginSwapChainRenderPass(commandBuffer);
 
             // order here matters
-            window->textRenderSystem->renderText(frameInfo);
-            window->renderSystem2D->renderGameObjects(frameInfo);
-            window->renderSystem3D->renderGameObjects(frameInfo);
-            window->pointLightSystem->render(frameInfo);
+            it->second->textRenderSystem->renderText(frameInfo);
+            it->second->renderSystem2D->renderGameObjects(frameInfo);
+            it->second->renderSystem3D->renderGameObjects(frameInfo);
+            it->second->pointLightSystem->render(frameInfo);
 
-            window->renderer->endSwapChainRenderPass(commandBuffer);
-            window->renderer->endFrame();
+            it->second->renderer->endSwapChainRenderPass(commandBuffer);
+            it->second->renderer->endFrame();
         }
+        it++;
     }
     return true;
 }
@@ -240,7 +244,9 @@ void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
 
 void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    if (action != GLFW_PRESS)
+        return;
+    if(key == GLFW_KEY_ESCAPE)
         _pause = !_pause;
     if (_pause) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -252,7 +258,7 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
         glfwSetCursorPos(window, w/2, h/2);
     }
 
-    if (key == GLFW_KEY_V && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_V) {
         for (auto& [key, val] : _windows) {
             if (val->window->getGLFWwindow() != window)
                 continue;
