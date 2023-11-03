@@ -130,6 +130,12 @@ void loadFreeCamWindow(WindowInfo& window)
         obj->model = std::make_shared<Model3D>(*window.device, planet->getModel());
         window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
     }
+
+    obj = std::make_unique<GameObject3D>(GameObject3D::makePointLight(100, 100.0f));
+
+    obj->transform.translation = { 0,0,5 };
+    window.gameObjects3d.emplace(obj->getId(), std::move(*obj));
+
 }
 
 void changeRelativeObject(WindowInfo& window) {

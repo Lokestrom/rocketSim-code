@@ -2,7 +2,7 @@ setup{
 dryMass=80
 centerOfMass={0,0,0}
 mesh=a
-model=cube
+model=saturnv
 }
 
 Engines{

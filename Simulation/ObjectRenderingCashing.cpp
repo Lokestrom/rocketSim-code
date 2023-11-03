@@ -19,12 +19,12 @@ SimulationTimeCash ObjectRenderingCash::getsimulationTimeCash(ld time)
 
 	if (size == 0)
 		return SimulationTimeCash();
-	SimulationTimeCash ans = std::move(_cash.pushOff());
+	SimulationTimeCash ans;
 	size--;
-	while (ans.time <= time && !(size == 0)) {
+	do {
 		ans = std::move(_cash.pushOff());
 		size--;
-	}
+	} while (ans.time <= time-timeObjects::dt && !(size == 0));
 	std::cout << "Sim cash time: " << ans.time << "\n";
 	std::cout << "real time: " << time << "\n";
 	return ans;

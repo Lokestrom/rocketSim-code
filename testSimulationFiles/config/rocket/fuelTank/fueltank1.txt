@@ -3,4 +3,4 @@ radius=1
 height=1
 FuelDensity=10000
 fuelmass=10
-model=cube
+model=tom

@@ -1,6 +1,8 @@
 #pragma once
 #include "controles.hpp"
 
+#include <chrono>
+
 namespace objectLists
 {
 	inline Vector<std::shared_ptr<FixedOrbitPlanet>> fixedOrbitPlanets;
@@ -14,8 +16,12 @@ namespace timeObjects {
 	inline ld dt = 0;
 	inline sizeT dtInstancesSinceLastLogging = 0;
 
-	inline ld realStartTime;
-	inline ld realCurrentTime;
+	inline ld realStartTimeEpoch;
+	inline ld realRunTime;
+	inline ld pauseStartTimeEpoch;
 
 	void updateTime() noexcept;
+	inline ld getTimeSinceEpoch() noexcept {
+		return std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+	}
 }

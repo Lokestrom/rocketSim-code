@@ -25,10 +25,12 @@ glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
 
-std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> Vulkan::_windows;
+/*std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> Vulkan::_windows;
 Keyboard Vulkan::_keyboard;
 Mouse Vulkan::_mouse;
 bool Vulkan::_pause = false;
+SimulationTimeCash Vulkan::
+*/
 
 WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType, void* windowTypeSpecificInfo)
     : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), typeSpecificInfo(windowTypeSpecificInfo) {
@@ -105,6 +107,7 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     typeSpecificInfo = windowInfo.typeSpecificInfo;
     windowInfo.typeSpecificInfo = nullptr;
     type = windowInfo.type;
+    cameraTarget.swap(windowInfo.cameraTarget);
 }
 
 WindowInfo::~WindowInfo()
@@ -158,7 +161,8 @@ void Vulkan::startup() {
 bool Vulkan::update() {
     if (_windows.empty())
         return false;
-    SimulationTimeCash cash = objectLists::objectCash.getsimulationTimeCash(timeObjects::realCurrentTime);
+    if(!_pause)
+        _currentSimulationState = objectLists::objectCash.getsimulationTimeCash(timeObjects::realRunTime);
     for (auto it = _windows.begin(); it != _windows.end();) {
         glfwPollEvents();
         if (it->second->window->shouldClose()) {
@@ -166,9 +170,10 @@ bool Vulkan::update() {
             continue;
         }
 
-        for (auto& [key, object] : it->second->gameObjects3d) {
-            object.transform = cash.objects[key];
-        }
+        if(it->second->type == WindowType::FreeCam)
+            for (auto& [id, transform] : _currentSimulationState.objects) {
+                it->second->gameObjects3d.at(id).transform = transform;
+            }
 
         for (auto& [key, text] : it->second->varyinglds) {
             text.update();
@@ -181,9 +186,12 @@ bool Vulkan::update() {
         it->second->currentTime = newTime;
 
         if (!_pause) {
-            _mouse.rotate(*it->second->window, it->second->camera->rotation);
-            _keyboard.rotate(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->rotation);
-            _keyboard.move(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->translation, it->second->camera->rotation);
+            std::optional<Vector3> targetPos;
+            if (it->second->cameraTarget.has_value())
+                targetPos = it->second->gameObjects3d.at(it->second->cameraTarget.value()).transform.translation;
+            _mouse.rotate(*it->second->window, it->second->camera->rotation, targetPos);
+            _keyboard.rotate(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->rotation, targetPos);
+            _keyboard.move(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->translation, it->second->camera->rotation, targetPos);
         }
         it->second->camera->setViewYXZ(toVec3(it->second->camera->translation), it->second->camera->rotation);
 
@@ -211,6 +219,7 @@ bool Vulkan::update() {
             ubo.inverseView = it->second->camera->getInverseView();
             ubo.resolution = glm::vec4{ it->second->window->getExtent().width / (double)std::max(it->second->window->getExtent().width, it->second->window->getExtent().height),
                 it->second->window->getExtent().height / (double)std::max(it->second->window->getExtent().width, it->second->window->getExtent().height),0,0};
+            it->second->pointLightSystem->update(frameInfo, ubo);
             it->second->uboBuffer[frameIndex]->writeToBuffer(&ubo);
             it->second->uboBuffer[frameIndex]->flush();
 
@@ -246,16 +255,20 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
 {
     if (action != GLFW_PRESS)
         return;
-    if(key == GLFW_KEY_ESCAPE)
+    if (key == GLFW_KEY_ESCAPE) {
         _pause = !_pause;
-    if (_pause) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        int w = 0, h = 0;
-        glfwGetWindowSize(window, &w, &h);
-        glfwSetCursorPos(window, w/2, h/2);
+        if (_pause) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            timeObjects::pauseStartTimeEpoch = timeObjects::getTimeSinceEpoch();
+        }
+        else {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            int w = 0, h = 0;
+            glfwGetWindowSize(window, &w, &h);
+            glfwSetCursorPos(window, w / 2, h / 2);
+            timeObjects::realStartTimeEpoch += timeObjects::getTimeSinceEpoch() - timeObjects::pauseStartTimeEpoch;
+
+        }
     }
 
     if (key == GLFW_KEY_V) {
@@ -264,13 +277,11 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
                 continue;
             if (val->cameraSetting != CameraSettings::normal) {
                 val->cameraSetting = CameraSettings::normal;
-                _keyboard.deleteTarget();
-                _mouse.deleteTarget();
+                val->cameraTarget = objectLists::rockets[0]->stages()[0]->getID().getID();
             }
             else {
                 val->cameraSetting = CameraSettings::lookAt;
-                _keyboard.setTarget({ 0,-.1,0 });
-                _mouse.setTarget({ 0,-.1,0 });
+                val->cameraTarget.reset();
             }
         }
     }

@@ -71,17 +71,17 @@ void run(String folder, String runName) {
 	vulkanRenderer.startup();
 	std::cout << "Started vulkan\n";
 
-	timeObjects::realStartTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+	timeObjects::realStartTimeEpoch = timeObjects::getTimeSinceEpoch();
 
 	std::cout << "Starting sim loop\n";
 
 	std::thread simThread(simulationLoop);
 
 	while (programStillRunning) {
-		timeObjects::realCurrentTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - timeObjects::realStartTime;
+		timeObjects::realRunTime = timeObjects::getTimeSinceEpoch() - timeObjects::realStartTimeEpoch;
 		if (objectLists::objectCash.getSize() == 0)
 			continue;
-		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realCurrentTime)
+		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realRunTime)
 			continue;
 		if (!vulkanRenderer.update())
 			programStillRunning = false;

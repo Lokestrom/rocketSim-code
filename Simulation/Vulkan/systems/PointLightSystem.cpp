@@ -80,6 +80,21 @@ void PointLightSystem::createPipeline(vk::RenderPass renderPass) {
         pipelineConfig);
 }
 
+void PointLightSystem::update(FrameInfo& frameInfo, GlobalUbo& ubo) {
+    int lightIndex = 0;
+    for (auto& kv : frameInfo.gameObjects3D) {
+        auto& obj = kv.second;
+        if (obj.pointLight == nullptr) continue;
+
+        // copy light to ubo
+        ubo.pointLights[lightIndex].position = glm::vec4(toVec4(obj.transform.translation, 1.f));
+        ubo.pointLights[lightIndex].color = glm::vec4(obj.color, obj.pointLight->lightIntensity);
+
+        lightIndex += 1;
+    }
+    ubo.numLights = lightIndex;
+}
+
 void PointLightSystem::render(FrameInfo& frameInfo) {
     // sort lights
     std::map<float, ID::ID_T> sorted;

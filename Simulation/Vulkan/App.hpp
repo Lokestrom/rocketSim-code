@@ -10,8 +10,9 @@
 #include "systems/RenderSystem2D.hpp"
 #include "systems/TextSystem.hpp"
 #include "WindowTypeSpecificInfo.hpp"
-
 #include "PeripheralInputDevice.hpp"
+
+#include "../ObjectRenderingCashing.hpp"
 
 // std
 #include <chrono>
@@ -49,6 +50,8 @@ struct WindowInfo {
 
 	std::unique_ptr<Camera> camera;
 	CameraSettings cameraSetting;
+	std::optional<ID::ID_T> cameraTarget;
+
 
 	std::chrono::steady_clock::time_point currentTime;
 
@@ -93,11 +96,13 @@ private:
 	static void mouseInput(GLFWwindow* window, int button, int action, int mods);
 
 private:
-	static std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> _windows;
+	inline static std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> _windows;
 
-	static Keyboard _keyboard;
-	static Mouse _mouse;
+	inline static Keyboard _keyboard;
+	inline static Mouse _mouse;
 
-	static bool _pause;
+	inline static SimulationTimeCash _currentSimulationState;
+
+	inline static bool _pause;
 };
 
