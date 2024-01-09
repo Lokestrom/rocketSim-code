@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Vector.hpp"
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
+#include "math.hpp"
 #include <memory>
 #include <glm/ext/matrix_float3x3.hpp>
 

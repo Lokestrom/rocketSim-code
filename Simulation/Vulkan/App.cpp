@@ -2,8 +2,9 @@
 
 #include "frameInfo.hpp"
 #include "PeripheralInputDevice.hpp"
-#include "WindowTypeSpecificInfo.hpp"
+#include "windowFunctions/WindowTypeSpecificInfo.hpp"
 #include "callbackFunctions.hpp"
+#include "UI.hpp"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -25,15 +26,12 @@ glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
 
-/*std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> Vulkan::_windows;
-Keyboard Vulkan::_keyboard;
-Mouse Vulkan::_mouse;
-bool Vulkan::_pause = false;
-SimulationTimeCash Vulkan::
-*/
-
 WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType, void* windowTypeSpecificInfo)
-    : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), typeSpecificInfo(windowTypeSpecificInfo) {
+    : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), 
+    typeSpecificInfo((windowTypeSpecificInfo == nullptr)
+        ? getWindowSpecificInfo(type) 
+        : windowTypeSpecificInfo)
+{
     window = std::make_unique<Window>(Vulkan::WIDTH, Vulkan::HEIGHT, name);
     device = std::make_unique<Device>(*window);
     renderer = std::make_unique<Renderer>(*window, *device);
@@ -91,9 +89,8 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     device.swap(windowInfo.device);
     globalPool.swap(windowInfo.globalPool);
     gameObjects3d.swap(windowInfo.gameObjects3d);
-    gameObjects2d.swap(windowInfo.gameObjects2d);
+    UIElements.swap(windowInfo.UIElements);
     staticTexts.swap(windowInfo.staticTexts);
-    varyingldsStaticTextRefs.swap(windowInfo.varyingldsStaticTextRefs);
     varyinglds.swap(windowInfo.varyinglds);
     uboBuffer.swap(windowInfo.uboBuffer);
     globalDescriptorSet.swap(windowInfo.globalDescriptorSet);
@@ -102,12 +99,10 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     pointLightSystem.swap(windowInfo.pointLightSystem);
     textRenderSystem.swap(windowInfo.textRenderSystem);
     camera.swap(windowInfo.camera);
-    cameraSetting = windowInfo.cameraSetting;
     currentTime = windowInfo.currentTime;
     typeSpecificInfo = windowInfo.typeSpecificInfo;
     windowInfo.typeSpecificInfo = nullptr;
     type = windowInfo.type;
-    cameraTarget.swap(windowInfo.cameraTarget);
 }
 
 WindowInfo::~WindowInfo()
@@ -124,9 +119,8 @@ WindowInfo::~WindowInfo()
     camera.reset();
 
     gameObjects3d.clear();
-    gameObjects2d.clear();
+    UIElements.clear();
     staticTexts.clear();
-    varyingldsStaticTextRefs.clear();
     varyinglds.clear();
 
     renderer.reset();
@@ -137,8 +131,18 @@ WindowInfo::~WindowInfo()
         delete typeSpecificInfo;
 }
 
+WindowInfo& WindowInfo::getWindowInfo(GLFWwindow* glfwWindow)
+{
+    for (const auto& i : Vulkan::getWindows()) {
+        if (i.second->window->getGLFWwindow() == glfwWindow)
+            return *i.second.get();
+    }
+    throw error("no WindowInfo with contains the given glfwWindow");
+}
+
 Vulkan::Vulkan() 
 {
+    Vulkan::addWindow(WindowInfo::createWindowInfo("startup", )
     Vulkan::addWindow(WindowInfo::createWindowInfo("Main", WindowType::Menu), loadMainWindow);
     Vulkan::addWindow(WindowInfo::createWindowInfo("Freecam", WindowType::FreeCam), loadFreeCamWindow);
 }
@@ -175,28 +179,12 @@ bool Vulkan::update() {
                 it->second->gameObjects3d.at(id).transform = transform;
             }
 
-        for (auto& [key, text] : it->second->varyinglds) {
-            text.update();
-            it->second->varyingldsStaticTextRefs[text.getId()] = &text.staticText();
-        }
-
         auto newTime = std::chrono::high_resolution_clock::now();
         float deltaTime =
             std::chrono::duration<float, std::chrono::seconds::period>(newTime - it->second->currentTime).count();
         it->second->currentTime = newTime;
 
-        if (!_pause) {
-            std::optional<Vector3> targetPos;
-            if (it->second->cameraTarget.has_value())
-                targetPos = it->second->gameObjects3d.at(it->second->cameraTarget.value()).transform.translation;
-            _mouse.rotate(*it->second->window, it->second->camera->rotation, targetPos);
-            _keyboard.rotate(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->rotation, targetPos);
-            _keyboard.move(it->second->window->getGLFWwindow(), deltaTime, it->second->camera->translation, it->second->camera->rotation, targetPos);
-        }
-        it->second->camera->setViewYXZ(toVec3(it->second->camera->translation), it->second->camera->rotation);
-
-        double aspect = it->second->renderer->getAspectRatio();
-        it->second->camera->setPerspectiveProjection(glm::radians(50.f), aspect, 0.1f, 100.f);
+        it->second->camera->update(*it->second, deltaTime, _keyboard, _mouse, _pause);
 
         if (auto commandBuffer = it->second->renderer->beginFrame()) {
             int frameIndex = it->second->renderer->getFrameIndex();
@@ -206,10 +194,9 @@ bool Vulkan::update() {
                 commandBuffer,
                 *it->second->camera,
                 it->second->globalDescriptorSet[frameIndex],
-                it->second->gameObjects2d,
+                it->second->UIElements,
                 it->second->gameObjects3d,
                 it->second->staticTexts,
-                it->second->varyingldsStaticTextRefs
             };
 
             // update
@@ -250,6 +237,13 @@ void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
     loadFunction(*_windows[id]);
 }
 
+void Vulkan::resetCallback(GLFWwindow* window)
+{
+    glfwSetKeyCallback(window, keyBoardInput);
+    glfwSetMouseButtonCallback(window, mouseInput);
+    glfwSetCharCallback(window, nullptr);
+}
+
 
 void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -275,13 +269,29 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
         for (auto& [key, val] : _windows) {
             if (val->window->getGLFWwindow() != window)
                 continue;
-            if (val->cameraSetting != CameraSettings::normal) {
-                val->cameraSetting = CameraSettings::normal;
-                val->cameraTarget = objectLists::rockets[0]->stages()[0]->getID().getID();
-            }
-            else {
-                val->cameraSetting = CameraSettings::lookAt;
-                val->cameraTarget.reset();
+            switch (val->camera->setting)
+            {
+            case CameraSettings::normal:
+                val->camera->setting = CameraSettings::follow;
+                val->camera->followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+                val->camera->transform.translation -= val->gameObjects3d.at(val->camera->followObj.value()).transform.translation;
+                break;
+
+            case CameraSettings::follow:
+                val->camera->setting = CameraSettings::lookAt;
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+                val->camera->transform.translation += val->gameObjects3d.at(val->camera->followObj.value()).transform.translation;
+                val->camera->followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+                break;
+
+            case CameraSettings::lookAt:
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+                val->camera->setting = CameraSettings::normal;
+                val->camera->followObj.reset();
+                break;
+
+            default:
+                break;
             }
         }
     }
@@ -289,30 +299,23 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
 
 void Vulkan::mouseInput(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        WindowInfo* parentWindowInfo;
-        for (auto& windowInfo : _windows)
-            if (windowInfo.second->window->getGLFWwindow() == window) {
-                parentWindowInfo = windowInfo.second.get();
-                break;
-            }
-        glm::vec2 mousePos, res;
+        WindowInfo& parentWindowInfo = WindowInfo::getWindowInfo(window);
+        Vector2 mousePos, res;
         double mousex, mousey;
         int w = 0, h = 0;
         glfwGetWindowSize(window, &w, &h);
         glfwGetCursorPos(window, &mousex, &mousey);
-        mousePos = glm::vec2{ (mousex*2/w)-1, (mousey*2/h)-1 };
-
-        for (auto& [key, val] : _windows) {
-            if (val->window->getGLFWwindow() != window)
-                continue;
-            for (auto& [id, obj] : val->gameObjects2d) {
-                if (obj.type != GameObject2DType::button)
-                    continue;
-                res = glm::vec2{ val->window->getExtent().width / (double)std::max(val->window->getExtent().width, val->window->getExtent().height), val->window->getExtent().height / (double)std::max(val->window->getExtent().width, val->window->getExtent().height) };
-                if (obj.isClicked(mousePos, res, *parentWindowInfo))
-                    return;
-            }
-            return;
+        mousePos = Vector2{ (mousex*2/w)-1, (mousey*2/h)-1 };
+        res = Vector2{ (ld)parentWindowInfo.window->getExtent().width, (ld)parentWindowInfo.window->getExtent().height };
+        res /= (ld)std::max(parentWindowInfo.window->getExtent().width, parentWindowInfo.window->getExtent().height);
+        
+        for (auto& i : parentWindowInfo.textInputFields) {
+            if(i->isClicked(mousePos, res, parentWindowInfo))
+                return;
+        }
+        for (auto& i : parentWindowInfo.buttons) {
+            if (i->isClicked(mousePos, res, parentWindowInfo))
+                return;
         }
     }
 }

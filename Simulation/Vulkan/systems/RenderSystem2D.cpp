@@ -51,8 +51,8 @@ void RenderSystem2D::createPipeline(vk::RenderPass renderPass) {
     pipelineConfig.pipelineLayout = _pipelineLayout;
     _pipeline = std::make_unique<Pipeline>(
         _device,
-        "D:/code/codeProjects/VulkanTest/shaders/shader2d.vert.spv",
-        "D:/code/codeProjects/VulkanTest/shaders/shader2d.frag.spv",
+        ".\\Vulkan\\shaders\\shader2d.vert.spv",
+        ".\\Vulkan\\shaders\\shader2d.frag.spv",
         pipelineConfig);
 }
 
@@ -61,8 +61,8 @@ void RenderSystem2D::renderGameObjects(FrameInfo& frameInfo) {
 
     frameInfo.commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
-    for (auto& kv : frameInfo.gameObjects2D) {
-        auto& obj = kv.second;
+    for (auto& kv : frameInfo.UIelements) {
+        auto& obj = *kv.second;
         if (obj.model == nullptr) continue;
         RenderSystem2DPushConstants push{};
         push.position = { obj.transform.translation, obj.transform.rotation};

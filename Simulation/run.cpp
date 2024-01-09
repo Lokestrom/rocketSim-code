@@ -53,8 +53,7 @@ void simulationLoop() {
 	}
 }
 
-void run(String folder, String runName) {
-	programStillRunning = true;
+void loadSimulationFiles(String folder, String runName) {
 	fileSystem::objects::simulationFolder = folder + '/';
 	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
 	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
@@ -66,6 +65,16 @@ void run(String folder, String runName) {
 	std::cout << "Loaded in Objects\n";
 	fileSystem::loggingStartup();
 	std::cout << "Started logging\n";
+}
+
+void deloadSimulationFiles() {
+	fileSystem::loggingEnd();
+}
+
+void run(String folder, String runName) {
+	programStillRunning = true;
+
+	loadSimulationFiles(folder, runName);
 
 	Vulkan vulkanRenderer;
 	vulkanRenderer.startup();
@@ -104,7 +113,7 @@ void run(String folder, String runName) {
 	simThread.join();
 	std::cout << "Simulation loop ended\n";
 
-	fileSystem::loggingEnd();
+	deloadSimulationFiles();
 	std::cout << "Ended logging\n";
 	std::cout << "Program ended\n";
 }

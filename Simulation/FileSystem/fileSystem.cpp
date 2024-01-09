@@ -45,7 +45,7 @@ namespace fileSystem {
 		arg.popBack();
 		arg.remove(' ');
 		arg.pop(0);
-		Vector<String> vec = std::move(arg.split(','));
+		Vector<String> vec = arg.split(',');
 		Vector<int> ans(vec.size());
 		for (const auto& i : vec) {
 			ans.pushBack(SToi(i));
@@ -56,7 +56,7 @@ namespace fileSystem {
 		arg.popBack();
 		arg.remove(' ');
 		arg.pop(0);
-		Vector<String> vec = std::move(arg.split(','));
+		Vector<String> vec = arg.split(',');
 		Vector<ID::ID_T> ans(vec.size());
 		for (const auto& i : vec) {
 			ans.pushBack(SToi(i));

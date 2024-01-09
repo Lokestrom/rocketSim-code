@@ -322,3 +322,18 @@ altitude over planet,
 center of mass,
 center of lift,
 center of thrust,
+
+
+mål:
+seperere ut shit og la det vere rom for tileg
+
+vulkan trenger:
+	model
+	vite om det har skjed en endrig til model
+	transformen til modelen
+
+	objecter som ikke er bundet til en simulation object
+	text input
+	knapp input
+	sliders
+	drop down menu

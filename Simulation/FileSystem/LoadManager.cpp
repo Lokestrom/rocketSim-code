@@ -3,6 +3,7 @@
 #include "Instructions.hpp"
 #include "../helpers/simulationObjects.hpp"
 #include "../helpers/options.hpp"
+#include "../ModelCash.hpp"
 
 #include <iostream>
 
@@ -10,16 +11,16 @@ namespace fs = std::filesystem;
 namespace fileSystem {
 	void loadInObjects() {
 		objects::simulationFolder += "\\config\\";
-		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "mesh")))
-			LoadManagerMaps::mesh[String(entry.path().filename().string()).split('.')[0]] = loadMesh(entry.path().string());
-		Model3D::Builder model;
+		Model3D::Builder renderModel;
+		SimulationModel simModel;
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "model"))) {
-			model.loadModel(entry.path().string());
-			LoadManagerMaps::model[String(entry.path().filename().string()).split('.')[0]] = std::move(model);
+			renderModel.loadModel(entry.path().string());
+			LoadManagerMaps::simulationModel[String(entry.path().filename().string()).split('.')[0]] = loadSimulationModel(renderModel);
+			LoadManagerMaps::renderModel[String(entry.path().filename().string()).split('.')[0]] = std::move(renderModel);
 		}
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket\\engine"))) {
 			Engine::Builder engine = loadEngine(entry.path().string());
-			LoadManagerMaps::engine[engine.name] = engine;
+			LoadManagerMaps::engine[engine.simObjectBuilder.name] = engine;
 		}
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket\\fuelTank")))
 			LoadManagerMaps::fuelTank[String(entry.path().filename().string()).split('.')[0]] = loadFuelTank(entry.path().string());
@@ -50,56 +51,13 @@ namespace fileSystem {
 		loadingFinishingTouches();
 	}
 
-	Shape loadMesh(String meshFile) {
-		std::ifstream file(meshFile.cstr());
-		String line;
-		Shape shape;
-		for (auto i = 0; getline(file, line); i++) {
-			String type = line.split('(')[0];
-			type.lower();
-			String args = line.split('(')[1];
-			Vector<String> argv = returnArgs(args);
-			bool solid = (argv.size() > 3) ? ((argv[3] == "true") ? true : false) : true;
-			if (type == "sphere") {
-				shape.meshes.pushBack(ShapeNode(MeshType::Sphere,
-					Sphere(returnVector3(argv[0]), STold(argv[1]), solid),
-					Box(),
-					Cylinder(),
-					NoseCone()
-				));
-			}
-			else if (type == "box") {
-				shape.meshes.pushBack(ShapeNode(MeshType::Box,
-					Sphere(),
-					Box(returnVector3(argv[0]), returnVector3(argv[1]), returnQuaternion(argv[2]), solid),
-					Cylinder(),
-					NoseCone()
-				));
-			}
-			else if (type == "cylinder") {
-				shape.meshes.pushBack(ShapeNode(MeshType::Cylinder,
-					Sphere(),
-					Box(),
-					Cylinder(returnVector3(argv[0]), STold(argv[1]), STold(argv[2]), solid),
-					NoseCone()
-				));
-			}
-			else if (type == "nosecone") {
-				shape.meshes.pushBack(ShapeNode(MeshType::NoseCone,
-					Sphere(),
-					Box(),
-					Cylinder(),
-					NoseCone(returnVector3(argv[0]), STold(argv[1]), STold(argv[2]), solid)
-				));
-			}
-			else {
-				file.close();
-				throw error("The mesh type: " + type + ". Is not a valid mesh", exitCodes::badUserBehavior);
-
-			}
-		}
-		file.close();
-		return shape;
+	SimulationModel loadSimulationModel(Model3D::Builder renderModel)
+	{
+		SimulationModel model;
+		model.vertices.reserve(renderModel.vertices.size());
+		for (auto i = 0; i < renderModel.vertices.size(); i++)
+			model.vertices.pushBack({ renderModel.vertices[i].position.x, renderModel.vertices[i].position.y, renderModel.vertices[i].position.z });
+		return model;
 	}
 
 	bool validationLayer(const std::unordered_map<String, String>& map, String variable, String& msg) {
@@ -144,9 +102,7 @@ namespace fileSystem {
 		validationLayer(map, "mount pos", misingValues);
 		if (misingValues != "")
 			throw error("There is mising values in the Engine file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
-		if (!LoadManagerMaps::mesh.count(map["mesh"]))
-			throw error("The mesh: " + map["mesh"] + " has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
-		if (!LoadManagerMaps::model.count(map["model"]))
+		if (!LoadManagerMaps::renderModel.count(map["model"]))
 			throw error("The model: " + map["model"] + " has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
@@ -178,7 +134,12 @@ namespace fileSystem {
 			throw e;
 		}
 		Engine::Builder engine;
-		engine.name = engineFile.split('\\')[engineFile.split('\\').size() - 1].split('.')[0];
+		SimulationObject::Builder simObject;
+		simObject.name = engineFile.split('\\')[engineFile.split('\\').size() - 1].split('.')[0];
+		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[map["model"]]);
+		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[map["model"]]);
+
+		engine.simObjectBuilder = simObject;
 		engine.mass = STold(map["mass"]);
 		engine.exitVel = STold(map["exitvelosity"]);
 		engine.centerOfMass = returnVector3(map["centerofmass"]);
@@ -188,8 +149,6 @@ namespace fileSystem {
 			Vector<String> fuel = i.split(':');
 			engine.fuelPerSecond.addFuel(Fuelmap(fuel[0], STold(fuel[1])));
 		}
-		engine.shape = LoadManagerMaps::mesh[map["mesh"]];
-		engine.model = LoadManagerMaps::model[map["model"]];
 		if (!map.count("maxgimblepersecond") && !map.count("maxgimble")) {
 			engine.maxGimble = 0;
 			engine.maxGimblePerSecond = 0;
@@ -207,7 +166,7 @@ namespace fileSystem {
 		validationLayer(map, "model", misingValues);
 		if (misingValues != "")
 			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
-		if (!LoadManagerMaps::model.count(map["model"]))
+		if (!LoadManagerMaps::renderModel.count(map["model"]))
 			throw error("The model: " + map["model"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 
 		try {
@@ -238,13 +197,17 @@ namespace fileSystem {
 		}
 
 		FuelTank::Builder fuelTank;
-		fuelTank.name = FuelTankFile.split('\\')[FuelTankFile.split('\\').size() - 1].split('.')[0];
+		SimulationObject::Builder simObject;
+		simObject.name = FuelTankFile.split('\\')[FuelTankFile.split('\\').size() - 1].split('.')[0];
+		simObject.model.renderModel = std::make_shared<Model3D::Builder> (LoadManagerMaps::renderModel[map["model"]]);
+		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[map["model"]]);
+
+		fuelTank.simObjectBuilder = simObject;
 		fuelTank.fuelType = map["fueltype"];
 		fuelTank.fuelLoad = STold(map["fuelmass"]);
 		fuelTank.fuelDensity = STold(map["fueldensity"]);
 		fuelTank.radius = STold(map["radius"]);
 		fuelTank.height = STold(map["height"]);
-		fuelTank.model = LoadManagerMaps::model[map["model"]];
 		
 		return fuelTank;
 	}	
@@ -265,9 +228,7 @@ namespace fileSystem {
 		validationLayer(map["setup"], "model", misingValues);
 		if (misingValues != "")
 			throw error("There is mising values in the file:\n" + misingValues + "Check for spelling errors.", exitCodes::badUserBehavior);
-		if (!LoadManagerMaps::mesh.count(map["setup"]["mesh"]))
-			throw error("The mesh: " + map["setup"]["mesh"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
-		if (!LoadManagerMaps::model.count(map["setup"]["model"]))
+		if (!LoadManagerMaps::renderModel.count(map["setup"]["model"]))
 			throw error("The model: " + map["setup"]["model"] + "has not been loaded. Check for spelling errors", exitCodes::badUserBehavior);
 		try {
 			validateThatValueIsNotNegative(map["setup"], "drymass");
@@ -291,26 +252,30 @@ namespace fileSystem {
 		file.close();
 		
 		RocketStage::Builder rocketStage;
-		rocketStage.name = rocketStageFile.split('\\')[rocketStageFile.split('\\').size() - 1].split('.')[0];
+		SimulationObject::Builder simObject;
+		simObject.name = rocketStageFile.split('\\')[rocketStageFile.split('\\').size() - 1].split('.')[0];
+		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[data["setup"]["model"]]);
+		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[data["setup"]["model"]]);
+
+		rocketStage.simObjectBuilder = simObject;
 		rocketStage.dryMass = STold(data["setup"]["drymass"]);
 		rocketStage.centerOfMass = returnVector3(data["setup"]["centerofmass"]);
-		rocketStage.mesh = LoadManagerMaps::mesh[data["setup"]["mesh"]];
-		rocketStage.model = LoadManagerMaps::model[data["setup"]["model"]];
+
 
 		for (auto i = 0; i < data["engines"].size(); i++) {
 			rocketStage.engines.pushBack(LoadManagerMaps::engine[(data["engines"][toS(i)]).split('(')[0]]);
-			rocketStage.engines[i].localID = i;
-			rocketStage.engines[i].transform.translation = returnVector3(returnArgs(data["engines"][toS(i)])[0]);
+			rocketStage.engines[i].simObjectBuilder.localID = i;
+			rocketStage.engines[i].simObjectBuilder.transform.translation = returnVector3(returnArgs(data["engines"][toS(i)])[0]);
 		}
 		for (auto i = 0; i < data["reactionthrusters"].size(); i++) {
 			rocketStage.reactionThrusters.pushBack(LoadManagerMaps::engine[(data["reactionthrusters"][toS(i)]).split('(')[0]]);
-			rocketStage.reactionThrusters[i].localID = i;
-			rocketStage.reactionThrusters[i].transform.translation = returnVector3(returnArgs(data["reactionthrusters"][toS(i)])[0]);
+			rocketStage.reactionThrusters[i].simObjectBuilder.localID = i;
+			rocketStage.reactionThrusters[i].simObjectBuilder.transform.translation = returnVector3(returnArgs(data["reactionthrusters"][toS(i)])[0]);
 		}
 		for (auto i = 0; i < data["fueltanks"].size(); i++) {
 			rocketStage.fuelTanks.pushBack(LoadManagerMaps::fuelTank[(data["fueltanks"][toS(i)]).split('(')[0]]);
-			rocketStage.fuelTanks[i].localID = i;
-			rocketStage.fuelTanks[i].transform.translation = returnVector3(returnArgs(data["fueltanks"][toS(i)])[0]);
+			rocketStage.fuelTanks[i].simObjectBuilder.localID = i;
+			rocketStage.fuelTanks[i].simObjectBuilder.transform.translation = returnVector3(returnArgs(data["fueltanks"][toS(i)])[0]);
 		}
 
 		return rocketStage;
@@ -325,20 +290,24 @@ namespace fileSystem {
 		auto data = loadBatches(file);
 		validatePlanetFileVariables(data);
 
-		Vector<Obstruction> obstructions;
+
+		SimulationObject::Builder simObject;
+		simObject.name = planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0];
+		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[data["setup"]["model"]]);
+		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[data["setup"]["model"]]);
 
 		if (data["setup"]["fixedorbit"] == "true") {
-			fixedOrbitPlanet.name = planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0];
+			fixedOrbitPlanet.simObjectBuilder = simObject;
 			fixedOrbitPlanet.mass = STold(data["setup"]["mass"]);
 			fixedOrbitPlanet.radius = STold(data["setup"]["radius"]);
-			fixedOrbitPlanet.model = LoadManagerMaps::model[data["setup"]["model"]];
+
 			return true;
 		}
-		physicsPlanet.name = planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0];
+
+		simObject.transform.translation = returnVector3(data["setup"]["pos"]);
+		physicsPlanet.simObjectBuilder = simObject;
 		physicsPlanet.mass = STold(data["setup"]["mass"]);
 		physicsPlanet.radius = STold(data["setup"]["radius"]);
-		physicsPlanet.model = LoadManagerMaps::model[data["setup"]["model"]];
-		physicsPlanet.transform.translation = returnVector3(data["setup"]["pos"]);
 		return false;
 	}
 
@@ -376,8 +345,8 @@ namespace fileSystem {
 		RocketStage::Builder rocketStage;
 		for (auto i = 0; i < data["stage"].size(); i++) {
 			rocketStage = LoadManagerMaps::rocketStage[(data["stage"][toS(i)]).split('(')[0]];
-			rocketStage.localID = i;
-			rocketStage.transform.translation = returnVector3(returnArgs(data["stage"][toS(i)])[0]);
+			rocketStage.simObjectBuilder.localID = i;
+			rocketStage.simObjectBuilder.transform.translation = returnVector3(returnArgs(data["stage"][toS(i)])[0]);
 			rocket.stages.pushBack(rocketStage);
 		}
 		rocket.transform.translation = returnVector3(data["setup"]["pos"]);
@@ -449,20 +418,29 @@ namespace fileSystem {
 		validateAllLoadedObjects(settings);
 	}
 
+	/*
+	* Sets up the transform components
+	*/
 	void loadingFinishingTouches()
 	{
 		Vector<std::shared_ptr<TransformComponent3D>> transformComponents;
+		ModelCashNode modelNode;
 		for (auto& rocket : objectLists::rockets) {
 			transformComponents.pushBack(rocket->transform());
+			
 			for (auto& rocketStage : rocket->stages()) {
 				rocketStage->getTransform()->addParentTransform(transformComponents);
 				transformComponents.pushBack(rocketStage->getTransform());
-				for (auto& engine : rocketStage->getEngines())
+			
+				for (auto& engine : rocketStage->getEngines()) {
 					engine->getTransform()->addParentTransform(transformComponents);
-				for (auto& reactionThruster : rocketStage->getReactionThrusters())
+				}
+				for (auto& reactionThruster : rocketStage->getReactionThrusters()) {
 					reactionThruster->getTransform()->addParentTransform(transformComponents);
-				for (auto& fuelTank : rocketStage->getFuelTanks())
+				}
+				for (auto& fuelTank : rocketStage->getFuelTanks()) {
 					fuelTank->getTransform()->addParentTransform(transformComponents);
+				}
 				transformComponents.popBack();
 			}
 			transformComponents.popBack();

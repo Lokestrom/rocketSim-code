@@ -3,22 +3,24 @@
 #include "../helpers/ID.hpp"
 
 FuelTank::FuelTank(const Builder& builder)
-	: _id(ID::createID(builder.name, builder.localID)),
-	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
-	_fuel(builder.fuelType, builder.fuelLoad), _density(builder.fuelDensity),
-	_mesh({0,0,0}, builder.radius, builder.height, true), 
-	_modelBuilder(builder.model)
+	: simObject(SimulationObject::createSimulationObject(builder.simObjectBuilder)),
+	_fuel(builder.fuelType, builder.fuelLoad), _density(builder.fuelDensity)
 {
 }
 
 IDview FuelTank::getID() const noexcept
 {
-	return IDview(_id);
+	return simObject->id;
 }
 
 ld FuelTank::getFuelMass() const noexcept
 {
 	return _fuel.totalMass();
+}
+
+ld FuelTank::getVolum() const noexcept
+{
+	return PI * _radius * _radius * _height;
 }
 
 Fuelmap FuelTank::getFuelmap() const noexcept 
@@ -31,32 +33,37 @@ String FuelTank::getFuelType() const noexcept
 	return _fuel.fuelTypes()[0];
 }
 
-Model3D::Builder FuelTank::getModel() const noexcept
+std::shared_ptr<SimulationModel> FuelTank::getModel() const noexcept
 {
-	return _modelBuilder;
+	return simObject->model;
 }
 
 void FuelTank::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {
-	_id.setName(newName);
-	_id.setLocalID(newLocalID);
+	simObject->id.setName(newName);
+	simObject->id.setLocalID(newLocalID);
 }
 void FuelTank::setName(const String& newName) noexcept
 {
-	_id.setName(newName);
+	simObject->id.setName(newName);
 }
 void FuelTank::setLocalD(ID::ID_T newLocalID) noexcept
 {
-	_id.setLocalID(newLocalID);
+	simObject->id.setLocalID(newLocalID);
 }
 void FuelTank::setPos(Vector3 newPos) noexcept
 {
-	_transform->translation = newPos;
+	simObject->transform->translation = newPos;
 }
 
 Vector3 FuelTank::getCenterOfMass() const noexcept
 {
-	return { _transform->translation.x * ((getFuelMass() / _density) / _mesh.volum()), _transform->translation.y, _transform->translation.z };
+	return { simObject->transform->translation.x * ((getFuelMass() / _density) / getVolum()), simObject->transform->translation.y, simObject->transform->translation.z };
+}
+
+std::shared_ptr<TransformComponent3D> FuelTank::getTransform()
+{
+	return simObject->transform;
 }
 
 void FuelTank::removeFuel(const Fuelmap& outFuel) noexcept

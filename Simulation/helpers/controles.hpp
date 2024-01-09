@@ -9,7 +9,7 @@
 	inline bool debug = true;
 #else
 	inline bool debug = false;
-#endif // !NDEBUG
+#endif // _DEBUG
 
 using namespace Database;
 
@@ -28,7 +28,8 @@ namespace fileSystem {
 enum class exitCodes {
 	success,
 	badUserBehavior,
-	fileFault
+	fileFault,
+	codeFault
 };
 
 struct error {

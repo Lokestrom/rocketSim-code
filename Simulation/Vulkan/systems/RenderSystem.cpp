@@ -58,8 +58,8 @@ void RenderSystem3D::createPipeline(vk::RenderPass renderPass) {
     pipelineConfig.pipelineLayout = _pipelineLayout;
     _pipeline = std::make_unique<Pipeline>(
         _device,
-        "D:\\code\\codeProjects\\VulkanTest\\shaders\\simple_shader.vert.spv",
-        "D:\\code\\codeProjects\\VulkanTest\\shaders\\simple_shader.frag.spv",
+        ".\\Vulkan\\shaders\\simple_shader.vert.spv",
+        ".\\Vulkan\\shaders\\simple_shader.frag.spv",
         pipelineConfig);
 }
 

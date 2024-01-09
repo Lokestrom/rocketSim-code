@@ -127,12 +127,30 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Vulkan\windowFunctions\instructions.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\alarms.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\freeCam.cpp" />
     <ClCompile Include="helpers\ID.cpp" />
     <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\TransformComponent3D.cpp" />
+    <ClCompile Include="helpers\math\matrix2.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\loadInConfig.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\loadInRun.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\mainMenu.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\mapView.cpp" />
+    <ClCompile Include="ModelCash.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\options.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\telemetry.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\timeControles.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\newSimulation.cpp" />
     <ClCompile Include="ObjectRenderingCashing.cpp" />
     <ClCompile Include="helpers\physics.cpp" />
     <ClCompile Include="helpers\simulationObjects.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\openWindowFunctions.cpp" />
+    <ClCompile Include="SimulationModel.cpp" />
+    <ClCompile Include="rocket\SimulationObject.cpp" />
+    <ClCompile Include="helpers\math\Vector2.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\startMenu.cpp" />
     <ClCompile Include="Vulkan\UI.cpp" />
     <ClCompile Include="Vulkan\callbackFunctions.cpp" />
     <ClCompile Include="DragSim.cpp" />
@@ -142,9 +160,9 @@
     <ClCompile Include="FileSystem\logging.cpp" />
     <ClCompile Include="helpers\controles.cpp" />
     <ClCompile Include="helpers\Mesh.cpp" />
-    <ClCompile Include="helpers\Quaternion.cpp" />
+    <ClCompile Include="helpers\math\Quaternion.cpp" />
     <ClCompile Include="run.cpp" />
-    <ClCompile Include="helpers\Vector3.cpp" />
+    <ClCompile Include="helpers\math\Vector3.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="rocket\Engine.cpp" />
@@ -171,12 +189,30 @@
     <ClCompile Include="Vulkan\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vulkan\windowFunctions\instructions.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\alarms.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\freeCam.hpp" />
     <ClInclude Include="helpers\ID.hpp" />
     <ClInclude Include="helpers\math.hpp" />
     <ClInclude Include="helpers\TransformComponent3D.hpp" />
+    <ClInclude Include="helpers\math\matrix2.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\loadInConfig.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\loadInRun.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\mainMenu.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\mapView.hpp" />
+    <ClInclude Include="ModelCash.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\options.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\telemetry.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\timeControles.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\newSimulation.hpp" />
     <ClInclude Include="ObjectRenderingCashing.hpp" />
     <ClInclude Include="helpers\physics.hpp" />
     <ClInclude Include="helpers\simulationObjects.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\openWindowFunctions.hpp" />
+    <ClInclude Include="SimulationModel.hpp" />
+    <ClInclude Include="rocket\SimulationObject.hpp" />
+    <ClInclude Include="helpers\math\Vector2.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\startMenu.hpp" />
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
     <ClInclude Include="Vulkan\callbackFunctions.hpp" />
@@ -188,9 +224,9 @@
     <ClInclude Include="helpers\controles.hpp" />
     <ClInclude Include="helpers\options.hpp" />
     <ClInclude Include="helpers\Mesh.hpp" />
-    <ClInclude Include="helpers\Quaternion.hpp" />
+    <ClInclude Include="helpers\math\Quaternion.hpp" />
     <ClInclude Include="run.hpp" />
-    <ClInclude Include="helpers\Vector3.hpp" />
+    <ClInclude Include="helpers\math\Vector3.hpp" />
     <ClInclude Include="planet.hpp" />
     <ClInclude Include="rocket\Engine.hpp" />
     <ClInclude Include="rocket\Fuelmap.hpp" />
@@ -215,7 +251,8 @@
     <ClInclude Include="Vulkan\systems\TextSystem.hpp" />
     <ClInclude Include="Vulkan\Text.hpp" />
     <ClInclude Include="Vulkan\Window.hpp" />
-    <ClInclude Include="Vulkan\WindowTypeSpecificInfo.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\windowFunctions.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\WindowTypeSpecificInfo.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Rocket simulation.txt" />

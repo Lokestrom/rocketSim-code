@@ -18,6 +18,8 @@
 #include "../helpers/controles.hpp"
 #include "Vector.hpp"
 
+struct WindowInfo;
+
 enum class CurveTag {
     on,
     conic,
@@ -37,7 +39,7 @@ public:
         Contour() {}
         Contour(const Contour&) = delete;
         Contour& operator=(const Contour&) = delete;
-        Contour& operator=(const Contour&& other);
+        Contour& operator=(Contour&& other) noexcept;
     };
     struct CharacterLayout {
         std::vector<std::shared_ptr<Contour>> contours;
@@ -48,7 +50,7 @@ public:
         CharacterLayout() {}
         CharacterLayout(const CharacterLayout&) = delete;
         CharacterLayout& operator=(const CharacterLayout&) = delete;
-        CharacterLayout& operator=(const CharacterLayout&& other);
+        CharacterLayout& operator=(CharacterLayout&& other) noexcept;
     };
 
     CharacterGlyph() : characterLayout() {}
@@ -57,7 +59,7 @@ public:
     CharacterGlyph(const CharacterGlyph&) = delete;
     CharacterGlyph& operator=(const CharacterGlyph&) = delete;
 
-    CharacterGlyph& operator=(const CharacterGlyph&& other);
+    CharacterGlyph& operator=(CharacterGlyph&& other) noexcept;
 
     void createCharacter(char character, std::string font);
     
@@ -88,8 +90,7 @@ class StaticText
 {
 public:
     using id_t = unsigned int;
-    using Map = std::unordered_map<id_t, StaticText>;
-    using MapRef = std::unordered_map<id_t, StaticText*>;
+    using Map = std::unordered_map<id_t, std::shared_ptr<StaticText>>;
 
     struct Vertex {
         glm::vec3 position{};
@@ -103,10 +104,7 @@ public:
         }
     };
 
-    static StaticText createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, std::string text = "") {
-        static id_t currentId = 0;
-        return StaticText{ device, currentId++, pos, color, scale, text };
-    }
+    static std::shared_ptr<StaticText> createText(WindowInfo& window, glm::vec2 pos, glm::vec4 color, float scale, std::string text = "");
 
     StaticText(const StaticText&) = delete;
     StaticText& operator=(const StaticText&) = delete;
@@ -119,6 +117,8 @@ public:
 
     void assignText(std::string text);
     void removeText();
+
+    void changeColor(const glm::vec4& newColor);
 
     void bind(vk::CommandBuffer commandBuffer);
     void draw(vk::CommandBuffer commandBuffer);
@@ -138,8 +138,6 @@ private:
     glm::vec2 _pos;
     glm::vec4 _color;
     float _scale;
-
-    glm::vec2 _nextCharacterPos;
 
     std::vector<Character> _characters;
     std::unique_ptr<Buffer> _vertexBuffer;
@@ -173,7 +171,7 @@ public:
         void addVariable(T& var, sizeT index);
         void assignText(std::string text);
 
-        std::string getString() noexcept;
+        std::string getString();
 
     private:
         std::string toS(T& var);
@@ -184,9 +182,9 @@ public:
 public:
     using id_t = unsigned int;
     using Map = std::unordered_map<id_t, VaryingText<T>>;
-    static VaryingText<T> createText(Device& device, glm::vec2 pos, glm::vec4 color, float scale, const std::string& text) {
+    static VaryingText<T> createText(WindowInfo& window, glm::vec2 pos, glm::vec4 color, float scale, const std::string& text) {
         static id_t currentId = 0;
-        auto textObj = StaticText::createText(device, pos, color, scale);
+        auto textObj = StaticText::createText(window, pos, color, scale);
         return VaryingText<T>(textObj, text);
     }
 
@@ -195,11 +193,11 @@ public:
     void assignText(std::string text);
 
     StaticText::id_t getId();
-    StaticText& staticText();
+    std::shared_ptr<StaticText> staticText();
 private:
-    VaryingText(StaticText& textObj, const std::string& text) : _textObj(std::move(textObj)), _text(text) {}
+    VaryingText(std::shared_ptr<StaticText> textObj, const std::string& text) : _textObj(textObj), _text(text) {}
 private:
-    StaticText _textObj;
+    std::shared_ptr<StaticText> _textObj;
     VaryingTextString _text;
 };
 
@@ -217,7 +215,7 @@ inline void VaryingText<T>::VaryingTextString::assignText(std::string text)
 }
 
 template<typename T>
-inline std::string VaryingText<T>::VaryingTextString::getString() noexcept
+inline std::string VaryingText<T>::VaryingTextString::getString()
 {
     std::string ans;
     ans.reserve(_planeText.size() + (_variable.size() * 5));
@@ -236,6 +234,7 @@ inline std::string VaryingText<T>::VaryingTextString::getString() noexcept
             planeStringIndex++;
         }
     }
+    return ans;
 }
 
 
@@ -287,10 +286,10 @@ inline void VaryingText<T>::assignText(std::string text)
 template<typename T>
 inline StaticText::id_t VaryingText<T>::getId()
 {
-    return _textObj.getId();
+    return _textObj->getId();
 }
 template<typename T>
-inline StaticText& VaryingText<T>::staticText()
+inline std::shared_ptr<StaticText> VaryingText<T>::staticText()
 {
     return _textObj;
 }

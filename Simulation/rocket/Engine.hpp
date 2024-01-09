@@ -2,29 +2,27 @@
 
 #include "Vector.hpp"
 
-#include "../helpers/Vector3.hpp"
 #include "../helpers/Mesh.hpp"
 #include "Fuelmap.hpp"
 
 #include "../helpers/TransformComponent3D.hpp"
-#include "../Vulkan/Model.hpp"
 #include "../helpers/ID.hpp"
+
+#include "../ModelCash.hpp"
+#include "SimulationObject.hpp"
+
 
 using namespace Database;
 
 class Engine {
 public:
 	struct Builder {
-		String name;
-		ID::ID_T localID;
-		TransformComponent3D transform;
+		SimulationObject::Builder simObjectBuilder;
 		ld mass;
 		ld exitVel;
 		Vector3 centerOfMass;
 		Vector3 mountPos;
 		Fuelmap fuelPerSecond;
-		Shape shape;
-		Model3D::Builder model;
 		ld maxGimblePerSecond;
 		ld maxGimble;
 	};
@@ -40,7 +38,7 @@ public:
 	Vector3 getCenterOfMass() const noexcept;
 	Quaternion getOrientation() const noexcept;
 	Fuelmap getFuelUsage() const noexcept;
-	Model3D::Builder getModel() const noexcept;
+	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
 
 	bool canGimble() const noexcept;
@@ -62,7 +60,7 @@ public:
 	bool pointInside(Vector3& point) noexcept;
 	bool isColliding() noexcept;
 private:
-	std::shared_ptr<TransformComponent3D> _transform;
+	std::shared_ptr<SimulationObject> simObject;
 
 	ld _mass,
 		_exitVel, _thrustPercent,
@@ -70,13 +68,9 @@ private:
 	Quaternion _desierdOrientation;
 	Fuelmap _fuelPerSecond;
 	Vector3 _centerOfMass, _mountPos;
-	Shape _shape;
-	ID _id;
 	int _gimbletime;
 	bool _active, _canGimble;
 	Vector<int> _fuelTankIDs;
-
-	Model3D::Builder _modelBuilder;
 };
 
 

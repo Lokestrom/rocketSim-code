@@ -1,7 +1,9 @@
 #pragma once
-#include "Vector3.hpp"
+#include "math/Vector3.hpp"
+#include "math/Vector2.hpp"
+#include "math/Quaternion.hpp"
+
 #include "controles.hpp"
-#include "Quaternion.hpp"
 
 const ld PI = 3.141592653589793l;
 const ld e = 2.718281828459045l;
@@ -34,3 +36,5 @@ ld findLatitude(Vector3 pos, Vector3 otherPos);
 ld findLongitude(Vector3 pos, Vector3 otherPos);
 
 geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos);
+
+Vector<Vector2> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove = Vector2::null());

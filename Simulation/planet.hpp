@@ -3,24 +3,25 @@
 #include "String.hpp"
 #include "ReadFile.hpp"
 
-#include "helpers/Vector3.hpp"
+#include "helpers/math.hpp"
 #include "helpers/Mesh.hpp"
 
 #include "Vulkan/GameObject.hpp"
 #include "helpers/math.hpp"
 #include "helpers/ID.hpp"
+#include "ModelCash.hpp"
+
+#include "rocket/SimulationObject.hpp"
 
 struct Obstruction 
 {
-	Shape mesh;
-	Vector3 pos;
-	Quaternion orientation;
-	std::shared_ptr<TransformComponent3D> transform;
-	Model3D::Builder model;
+	struct Builder {
+		SimulationObject::Builder simObjectBuilder;
+	};
 
-	Obstruction();
-	Obstruction(Shape mesh, geographicCoordinate geoCord);
-	Obstruction(Vector3 pos, Quaternion orientation, Shape mesh);
+	std::shared_ptr<SimulationObject> simObject;
+
+	Obstruction(const Builder& builder);
 
 	bool pointInside(const Vector3& point) noexcept;
 };
@@ -28,19 +29,15 @@ struct Obstruction
 class Planet 
 {
 public:
-	ID _id;
-	ld _mass;
-	Sphere _mesh;
-	std::shared_ptr<TransformComponent3D> _transform;
+	ld _mass, _radius;
 	Vector3 _vel;
 	Quaternion _spin;
-	Vector<Obstruction> _obstructions;
+	Vector<std::shared_ptr<Obstruction>> _obstructions;
 	ReadFile<ld> _atmosphereCondisions;
 
-	Model3D::Builder _model;
+	std::shared_ptr<SimulationObject> _simObject;
 
-	Planet(const String& name, ID::ID_T lockalID, ld mass, ld radius, 
-		const TransformComponent3D& transform, const Model3D::Builder& model);
+	Planet(const SimulationObject::Builder& simObjectBuilder, ld mass, ld radius);
 
 	IDview getID() const noexcept;
 	Vector3 getPos() const noexcept;
@@ -48,9 +45,8 @@ public:
 	Quaternion getOrientation() const noexcept;
 	ld getMass() const noexcept;
 	ld getRadius() const noexcept;
-	Sphere getMesh() const noexcept;
-	Vector<Obstruction> getObstructions() const noexcept;
-	Model3D::Builder getModel() const noexcept;
+	Vector<std::shared_ptr<Obstruction>> getObstructions() noexcept;
+	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
@@ -59,8 +55,10 @@ public:
 	ld atmosphreDensity(ld altitude);
 	Vector3 atmosphreWind(ld altitude);
 
-	void addObstruction(Obstruction obj) noexcept;
-	void addObstruction(Vector<Obstruction> obj) noexcept;
+	ld altitude(const Vector3& position);
+
+	void addObstruction(Obstruction::Builder obj) noexcept;
+	void addObstruction(Vector<Obstruction::Builder> obj) noexcept;
 
 	bool checkIfPointInside(const Vector3& point) const noexcept;
 
@@ -74,14 +72,11 @@ class PhysicsPlanet : public Planet
 public:
 	struct Builder
 	{
-		String name;
-		ID::ID_T localID;
+		SimulationObject::Builder simObjectBuilder;
 		ld radius;
 		ld mass;
-		TransformComponent3D transform;
 		String _atmosphereCondisionsFile;
-		Vector<Obstruction> obstructions;
-		Model3D::Builder model;
+		Vector<Obstruction::Builder> obstructions;
 		Quaternion Spin;
 		Vector3 velosity;
 	};
@@ -101,14 +96,11 @@ class FixedOrbitPlanet : public Planet
 public:
 	struct Builder
 	{
-		String name;
-		ID::ID_T localID;
+		SimulationObject::Builder simObjectBuilder;
 		ld radius;
 		ld mass;
-		TransformComponent3D transform;
 		String _atmosphereCondisionsFile;
-		Vector<Obstruction> obstructions;
-		Model3D::Builder model;
+		Vector<Obstruction::Builder> obstructions;
 		Quaternion Spin;
 		Vector3 velosity;
 	};

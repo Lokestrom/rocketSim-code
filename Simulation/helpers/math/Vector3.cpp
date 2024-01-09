@@ -1,6 +1,19 @@
 #include "Vector3.hpp"
 
 #include <math.h>
+#include <unordered_map>
+
+template <typename T, typename... Rest>
+void hashCombine(std::size_t& seed, const T& v, const Rest&... rest) {
+	seed ^= std::hash<T>{}(v)+0x9e3779b9 + (seed << 6) + (seed >> 2);
+	(hashCombine(seed, rest), ...);
+};
+
+size_t std::hash<Vector3>::operator()(Vector3 const& vertex) const {
+	size_t seed = 0;
+	hashCombine(seed, vertex.x, vertex.y, vertex.z);
+	return seed;
+}
 
 Vector3::Vector3() : x(0), y(0), z(0) {}
 
@@ -106,6 +119,10 @@ Vector3& Vector3::operator/=(const ld& r) noexcept
 ld Vector3::length() const noexcept
 {
 	return sqrtl(x * x + y * y + z * z);
+}
+ld Vector3::lengthSquared() const noexcept
+{
+	return x * x + y * y + z * z;
 }
 Vector3 Vector3::normal() const noexcept
 {

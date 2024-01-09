@@ -7,7 +7,16 @@
 
 #include "GameObject.hpp"
 
-#include "../helpers/Quaternion.hpp"
+enum class CameraSettings {
+    normal,
+    lookAt,
+    follow,
+    normal2d
+};
+
+struct WindowInfo;
+class Keyboard;
+class Mouse;
 
 class Camera
 {
@@ -25,8 +34,13 @@ public:
     const glm::mat4& getInverseView() const { return inverseViewMatrix; }
     const glm::vec3 getPosition() const { return glm::vec3(inverseViewMatrix[3]); }
 
-    Vector3 translation;
-    Quaternion rotation;
+    void update(WindowInfo& window, double dt, Keyboard& keyboard, Mouse& mouse, bool pause);
+
+public:
+    TotalTransformComponent3D transform;
+    std::optional<ID::GlobaleID_T> followObj;
+
+    CameraSettings setting;
 
 private:
     glm::mat4 projectionMatrix{ 1.f };

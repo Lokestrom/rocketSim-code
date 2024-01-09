@@ -4,8 +4,7 @@
 #include "Vector.hpp"
 
 #include "../helpers/controles.hpp"
-#include "../helpers/Vector3.hpp"
-#include "../helpers/Quaternion.hpp"
+#include "../helpers/math.hpp"
 #include "../helpers/TransformComponent3D.hpp"
 
 #include "rocketStage.hpp"
@@ -81,6 +80,7 @@ private:
 	Quaternion _rotationVel, _rotationAcc,
 		_desierdOrientation;
 	Vector3 _centerOfMass;
+	ld _dragCoeficient;
 
 	bool _RCS;
 
@@ -89,6 +89,7 @@ private:
 private:
 	void thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noexcept;
 	void gravity(Vector3& gravity) const noexcept;
+	void drag(Vector3& drag) const noexcept;
 	void engineShutdownChecker() noexcept;
 };
 

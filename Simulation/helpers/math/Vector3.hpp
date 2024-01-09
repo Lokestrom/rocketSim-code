@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 using ld = long double;
 
 struct Vector3 {
@@ -30,6 +32,7 @@ struct Vector3 {
 
 	/*operasjons*/
 	ld length() const noexcept;
+	ld lengthSquared() const noexcept;
 	Vector3 normal() const noexcept;
 	ld dot(const Vector3& v) const noexcept;
 	Vector3 cross(const Vector3& v) const noexcept;
@@ -41,5 +44,13 @@ struct Vector3 {
 	static Vector3 UnitZ() noexcept;
 	static Vector3 null() noexcept;
 };
+
+namespace std {
+	template <>
+	struct hash<Vector3> {
+		size_t operator()(Vector3 const& vertex) const;
+	};
+}  // namespace std
+
 
 Vector3 abs(const Vector3& v) noexcept;

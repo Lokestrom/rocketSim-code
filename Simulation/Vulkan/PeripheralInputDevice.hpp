@@ -22,14 +22,16 @@ public:
         int rollLeft = GLFW_KEY_Q;
     };
 
-    void move(GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation, std::optional<Vector3>& target);
-    void rotate(GLFWwindow* window, double dt, Quaternion& objectRotation, std::optional<Vector3>& target);
+    void move(GLFWwindow* window, double dt, TotalTransformComponent3D& transform);
+    void lookAtMove(GLFWwindow* window, double dt, TotalTransformComponent3D& transform, TotalTransformComponent3D& lookAtTransform);
+    void followMove(GLFWwindow* window, double dt, TotalTransformComponent3D& transform, TotalTransformComponent3D& followTransform);
+
+    void rotate(GLFWwindow* window, double dt, TotalTransformComponent3D& transform);
+    void lookAtRotate(GLFWwindow* window, double dt, TotalTransformComponent3D& transform);
+
     bool pausePressed(GLFWwindow* window);
 
 private:
-
-    void trackingMove(GLFWwindow* window, double dt, Vector3& objectTranslation, Quaternion& objectRotation, Vector3& target);
-
     KeyMappings _keys{};
     double _lookSpeed{ 1.5 };
     double _moveSpeed{ 3. };
@@ -38,7 +40,7 @@ private:
 class Mouse {
 public:
 
-    void rotate(Window& window, Quaternion& objectRotation, std::optional<Vector3>& target);
+    void rotate(Window& window, TotalTransformComponent3D& transform);
 
     double _lookSpeed{ 0.005 };
 };

@@ -9,8 +9,9 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/RenderSystem2D.hpp"
 #include "systems/TextSystem.hpp"
-#include "WindowTypeSpecificInfo.hpp"
+#include "windowFunctions/WindowTypeSpecificInfo.hpp"
 #include "PeripheralInputDevice.hpp"
+#include "UI.hpp"
 
 #include "../ObjectRenderingCashing.hpp"
 
@@ -19,13 +20,6 @@
 #include <memory>
 
 class GameObject3D;
-
-enum class CameraSettings {
-	normal,
-	lookAt,
-	Follow,
-	normal2d
-};
 
 struct WindowInfo {
 	unsigned int ID;
@@ -36,10 +30,14 @@ struct WindowInfo {
 	std::unique_ptr<Device> device;
 	std::unique_ptr<DescriptorPool> globalPool;
 	GameObject3D::Map gameObjects3d;
-	GameObject2D::Map gameObjects2d;
+	UIElement::Map UIElements;
 	StaticText::Map staticTexts;
-	StaticText::MapRef varyingldsStaticTextRefs;
 	VaryingText<long double>::Map varyinglds;
+
+	Vector<std::shared_ptr<TextInputField>> textInputFields;
+	Vector<std::shared_ptr<Button>> buttons;
+	
+	std::optional<Background> background;
 
 	std::vector<std::unique_ptr<Buffer>> uboBuffer;
 	std::vector<vk::DescriptorSet> globalDescriptorSet;
@@ -49,13 +47,10 @@ struct WindowInfo {
 	std::unique_ptr<TextRenderer> textRenderSystem;
 
 	std::unique_ptr<Camera> camera;
-	CameraSettings cameraSetting;
-	std::optional<ID::ID_T> cameraTarget;
-
 
 	std::chrono::steady_clock::time_point currentTime;
 
-	void* typeSpecificInfo;
+	std::shared_ptr<void> typeSpecificInfo;
 
 	static WindowInfo createWindowInfo(std::string name, WindowType type, void* typeSpecificInfo = nullptr) {
 		static unsigned int currentId = 0;
@@ -66,6 +61,8 @@ struct WindowInfo {
 	WindowInfo(WindowInfo&& window) noexcept;
 
 	~WindowInfo();
+
+	static WindowInfo& getWindowInfo(GLFWwindow* glfwWindow);
 
 private:
 	WindowInfo(unsigned int id, std::string name, WindowType type, void* typeSpecificInfo);
@@ -89,6 +86,8 @@ public:
 	static bool update();
 
 	static void addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&));
+
+	static void resetCallback(GLFWwindow* window);
 
 private:
 

@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 #include "GameObject.hpp"
 #include "Text.hpp"
+#include "UI.hpp"
 
 #include "vulkan/vulkan.hpp"
 
@@ -29,8 +30,7 @@ struct FrameInfo {
 	vk::CommandBuffer commandBuffer;
 	Camera& camera;
 	vk::DescriptorSet globalDescriptorSet;
-	GameObject2D::Map& gameObjects2D;
+	UIElement::Map& UIelements;
 	GameObject3D::Map& gameObjects3D;
 	StaticText::Map& staticText;
-	StaticText::MapRef varyingText;
 };

@@ -1,2 +1,0 @@
-randomSeed=3435973836
-totalTime=124.79

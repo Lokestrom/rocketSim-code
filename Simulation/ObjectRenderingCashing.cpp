@@ -20,7 +20,6 @@ SimulationTimeCash ObjectRenderingCash::getsimulationTimeCash(ld time)
 	if (size == 0)
 		return SimulationTimeCash();
 	SimulationTimeCash ans;
-	size--;
 	do {
 		ans = std::move(_cash.pushOff());
 		size--;

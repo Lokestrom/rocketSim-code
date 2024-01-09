@@ -5,10 +5,9 @@
 #include "../helpers/simulationObjects.hpp"
 
 RocketStage::RocketStage(const Builder& builder)
-	: _id(ID::createID(builder.name, builder.localID)),
-	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
-	_dryMass(builder.dryMass), _mesh(builder.mesh),
-	_centerOfMass(builder.centerOfMass), _modelBuilder(builder.model)
+	: simObject(SimulationObject::createSimulationObject(builder.simObjectBuilder)),
+	_dryMass(builder.dryMass), 
+	_centerOfMass(builder.centerOfMass)
 {
 	for (const auto& i : builder.engines)
 		_engines.pushBack(std::make_shared<Engine>(i));
@@ -21,7 +20,7 @@ RocketStage::RocketStage(const Builder& builder)
 /*getters*/
 IDview RocketStage::getID() const noexcept
 {
-	return _id;
+	return simObject->id;
 }
 
 ld RocketStage::getDryMass() const noexcept
@@ -39,14 +38,10 @@ ld RocketStage::getMass() const noexcept
 		addisionalMass += i->getMass();
 	return _dryMass + addisionalMass;
 }
-Shape RocketStage::getMesh() const noexcept 
-{
-	return _mesh;
-}
 
 Vector3 RocketStage::getPos() const noexcept 
 {
-	return _transform->translation;
+	return simObject->transform->translation;
 }
 Vector3 RocketStage::getCenterOfGravity() const noexcept 
 {
@@ -95,36 +90,36 @@ Vector<IDview> RocketStage::getFuelTankIDs() const noexcept
 	return fID;
 }
 
-Model3D::Builder RocketStage::getModel() const noexcept
+std::shared_ptr<SimulationModel> RocketStage::getModel() const noexcept
 {
-	return _modelBuilder;
+	return simObject->model;
 }
 
 std::shared_ptr<TransformComponent3D> RocketStage::getTransform() noexcept
 {
-	return _transform;
+	return simObject->transform;
 }
 
 /*setters*/
 void RocketStage::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {
-	_id.setName(newName);
-	_id.setLocalID(newLocalID);
+	simObject->id.setName(newName);
+	simObject->id.setLocalID(newLocalID);
 }
 
 void RocketStage::setID(const String& newName) noexcept
 {
-	_id.setName(newName);
+	simObject->id.setName(newName);
 }
 
 void RocketStage::setID(ID::ID_T newLocalID) noexcept
 {
-	_id.setLocalID(newLocalID);
+	simObject->id.setLocalID(newLocalID);
 }
 
 void RocketStage::setPos(Vector3 newPos) noexcept
 {
-	_transform->translation = newPos;
+	simObject->transform->translation = newPos;
 }
 
 /*other*/
@@ -177,36 +172,10 @@ ld RocketStage::deltaV() const noexcept
 
 bool RocketStage::pointInside(Vector3& point) const noexcept 
 {
-	for (auto i : _engines)
-		if (i->pointInside(point))
-			return true;
-	for (auto i : _reactionThrusters)
-		if (i->pointInside(point))
-			return true;
-	return _mesh.pointInside(point);
+	return false;
 }
 bool RocketStage::isColliding() const noexcept 
 {
-	for (auto& i : _engines)
-		if (i->isColliding())
-			return true;
-	for (auto& i : _reactionThrusters)
-		if (i->isColliding())
-			return true;
-	for (auto& i : objectLists::physicsPlanets) {
-		if (collision(getMesh(), i->getMesh()))
-			return true;
-		for (auto& j : i->getObstructions())
-			if (collision(getMesh(), j.mesh))
-				return true;
-	}
-	for (auto& i : objectLists::fixedOrbitPlanets) {
-		if (collision(getMesh(), i->getMesh()))
-			return true;
-		for (auto& j : i->getObstructions())
-			if (collision(getMesh(), j.mesh))
-				return true;
-	}
 	return false;
 }
 /*search*/

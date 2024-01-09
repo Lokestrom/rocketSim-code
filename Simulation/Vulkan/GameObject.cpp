@@ -69,32 +69,6 @@ glm::mat3 Transform3DComponent::normalMatrix() {
     };
 }
 
-glm::mat3 Transform2DComponent::mat3() {
-    const float c = glm::cos(rotation);
-    const float s = glm::sin(rotation);
-    return glm::mat3{
-        {
-            scale.x * (c),
-            scale.x * (s),
-            0.0f,
-        },
-        {
-            scale.y * (-s),
-            scale.y * (c),
-            0.0f,
-        },
-        {translation.x, translation.y, 1.0f} };
-}
-
-glm::mat2 Transform2DComponent::normalMatrix() {
-    const float c = glm::cos(rotation);
-    const float s = glm::sin(rotation);
-    glm::mat2 rotMat = { {c,s}, {-s,c} };
-
-    glm::mat2 scaleMat = { {scale.x, .0f}, {.0f,scale.y} };
-    return rotMat * scaleMat;
-}
-
 GameObject3D GameObject3D::makePointLight(ID::ID_T id,
     float intensity, float radius, glm::vec3 color) {
     GameObject3D gameObj = GameObject3D::createGameObject(id);
@@ -103,75 +77,5 @@ GameObject3D GameObject3D::makePointLight(ID::ID_T id,
     gameObj.pointLight->lightIntensity = intensity;
     gameObj.pointLight->radius = radius;
     return gameObj;
-}
-
-void GameObject2D::setButtonFunction(void(*function)(WindowInfo& window))
-{
-    clickedFunction = function;
-}
-
-bool GameObject2D::isClicked(glm::vec2 mousePos, glm::vec2 res, WindowInfo& window) {
-    glm::mat2 rotationMat = { {cos(transform.rotation), -sin(transform.rotation)}, {sin(transform.rotation), cos(transform.rotation)} };
-
-    std::cout << "x: " << mousePos.x << " y: " << mousePos.y << "\n";
-    glm::vec2 relativePos = (mousePos - glm::vec2{transform.translation.x, transform.translation.y});
-    relativePos.x /= res.y;
-    relativePos.y /= res.x;
-
-
-    relativePos = rotationMat * relativePos;
-    
-    if (relativePos.x >= -transform.scale.x &&
-        relativePos.x <= transform.scale.x &&
-        relativePos.y >= -transform.scale.y &&
-        relativePos.y <= transform.scale.y) {
-        clickedFunction(window);
-        return true;
-    }
-    return false;
-}
-
-void GameObject2D::loadBackground(Device& device) {
-    std::vector<Model2D::Vertex> vertices;
-    Model2D::Vertex vertex;
-    vertex.color = { color, 1 };
-    vertex.position = glm::vec2{ 1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ 1, -1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ 1, -1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, -1 };
-    vertices.push_back(vertex);
-    transform.rotation = 0;
-    transform.scale = { 1000,1000 };
-    transform.translation = { 0,0,0.1 };
-
-    model = Model2D::createModelFromVertices(device, vertices);
-}
-
-void GameObject2D::loadButton(Device& device) {
-    std::vector<Model2D::Vertex> vertices;
-    Model2D::Vertex vertex;
-    vertex.color = { color, 1 };
-    vertex.position = glm::vec2{ 1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ 1, -1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, 1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ 1, -1 };
-    vertices.push_back(vertex);
-    vertex.position = glm::vec2{ -1, -1 };
-    vertices.push_back(vertex);
-    transform.translation.z = 0;
-
-    model = Model2D::createModelFromVertices(device, vertices);
 }
 

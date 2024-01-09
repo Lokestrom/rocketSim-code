@@ -206,24 +206,6 @@ void Pipeline::defaultPipelineConfigInfoText(PipelineConfigInfo& configInfo)
     defaultPipelineConfigInfo(configInfo);
     configInfo.bindingDescriptions = StaticText::Vertex::getBindingDescriptions();
     configInfo.attributeDescriptions = StaticText::Vertex::getAttributeDescriptions();
-    configInfo.depthStencilInfo.front = vk::StencilOpState();
-    configInfo.depthStencilInfo.front.setReference(0);
-    configInfo.depthStencilInfo.front.setCompareOp(vk::CompareOp::eAlways);
-    configInfo.depthStencilInfo.front.setFailOp(vk::StencilOp::eInvert);
-    configInfo.depthStencilInfo.front.setPassOp(vk::StencilOp::eInvert);
-
-    configInfo.depthStencilInfo.back = vk::StencilOpState();
-    configInfo.depthStencilInfo.back.setReference(0);
-    configInfo.depthStencilInfo.back.setCompareOp(vk::CompareOp::eAlways);
-    configInfo.depthStencilInfo.back.setFailOp(vk::StencilOp::eInvert);
-    configInfo.depthStencilInfo.back.setPassOp(vk::StencilOp::eInvert);
-
-    configInfo.depthStencilInfo.depthCompareOp = vk::CompareOp::eAlways;
-    configInfo.depthStencilInfo.stencilTestEnable = VK_TRUE;
-    configInfo.dynamicStateEnables = { vk::DynamicState::eViewport, vk::DynamicState::eScissor };
-    configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
-    configInfo.dynamicStateInfo.dynamicStateCount =
-        static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
 }
 
 void Pipeline::defaultPipelineConfigInfo2D(PipelineConfigInfo& configInfo) {

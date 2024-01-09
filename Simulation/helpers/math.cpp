@@ -1,7 +1,8 @@
 #include "math.hpp"
 
-#include "Vector3.hpp"
-#include "Quaternion.hpp"
+#include "math/Vector2.hpp"
+#include "math/Vector3.hpp"
+#include "math/Quaternion.hpp"
 
 ld radToDeg(ld x)
 {
@@ -89,4 +90,19 @@ ld findLongitude(Vector3 pos, Vector3 otherPos)
 geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos)
 {
     return { findLatitude(pos, otherPos), findLongitude(pos, otherPos) };
+}
+
+Vector<Vector2> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove)
+{
+    Vector<Vector2> grid;
+    Vector2 currPlace = posMove;
+    for (int i = 0; i < dimentions.x; i++) {
+        for (int j = 0; j < dimentions.y; j++) {
+            grid.pushBack(currPlace);
+            currPlace.y += seperation.y;
+        }
+        currPlace.x += seperation.x;
+        currPlace.y = posMove.y;
+    }
+    return grid;
 }

@@ -21,6 +21,6 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
 } ubo;
 
 void main() {
-	outColor = color.x;
-	def=1;
+	outColor = color;
+	def=0;
 }

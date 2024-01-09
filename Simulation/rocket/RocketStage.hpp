@@ -7,22 +7,23 @@
 #include "../helpers/Mesh.hpp"
 #include "Engine.hpp"
 
+#include "../ModelCash.hpp"
+
+#include "SimulationObject.hpp"
+
+
 using namespace Database;
 
 class RocketStage 
 {
 public:
 	struct Builder {
-		String name;
-		ID::ID_T localID;
-		TransformComponent3D transform;
+		SimulationObject::Builder simObjectBuilder;
 		ld dryMass;
 		Vector3 centerOfMass;
 		Vector<Engine::Builder> engines;
 		Vector<ReactionThruster::Builder> reactionThrusters;
 		Vector<FuelTank::Builder> fuelTanks;
-		Shape mesh;
-		Model3D::Builder model;
 	};
 public:
 	RocketStage(const Builder& builder);
@@ -31,7 +32,6 @@ public:
 	IDview getID() const noexcept;
 	ld getDryMass() const noexcept;
 	ld getMass() const noexcept;
-	Shape getMesh() const noexcept;
 	Vector3 getPos() const noexcept;
 	Vector3 getCenterOfGravity() const noexcept;
 	Vector<std::shared_ptr<Engine>>& getEngines() noexcept;
@@ -40,7 +40,7 @@ public:
 	Vector<IDview> getReactionThrusterIDs() const noexcept;
 	Vector<std::shared_ptr<FuelTank>>& getFuelTanks() noexcept;
 	Vector<IDview> getFuelTankIDs() const noexcept;
-	Model3D::Builder getModel() const noexcept;
+	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
 
 	/*setters*/
@@ -66,17 +66,13 @@ public:
 	std::shared_ptr<FuelTank> fuelTankSearch(ID::ID_T ID) const noexcept;
 
 private:
-	ID _id;
+	std::shared_ptr<SimulationObject> simObject;
 
 	ld _dryMass;
-	Shape _mesh;
 
-	std::shared_ptr<TransformComponent3D> _transform;
 	Vector3 _centerOfMass;
 
 	Vector<std::shared_ptr<Engine>> _engines;
 	Vector<std::shared_ptr<ReactionThruster>> _reactionThrusters;
 	Vector<std::shared_ptr<FuelTank>> _fuelTanks;
-
-	Model3D::Builder _modelBuilder;
 };

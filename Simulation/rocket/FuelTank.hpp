@@ -6,34 +6,36 @@
 #include "Fuelmap.hpp"
 
 #include "../helpers/TransformComponent3D.hpp"
-#include "../Vulkan/Model.hpp"
 #include "../helpers/ID.hpp"
+
+#include "../ModelCash.hpp"
+
+#include "SimulationObject.hpp"
+
 
 using namespace Database;
 
 class FuelTank {
 public:
 	struct Builder {
-		String name;
-		ID::ID_T localID;
+		SimulationObject::Builder simObjectBuilder;
 		String fuelType;
 		ld fuelLoad;
 		ld radius;
 		ld height;
 		ld fuelDensity;
-		Model3D::Builder model;
-		TransformComponent3D transform;
 	};
 public:
 	FuelTank(const Builder& builder);
 
 	IDview getID() const noexcept;
 	ld getFuelMass() const noexcept;
+	ld getVolum() const noexcept;
 	Fuelmap getFuelmap() const noexcept;
 	String getFuelType() const noexcept;
-	Model3D::Builder getModel() const noexcept;
+	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	Vector3 getCenterOfMass() const noexcept;
-	std::shared_ptr<TransformComponent3D> getTransform() { return _transform; };
+	std::shared_ptr<TransformComponent3D> getTransform();
 
 	void setID(const String& newName, ID::ID_T newLocalID) noexcept;
 	void setName(const String& newName) noexcept;
@@ -43,14 +45,11 @@ public:
 	void removeFuel(const Fuelmap& outFuel) noexcept;
 
 private:
-	ID _id;
-
-	std::shared_ptr<TransformComponent3D> _transform;
+	std::shared_ptr<SimulationObject> simObject;
 
 	Fuelmap _fuel;
-	Cylinder _mesh;
 	ld _density;
 
-	Model3D::Builder _modelBuilder;
+	ld _height, _radius;
 };
 

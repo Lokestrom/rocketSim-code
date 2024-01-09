@@ -57,7 +57,8 @@ void Device::createInstance() {
     }
 
     uint32_t version = 0;
-    vk::enumerateInstanceVersion(&version);
+    if (vk::enumerateInstanceVersion(&version) != vk::Result::eSuccess)
+        throw std::runtime_error("cant find version!");
 
     std::cout << "System can support Vulkan Variant: " << VK_API_VERSION_VARIANT(version)
         << ", Major: " << VK_API_VERSION_MAJOR(version)
@@ -65,7 +66,7 @@ void Device::createInstance() {
         << ", Patch: " << VK_API_VERSION_PATCH(version) << '\n';
 
     vk::ApplicationInfo appInfo = {};
-    appInfo.pApplicationName = "LittleVulkanEngine App";
+    appInfo.pApplicationName = "Simulation Rendering App";
     appInfo.applicationVersion = version;
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = version;
@@ -240,7 +241,7 @@ std::vector<const char*> Device::getRequiredExtensions() {
 }
 
 void Device::hasGflwRequiredInstanceExtensions() {
-    std::vector<vk::ExtensionProperties> extensions = vk::enumerateInstanceExtensionProperties();;
+    std::vector<vk::ExtensionProperties> extensions = vk::enumerateInstanceExtensionProperties();
 
     std::cout << "available extensions:" << std::endl;
     std::unordered_set<std::string> available;
@@ -294,14 +295,20 @@ QueueFamilyIndices Device::findQueueFamilies(vk::PhysicalDevice device) {
 
 SwapChainSupportDetails Device::querySwapChainSupport(vk::PhysicalDevice device) {
     SwapChainSupportDetails details;
-    device.getSurfaceCapabilitiesKHR(_surface, &details.capabilities);
+    if (device.getSurfaceCapabilitiesKHR(_surface, &details.capabilities) != vk::Result::eSuccess) {
+        throw std::runtime_error("cant find the surface capabilities");
+    }
 
     uint32_t formatCount;
-    device.getSurfaceFormatsKHR(_surface, &formatCount, nullptr);
+    if (device.getSurfaceFormatsKHR(_surface, &formatCount, nullptr) != vk::Result::eSuccess) {
+        throw std::runtime_error("cant find surface formats");
+    }
 
     if (formatCount != 0) {
         details.formats.resize(formatCount);
-        device.getSurfaceFormatsKHR(_surface, &formatCount, details.formats.data());
+        if (device.getSurfaceFormatsKHR(_surface, &formatCount, details.formats.data()) != vk::Result::eSuccess) {
+            throw std::runtime_error("cant get surface formats");
+        }
     }
 
     details.presentModes = device.getSurfacePresentModesKHR(_surface);
@@ -380,13 +387,17 @@ vk::CommandBuffer Device::beginSingleTimeCommands() {
     allocInfo.commandBufferCount = 1;
     
     vk::CommandBuffer commandBuffer;
-    _logicalDevice.allocateCommandBuffers(&allocInfo, &commandBuffer);
+    if (_logicalDevice.allocateCommandBuffers(&allocInfo, &commandBuffer) != vk::Result::eSuccess) {
+        throw std::runtime_error("cant allocate comand buffer");
+    }
 
     vk::CommandBufferBeginInfo beginInfo{};
     beginInfo.sType = vk::StructureType::eCommandBufferBeginInfo;
     beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
 
-    commandBuffer.begin(&beginInfo);
+    if (commandBuffer.begin(&beginInfo) != vk::Result::eSuccess) {
+        throw std::runtime_error("cant begin comand buffer");
+    }
     return commandBuffer;
 }
 
@@ -398,7 +409,9 @@ void Device::endSingleTimeCommands(vk::CommandBuffer commandBuffer) {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    _graphicsQueue.submit(1, &submitInfo, nullptr);
+    if (_graphicsQueue.submit(1, &submitInfo, nullptr) != vk::Result::eSuccess) {
+        throw std::runtime_error("cant submit to graphics queue");
+    }
     _graphicsQueue.waitIdle();
 
     _logicalDevice.freeCommandBuffers(_commandPool, 1, &commandBuffer);

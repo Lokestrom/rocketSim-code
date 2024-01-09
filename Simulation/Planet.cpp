@@ -4,78 +4,69 @@
 #include "helpers/simulationObjects.hpp"
 
 /*Obstruction*/
-Obstruction::Obstruction()
-	: mesh(Shape()), pos(Vector3::null()), orientation(Quaternion())
-{}
-Obstruction::Obstruction(Shape mesh, geographicCoordinate geoCord)
-	: mesh(mesh) 
-{}
-Obstruction::Obstruction(Vector3 pos, Quaternion orientation, Shape mesh)
-	: pos(pos), orientation(orientation), mesh(mesh) 
-{}
+
+
+Obstruction::Obstruction(const Builder& builder)
+	: simObject(SimulationObject::createSimulationObject(builder.simObjectBuilder))
+{
+}
 
 bool Obstruction::pointInside(const Vector3& point) noexcept
 {
-	return mesh.pointInside(point);
+	return false;
 }
 
 /*Planet*/
 
-Planet::Planet(const String& name, ID::ID_T lockalID, ld mass, ld radius, 
-	const TransformComponent3D& transform, const Model3D::Builder& model)
-	: _id(ID::createID(name, lockalID)), _mass(mass), _mesh({ 0,0,0 }, radius),
-	_transform(std::make_shared<TransformComponent3D>(transform)),
-	_model(model)
+Planet::Planet(const SimulationObject::Builder& simObjectBuilder, ld mass, ld radius)
+	: _simObject(SimulationObject::createSimulationObject(simObjectBuilder)),
+	_mass(mass), _radius(radius)
 {
 }
 
 IDview Planet::getID() const noexcept
 {
-	return _id;
+	return _simObject->id;
 }
 
 Vector3 Planet::getPos() const noexcept 
 {
-	return this->_transform->translation;
+	return _simObject->transform->translation;
 }
 Vector3 Planet::getVel() const noexcept 
 {
-	return this->_vel;
+	return _vel;
 }
 Quaternion Planet::getOrientation() const noexcept
 {
-	return _transform->rotation;
+	return _simObject->transform->rotation;
 }
 ld Planet::getMass() const noexcept 
 {
-	return this->_mass;
+	return _mass;
 }
 ld Planet::getRadius() const noexcept 
 {
-	return this->_mesh.radius;
+	return _radius;
 }
-Sphere Planet::getMesh() const noexcept 
-{
-	return _mesh;
-}
-Vector<Obstruction> Planet::getObstructions() const noexcept 
+Vector<std::shared_ptr<Obstruction>> Planet::getObstructions() noexcept
 {
 	return _obstructions;
 }
 
-Model3D::Builder Planet::getModel() const noexcept
+std::shared_ptr<SimulationModel> Planet::getModel() const noexcept
 {
-	return _model;
+	return _simObject->model;
 }
 
 std::shared_ptr<TransformComponent3D> Planet::getTransform() noexcept
 {
-	return _transform;
+	return _simObject->transform;
 }
 
 void Planet::setPos(Vector3 newPos) noexcept
 {
-	_transform->translation = newPos;
+	_simObject->transform->translation = newPos;
 }
 void Planet::setVel(Vector3 newVel) noexcept
 {
@@ -109,29 +100,31 @@ Vector3 Planet::atmosphreWind(ld altitude)
 	return (windTop * (altitude - data[0][0]) + windBottom * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
 }
 
-void Planet::addObstruction(Obstruction obj) noexcept 
+ld Planet::altitude(const Vector3& position)
 {
-	_obstructions.pushBack(obj);
+	return (position - this->getPos()).length() - getRadius();
 }
-void Planet::addObstruction(Vector<Obstruction> obj) noexcept
+
+void Planet::addObstruction(Obstruction::Builder obj) noexcept
 {
-	_obstructions += obj;
+	_obstructions.pushBack(std::make_shared<Obstruction>(obj));
+}
+void Planet::addObstruction(Vector<Obstruction::Builder> obj) noexcept
+{
+	_obstructions.reserve(_obstructions.size() + obj.size());
+	for(auto& i : obj)
+		_obstructions.pushBack(std::make_shared<Obstruction>(i));
 }
 
 bool Planet::checkIfPointInside(const Vector3& point) const noexcept 
 {
-	if (_mesh.pointInside(point - getPos()))
-		return true;
-	for (auto& i : _obstructions)
-		if (i.pointInside(point - getPos()))
-			return true;
 	return false;
 }
 
 /*PhysicsPlanet*/
 
 PhysicsPlanet::PhysicsPlanet(const Builder& builder)
-	: Planet(builder.name, builder.localID, builder.mass, builder.radius, builder.transform, builder.model)
+	: Planet(builder.simObjectBuilder, builder.mass, builder.radius)
 {
 }
 
@@ -158,7 +151,7 @@ void PhysicsPlanet::update()
 /*FixedOrbitPlanet*/
 
 FixedOrbitPlanet::FixedOrbitPlanet(const Builder& builder)
-	: Planet(builder.name, builder.localID, builder.mass, builder.radius, builder.transform, builder.model)
+	: Planet(builder.simObjectBuilder, builder.mass, builder.radius)
 {
 }
 

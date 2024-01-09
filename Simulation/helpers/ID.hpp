@@ -18,9 +18,9 @@ struct ID
 		: _name(""), _id(0), _localID(0)
 	{}
 
-	ID_T getID() { return _id; }
-	String getName() { return _name; }
-	ID_T getLocalID() { return _localID; }
+	ID_T getID() const noexcept { return _id; }
+	String getName() const noexcept { return _name; }
+	ID_T getLocalID() const noexcept { return _localID; }
 
 	void setName(const String& newName) { _name = newName; }
 	void setLocalID(const ID::ID_T& newLocalID) { _localID = newLocalID; }
@@ -59,3 +59,12 @@ private:
 	const ID::GlobaleID_T* _id;
 	const ID::ID_T* _localID;
 };
+
+bool operator==(const ID& l, const ID& r);
+bool operator!=(const ID& l, const ID& r);
+bool operator==(const IDview& l, const IDview& r);
+bool operator!=(const IDview& l, const IDview& r);
+bool operator==(const ID& l, const IDview& r);
+bool operator!=(const ID& l, const IDview& r);
+bool operator==(const IDview& l, const ID& r);
+bool operator!=(const IDview& l, const ID& r);

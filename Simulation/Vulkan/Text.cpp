@@ -5,19 +5,21 @@
 #include  <freetype/freetype.h>
 #include <freetype/ftbbox.h>
 #include <freetype/ftadvanc.h>
+
+#include "App.hpp"
 #include FT_FREETYPE_H
 
 std::unordered_map<char, std::shared_ptr<CharacterGlyph>> CharacterGlyphCache::_cachedCharacters;
 std::string CharacterGlyphCache::_fontPath;
 
-CharacterGlyph::Contour& CharacterGlyph::Contour::operator=(const Contour&& other)
+CharacterGlyph::Contour& CharacterGlyph::Contour::operator=(Contour&& other) noexcept
 {
     points = std::move(other.points);
     flags = std::move(other.flags);
     return *this;
 }
 
-CharacterGlyph::CharacterLayout& CharacterGlyph::CharacterLayout::operator=(const CharacterLayout&& other)
+CharacterGlyph::CharacterLayout& CharacterGlyph::CharacterLayout::operator=(CharacterLayout&& other) noexcept
 {
     contours = std::move(other.contours);
     return *this;
@@ -43,9 +45,9 @@ int GetOutLine(FT_Glyph glyph, FT_OutlineGlyph* Outg)
     return Err;
 }
 
-CharacterGlyph& CharacterGlyph::operator=(const CharacterGlyph&& other)
+CharacterGlyph& CharacterGlyph::operator=(CharacterGlyph&& other) noexcept
 {
-    characterLayout = std::move(characterLayout);
+    characterLayout = std::move(other.characterLayout);
     return *this;
 }
 
@@ -154,23 +156,39 @@ std::vector<vk::VertexInputAttributeDescription> StaticText::Vertex::getAttribut
     return attributeDescriptions;
 }
 
+std::shared_ptr<StaticText> StaticText::createText(WindowInfo& window, glm::vec2 pos, glm::vec4 color, float scale, std::string text) {
+    static id_t currentId = 0;
+    window.staticTexts.insert({ currentId, std::make_shared<StaticText>(StaticText{ *window.device, currentId, pos, color, scale, text }) });
+    return window.staticTexts[currentId++];
+}
+
 void StaticText::assignText(std::string text)
 {
-    _nextCharacterPos = { 0,0 };
+    glm::vec2 nextCharacterPos = { 0,0 };
+    glm::vec2 textSize = {0,0};
     Character newChar;
     _characters.clear();
     _characters.reserve(text.size());
     for (auto& c : text) {
         if (c != '\n') {
-            newChar.pos = _nextCharacterPos;
+            newChar.pos = nextCharacterPos;
             newChar.characterGlyph = CharacterGlyphCache::getCharacterGlyph(c);
             _characters.push_back(newChar);
-            _nextCharacterPos.x += newChar.characterGlyph->getCharacterlayout().horiAdvance;
+            nextCharacterPos.x += newChar.characterGlyph->getCharacterlayout().horiAdvance;
         }
         else {
-            _nextCharacterPos.x = 0;
-            _nextCharacterPos.y += newChar.characterGlyph->getCharacterlayout().lineSpacing;
+            textSize.x = std::max(nextCharacterPos.x, textSize.x);
+            nextCharacterPos.x = 0;
+            nextCharacterPos.y += newChar.characterGlyph->getCharacterlayout().lineSpacing;
         }
+    }
+
+    textSize.x = std::max(nextCharacterPos.x, textSize.x);
+    textSize.y = -(nextCharacterPos.y + newChar.characterGlyph->getCharacterlayout().lineSpacing/2);
+    textSize /= 2;
+
+    for (auto& i : _characters) {
+        i.pos -= textSize;
     }
 }
 
@@ -178,6 +196,11 @@ void StaticText::removeText()
 {
     _characters.clear();
     _characters.shrink_to_fit();
+}
+
+void StaticText::changeColor(const glm::vec4& newColor)
+{
+    _color = newColor;
 }
 
 void StaticText::bind(vk::CommandBuffer commandBuffer)
@@ -207,7 +230,7 @@ void StaticText::createVertexBuffer()
             auto i = 0;
             for (;contour->flags[i] != CurveTag::on; i++);
             vertex.position = { contour->points[i] + c.pos, 0 };
-            for (; i < contour->points.size(); i++) {
+            for (i++; i < contour->points.size(); i++) {
                 if (contour->flags[i] != CurveTag::on)
                     continue;
                 vertices.push_back(vertex);

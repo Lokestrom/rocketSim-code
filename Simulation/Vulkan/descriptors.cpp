@@ -32,7 +32,7 @@ DescriptorSetLayout::DescriptorSetLayout(
     Device& device, std::unordered_map<uint32_t, vk::DescriptorSetLayoutBinding> bindings)
     : _device{ device }, _bindings{ bindings } {
     std::vector<vk::DescriptorSetLayoutBinding> setLayoutBindings{};
-    for (auto kv : bindings) {
+    for (auto& kv : bindings) {
         setLayoutBindings.push_back(kv.second);
     }
 

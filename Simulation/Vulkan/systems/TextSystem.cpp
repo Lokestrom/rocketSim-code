@@ -51,8 +51,8 @@ void TextRenderer::createPipeline(vk::RenderPass renderPass) {
     pipelineConfig.pipelineLayout = _pipelineLayout;
     _pipeline = std::make_unique<Pipeline>(
         _device,
-        "D:/code/codeProjects/VulkanTest/shaders/shaderText.vert.spv",
-        "D:/code/codeProjects/VulkanTest/shaders/shaderText.frag.spv",
+        ".\\Vulkan\\shaders\\shaderText.vert.spv",
+        ".\\Vulkan\\shaders\\shaderText.frag.spv",
         pipelineConfig);
 }
 
@@ -62,7 +62,7 @@ void TextRenderer::renderText(FrameInfo& frameInfo) {
     frameInfo.commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
     for (auto& kv : frameInfo.staticText) {
-        auto& text = kv.second;
+        auto& text = *kv.second;
         TextRendererPushConstants push{};
         push.position = text.getPos();
         push.scale = text.getScale();
@@ -70,15 +70,5 @@ void TextRenderer::renderText(FrameInfo& frameInfo) {
         frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(TextRendererPushConstants), &push);
         text.bind(frameInfo.commandBuffer);
         text.draw(frameInfo.commandBuffer);
-    }
-    for (auto& kv : frameInfo.varyingText) {
-        auto& text = kv.second;
-        TextRendererPushConstants push{};
-        push.position = text->getPos();
-        push.scale = text->getScale();
-
-        frameInfo.commandBuffer.pushConstants(_pipelineLayout, vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(TextRendererPushConstants), &push);
-        text->bind(frameInfo.commandBuffer);
-        text->draw(frameInfo.commandBuffer);
     }
 }

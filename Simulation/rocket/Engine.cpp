@@ -10,13 +10,13 @@
 using namespace Database;
 
 Engine::Engine(const Builder& builder)
-	: _id(ID::createID(builder.name, builder.localID)),
-	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
+	: simObject(SimulationObject::createSimulationObject(builder.simObjectBuilder)),
 	_mass(builder.mass), _exitVel(builder.exitVel),
 	_centerOfMass(builder.centerOfMass), _mountPos(builder.mountPos),
 	_fuelPerSecond(builder.fuelPerSecond),
-	_shape(builder.shape), _modelBuilder(builder.model),
-	_thrustPercent(1)
+	_active(false), _thrustPercent(1),
+	_canGimble(false), _maxGimble(0), _maxGimblePerSecond(0),
+	_gimbletime(0)
 {
 	if (builder.maxGimble != 0) {
 		_canGimble = true;
@@ -27,7 +27,7 @@ Engine::Engine(const Builder& builder)
 
 IDview Engine::getID() const noexcept
 {
-	return IDview(_id);
+	return simObject->id;
 }
 Vector3 Engine::getCenterOfMass() const noexcept
 {
@@ -35,7 +35,7 @@ Vector3 Engine::getCenterOfMass() const noexcept
 }
 Quaternion Engine::getOrientation() const noexcept
 {
-	return _transform->rotation;
+	return simObject->transform->rotation;
 }
 bool Engine::active() const noexcept
 {
@@ -66,32 +66,32 @@ Fuelmap Engine::getFuelUsage() const noexcept
 	return _fuelPerSecond;
 }
 
-Model3D::Builder Engine::getModel() const noexcept
+std::shared_ptr<SimulationModel> Engine::getModel() const noexcept
 {
-	return _modelBuilder;
+	return simObject->model;
 }
 
 std::shared_ptr<TransformComponent3D> Engine::getTransform() noexcept
 {
-	return _transform;
+	return simObject->transform;
 }
 
 void Engine::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {
-	_id.setName(newName);
-	_id.setLocalID(newLocalID);
+	simObject->id.setName(newName);
+	simObject->id.setLocalID(newLocalID);
 }
 void Engine::setID(const String& newName) noexcept
 {
-	_id.setName(newName);
+	simObject->id.setName(newName);
 }
 void Engine::setID(ID::ID_T newLocalID) noexcept
 {
-	_id.setLocalID(newLocalID);
+	simObject->id.setLocalID(newLocalID);
 }
 void Engine::setPos(Vector3 newPos) noexcept
 {
-	_transform->translation = newPos;
+	simObject->transform->translation = newPos;
 }
 
 void Engine::toggle(bool newState) noexcept
@@ -101,15 +101,15 @@ void Engine::toggle(bool newState) noexcept
 
 void Engine::update() 
 {
-	if (_transform->rotation != _desierdOrientation && canGimble()) {
-		_transform->rotation += getStepQuaternion(_transform->rotation, _desierdOrientation, _gimbletime, _maxGimblePerSecond) * timeObjects::dt;
+	if (simObject->transform->rotation != _desierdOrientation && canGimble()) {
+		simObject->transform->rotation += getStepQuaternion(simObject->transform->rotation, _desierdOrientation, _gimbletime, _maxGimblePerSecond) * timeObjects::dt;
 	}
 }
 
 Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept
 {
 	usedFuel.addFuel(_fuelPerSecond* timeObjects::dt);
-	Vector3 engineThrust = _transform->getTotalRotation().rotate(_exitVel * (_fuelPerSecond * timeObjects::dt).totalMass());
+	Vector3 engineThrust = simObject->transform->getTotalRotation().rotate(_exitVel * (_fuelPerSecond * timeObjects::dt).totalMass());
 	Vector3 rotDirVec = centerOfMass.cross(engineThrust);
 	ld radius = centerOfMass.length();
 
@@ -136,25 +136,11 @@ void Engine::gimble(sizeT t, Quaternion newGimble = Quaternion())
 
 bool Engine::pointInside(Vector3& point) noexcept
 {
-	return _shape.pointInside(point);
+	return false;
 }
 
 bool Engine::isColliding() noexcept
 {
-	for (auto& i : objectLists::physicsPlanets) {
-		if (collision(_shape, i->getMesh()))
-			return true;
-		for (auto& j : i->getObstructions())
-			if (collision(j.mesh, _shape))
-				return true;
-	}
-	for (auto& i : objectLists::fixedOrbitPlanets) {
-		if (collision(_shape, i->getMesh()))
-			return true;
-		for (auto& j : i->getObstructions())
-			if (collision(j.mesh, _shape))
-				return true;
-	}
 	return false;
 }
 

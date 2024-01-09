@@ -6,7 +6,8 @@ ld gravityFormulaNewton(ld m, ld M, ld r)
     return (G * m * M) / (r * r);
 }
 Vector3 generateGravity(ld m, ld M, Vector3 pos, Vector3 otherPos) {
-    if (pos == otherPos)
+    Vector3 relativePos = otherPos - pos;
+    if (relativePos == Vector3::null())
         return Vector3::null();
-    return gravityFormulaNewton(m, M, distanse(pos, otherPos)) * (otherPos - pos).normal();
+    return ((G * m * M) / relativePos.lengthSquared()) * relativePos.normal();
 }

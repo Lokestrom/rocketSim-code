@@ -1,5 +1,7 @@
 #include "Camera.hpp"
 
+#include "App.hpp"
+
 // std
 #include <cassert>
 #include <limits>
@@ -115,4 +117,43 @@ void Camera::setViewYXZ(glm::vec3 position, Quaternion rotation) {
     inverseViewMatrix[3][0] = position.x;
     inverseViewMatrix[3][1] = position.y;
     inverseViewMatrix[3][2] = position.z;
+}
+
+glm::vec3 toVec3(Vector3 v);
+
+void Camera::update(WindowInfo& window, double dt, Keyboard& keyboard, Mouse& mouse, bool pause)
+{
+    if (!pause) {
+        switch (setting)
+        {
+        case CameraSettings::normal2d:
+            break;
+        case CameraSettings::normal:
+            keyboard.move(window.window->getGLFWwindow(), dt, transform);
+            keyboard.rotate(window.window->getGLFWwindow(), dt, transform);
+            mouse.rotate(*window.window, transform);
+            setViewYXZ(toVec3(transform.translation), transform.rotation);
+            break;
+
+        case CameraSettings::follow:
+            keyboard.move(window.window->getGLFWwindow(), dt, transform);
+            keyboard.rotate(window.window->getGLFWwindow(), dt, transform);
+            mouse.rotate(*window.window, transform);
+            setViewYXZ(toVec3(transform.translation + window.gameObjects3d.at(followObj.value()).transform.translation), transform.rotation);
+            break;
+
+        case CameraSettings::lookAt:
+            keyboard.lookAtMove(window.window->getGLFWwindow(), dt, transform, window.gameObjects3d.at(followObj.value()).transform);
+            keyboard.lookAtRotate(window.window->getGLFWwindow(), dt, transform);
+            setViewYXZ(toVec3(transform.translation), transform.rotation);
+            break;
+
+        default:
+            throw error("the camera setting is invalid", exitCodes::codeFault);
+        }
+    }
+
+    
+    double aspect = window.renderer->getAspectRatio();
+    window.camera->setPerspectiveProjection(glm::radians(70.f), aspect, 0.1f, 100.f);
 }

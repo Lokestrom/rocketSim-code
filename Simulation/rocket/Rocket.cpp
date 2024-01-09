@@ -6,12 +6,15 @@
 #include "../FileSystem/Instructions.hpp"
 #include "../helpers/simulationObjects.hpp"
 #include "../helpers/physics.hpp"
+#include "../DragSim.hpp"
+#include "../helpers/Mesh.hpp"
 
 
 Rocket::Rocket(const Builder& builder)
 	: _id(ID::createID(builder.name, builder.localID)),
 	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
-	_vel(builder.velosity), _acc(builder.accseleration)
+	_vel(builder.velosity), _acc(builder.accseleration),
+	_RCS(false)
 {
 	for (const auto& i : builder.stages)
 		_rocketStages.pushBack(std::make_shared<RocketStage>(i));
@@ -196,16 +199,12 @@ ld Rocket::altitude(const String& planetID) const
 {
 	auto fp = fixedOrbitPlanetSearch(planetID);
 	if (fp != nullptr) {
-		ld alt = (this->pos() - fp->getPos()).length();
-		alt = abs(alt) - fp->getRadius();
-		return alt;
+		return fp->altitude(this->pos());
 	}
 
 	auto pp = physicsPlanetSearch(planetID);
 	if (pp != nullptr) {
-		ld alt = (this->pos() - pp->getPos()).length();
-		alt = abs(alt) - pp->getRadius();
-		return alt;
+		return pp->altitude(this->pos());
 	}
 	throw error(("The planet: " + planetID + " does not excist").cstr(), exitCodes::badUserBehavior);
 
@@ -270,7 +269,7 @@ void GenetateStartValues(const FixedOrbitPlanet& planet, Rocket& rocket, geograp
 
 std::shared_ptr<Rocket> rocketSearch(const String& name) noexcept
 {
-	for (auto i : objectLists::rockets)
+	for (auto& i : objectLists::rockets)
 		if (i->getID().getName() == name)
 			return i;
 	return nullptr;
@@ -296,17 +295,33 @@ void Rocket::thrust(Vector3& thrust, Vector3& rotationalAcc, ld mass) const noex
 void Rocket::gravity(Vector3& gravity) const noexcept
 {
 	gravity = Vector3::null();
-	for (auto i : objectLists::fixedOrbitPlanets) {
+	for (auto& i : objectLists::fixedOrbitPlanets) {
 		gravity += generateGravity(this->mass(), i->getMass(), this->pos() + this->_centerOfMass, i->getPos());
 	}
-	for (auto i : objectLists::physicsPlanets) {
+	for (auto& i : objectLists::physicsPlanets) {
 		gravity += generateGravity(this->mass(), i->getMass(), this->pos() + this->_centerOfMass, i->getPos());
+	}
+}
+
+void Rocket::drag(Vector3& drag) const noexcept
+{
+	drag = Vector3::null();
+	for (auto& i : objectLists::physicsPlanets) {
+		ld altitide = i->altitude(this->pos());
+		Vector3 relativeVelosity = this->vel() - i->atmosphreWind(altitide);
+		drag += dragEquation(_dragCoeficient, getFacingSurfaceArea(SimulationModel(), (pos() - i->getPos()).normal()), i->atmosphreDensity(altitide), relativeVelosity);
+	}
+
+	for (auto& i : objectLists::fixedOrbitPlanets) {
+		ld altitide = i->altitude(this->pos());
+		Vector3 relativeVelosity = this->vel() - i->atmosphreWind(altitide);
+		drag += dragEquation(_dragCoeficient, getFacingSurfaceArea(SimulationModel(), (pos() - i->getPos()).normal()), i->atmosphreDensity(altitide), relativeVelosity);
 	}
 }
 
 void Rocket::engineShutdownChecker() noexcept
 {
-	for (auto i : _rocketStages[0]->getEngineIDs())
+	for (auto& i : _rocketStages[0]->getEngineIDs())
 		if (engineShutDownTime[i.getLocalID()] <= timeObjects::currentTime)
 			_rocketStages[0]->engineSearch(i.getLocalID())->toggle(false);
 }

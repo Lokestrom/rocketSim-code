@@ -1,12 +1,13 @@
 #pragma once
 
 #include "fileSystem.hpp"
+#include "../ModelCash.hpp"
 
 namespace fileSystem {
 
 	void loadInObjects();
 
-	Shape loadMesh(String meshFile);
+	SimulationModel loadSimulationModel(Model3D::Builder renderModel);
 
 	void validateEngineVariables(std::unordered_map<String, String> map);
 	Engine::Builder loadEngine(String engineFile);
@@ -32,8 +33,8 @@ namespace fileSystem {
 	std::unordered_map<String, std::unordered_map<String, String>> loadBatches(std::ifstream& file);
 
 	namespace LoadManagerMaps {
-		inline std::unordered_map<String, Shape> mesh;
-		inline std::unordered_map<String, Model3D::Builder> model;
+		inline std::unordered_map<String, Model3D::Builder> renderModel;
+		inline std::unordered_map<String, SimulationModel> simulationModel;
 
 		inline std::unordered_map<String, Engine::Builder> engine;
 		inline std::unordered_map<String, FuelTank::Builder> fuelTank;
