@@ -1,18 +1,24 @@
 #pragma once
 
-#include "../App.hpp"
+#include "windowFunctions.hpp"
 
-class TimeControles {
-	static inline String name = "time controles";
-	static inline WindowType type = WindowType::Time;
-	struct Info {
+namespace windows {
 
+	class TimeControles {
+	public:
+		static inline String name = "time controles";
+		static inline windows::Type type = windows::Type::Time;
+		struct Info {
+
+		};
+
+		static void load(WindowInfo& window);
+		static void open(WindowInfo& window);
+		static void swapTo(WindowInfo& window);
+		static void* createInfo();
+		static void deleteInfo(void* info);
 	};
 
-	static void load(WindowInfo& window);
-	static void open(WindowInfo& window);
-	static void swapTo(WindowInfo& window);
-	static void* createInfo();
-};
+}
 
 

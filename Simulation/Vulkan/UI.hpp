@@ -83,7 +83,7 @@ public:
 
     bool isSelected() { return _selected; }
 
-    void changeColor(const Vector3& newColor);
+    void changeColor(WindowInfo& window, const Vector3& newColor);
     void changeColorText(const Vector3& newColor);
 
     TextInputField(const TextInputField&) = delete;

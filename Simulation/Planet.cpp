@@ -22,6 +22,8 @@ Planet::Planet(const SimulationObject::Builder& simObjectBuilder, ld mass, ld ra
 	: _simObject(SimulationObject::createSimulationObject(simObjectBuilder)),
 	_mass(mass), _radius(radius)
 {
+	if (mass == 0)
+		Error("Planet mass must be nonzero", Error::exitCodes::badUserBehavior);
 }
 
 IDview Planet::getID() const noexcept

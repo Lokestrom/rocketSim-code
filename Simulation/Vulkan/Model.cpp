@@ -165,7 +165,7 @@ void Model2D::Builder::loadModel(const std::string& filepath) {
     std::string warn, err;
 
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
-        throw std::runtime_error(warn + err);
+         std::runtime_error(warn + err);
     }
 
     vertices.clear();
@@ -317,7 +317,7 @@ void Model3D::Builder::loadModel(const std::string& filepath) {
     std::string warn, err;
 
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
-        throw std::runtime_error(warn + err);
+         std::runtime_error(warn + err);
     }
 
     vertices.clear();

@@ -63,6 +63,8 @@ void TextRenderer::renderText(FrameInfo& frameInfo) {
 
     for (auto& kv : frameInfo.staticText) {
         auto& text = *kv.second;
+        if (text.empty())
+            continue;
         TextRendererPushConstants push{};
         push.position = text.getPos();
         push.scale = text.getScale();

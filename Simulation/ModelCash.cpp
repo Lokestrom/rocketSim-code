@@ -24,6 +24,6 @@ std::shared_ptr<SimulationModel> ModelCash::getSimulationModel(ID::GlobaleID_T i
 void ModelCash::addModel(ID::GlobaleID_T id, const ModelCashNode& node)
 {
 	if (_cash.count(id))
-		throw error("cant assign multiple models to a id. globaleID at fault: " + toS(id), exitCodes::codeFault);
+		 Error("cant assign multiple models to a id. globaleID at fault: " + toS(id), Error::exitCodes::codeFault);
 	_cash[id] = node;
 }

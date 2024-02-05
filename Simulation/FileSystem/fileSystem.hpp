@@ -16,7 +16,7 @@
 using namespace Database;
 
 namespace fileSystem {
-	void writeError(error e);
+	void writeError(Error e);
 
 	namespace objects
 	{
@@ -27,10 +27,8 @@ namespace fileSystem {
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> engineFiles;
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> fuelTankFiles;
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> planetFiles;
-#ifndef _DEBUG
+		
 		inline std::ofstream errorLogFile;
-#endif // !debug
-
 	}
 
 	Vector<String> returnVariableAndValue(String line);

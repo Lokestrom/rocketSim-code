@@ -1,7 +1,8 @@
 #include "UI.hpp"
 
 #include "App.hpp"
-#include "WindowTypeSpecificInfo.hpp"
+
+#include <iostream>
 
 glm::mat3 Transform2DComponent::mat3() {
     const float c = glm::cos(rotation);
@@ -73,7 +74,6 @@ void UIElement::makeSquare(Vector2 size, Device& device)
     vertex.position = glm::vec2{ -1, -1 };
     vertices.push_back(vertex);
 
-    size /= 2;
     transform.scale = { size.x, size.y };
 
     model = Model2D::createModelFromVertices(device, vertices);
@@ -104,9 +104,10 @@ void TextInputField::setSubmitFunction(void(*function)(WindowInfo& window, Strin
     _submitFunction = function;
 }
 
-void TextInputField::changeColor(const Vector3& newColor)
+void TextInputField::changeColor(WindowInfo& window, const Vector3& newColor)
 {
     _field.lock()->color = {newColor.x, newColor.y, newColor.z};
+    _field.lock()->
 }
 
 void TextInputField::changeColorText(const Vector3& newColor)
@@ -122,36 +123,45 @@ void TextInputField::charCallback(GLFWwindow* window, unsigned int codepoint)
         if (i->isSelected())
             textField = i;
     if (textField == nullptr)
-        throw error("there is no selected text input field", exitCodes::codeFault);
+         Error("there is no selected text input field", Error::exitCodes::codeFault);
 
-    switch (codepoint)
-    {
-    case '\b':
-        textField->_text.popBack();
-        break;
-    case '\n':
-        textField->_submitFunction(windowInfo, textField->_text);
-        textField->_selected = false;
-        Vulkan::resetCallback(window);
-        return;
-    default:
-        break;
-    }
-    
     textField->_text.pushBack(codepoint);
     textField->_renderText.lock()->assignText(toSTD(textField->_text));
 }
 
 void TextInputField::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    WindowInfo& windowInfo = WindowInfo::getWindowInfo(window);
+    std::shared_ptr<TextInputField> textField;
+    for (auto& i : windowInfo.textInputFields)
+        if (i->isSelected())
+            textField = i;
+
     if (action != GLFW_PRESS)
         return;
     if (key == GLFW_KEY_ESCAPE) {
-        for (auto& i : WindowInfo::getWindowInfo(window).textInputFields)
-            i->_selected = false;
+        textField->_selected = false;
         Vulkan::resetCallback(window);
+        return;
     }
-
+    switch (key)
+    {
+    case GLFW_KEY_BACKSPACE:
+        if (textField->_text.length() == 0)
+            return;
+        textField->_text.popBack();
+        textField->_renderText.lock()->assignText(toSTD(textField->_text));
+        return;
+    case GLFW_KEY_ENTER:
+        textField->_submitFunction(windowInfo, textField->_text);
+        textField->_selected = false;
+        Vulkan::resetCallback(window);
+        textField->_text.clear();
+        textField->_renderText.lock()->assignText(toSTD(textField->_text));
+        return;
+    default:
+        break;
+    }
 }
 
 void TextInputField::mouseCallback(GLFWwindow* window, int button, int action, int mods)
@@ -161,7 +171,6 @@ void TextInputField::mouseCallback(GLFWwindow* window, int button, int action, i
             i->_selected = false;
         Vulkan::resetCallback(window);
     }
-
 }
 
 TextInputField::TextInputField(WindowInfo& window, const Vector2& pos, const Vector2& size) {
@@ -171,7 +180,7 @@ TextInputField::TextInputField(WindowInfo& window, const Vector2& pos, const Vec
     field->transform.translation = { pos.x, pos.y, 0.5 };
     _field = field;
 
-    _renderText = StaticText::createText(window, { pos.x, pos.y }, { 1,1,1,1 }, size.y / 100);
+    _renderText = StaticText::createText(window, { pos.x, pos.y }, { 1,1,1,1 }, size.y / 2000);
 
     _text = "";
     _selected = false;
@@ -191,7 +200,7 @@ bool Button::isClicked(const Vector2& mousePos, const Vector2& res, WindowInfo& 
     if (!_field.lock()->isClicked(mousePos, res))
         return false;
     if (_clickFunction == nullptr)
-        throw error("The button does not have a function", exitCodes::codeFault);
+         Error("The button does not have a function", Error::exitCodes::codeFault);
     _clickFunction(window);
     return true;
 }
@@ -220,7 +229,7 @@ Button::Button(WindowInfo& window, const Vector2& pos, const Vector2& size) {
 Background& Background::createBackground(WindowInfo& window, const Vector3& color)
 {
     if (window.background.has_value())
-        throw error("cant have mutiple backgrounds", exitCodes::codeFault);
+         Error("cant have mutiple backgrounds", Error::exitCodes::codeFault);
     window.background = Background(window, color);
     return window.background.value();
 }

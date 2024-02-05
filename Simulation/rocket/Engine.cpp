@@ -121,7 +121,7 @@ Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 center
 void Engine::gimble(Quaternion newGimble = Quaternion()) 
 {
 	if (abs(getDifferenceRadian(Quaternion(), newGimble)) > _maxGimble)
-		throw InvalidArgument("The new gimble is greater than the maximum alowd gimble");
+		 InvalidArgument("The new gimble is greater than the maximum alowd gimble");
 
 	_desierdOrientation = newGimble;
 	_gimbletime = 1;
@@ -129,7 +129,7 @@ void Engine::gimble(Quaternion newGimble = Quaternion())
 void Engine::gimble(sizeT t, Quaternion newGimble = Quaternion()) 
 {
 	if (abs(getDifferenceRadian(Quaternion(), newGimble)) > _maxGimble)
-		throw InvalidArgument("The new gimble is greater than the maximum alowd gimble");
+		 InvalidArgument("The new gimble is greater than the maximum alowd gimble");
 	_desierdOrientation = newGimble;
 	_gimbletime = t;
 }

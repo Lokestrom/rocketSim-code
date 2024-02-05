@@ -1,6 +1,7 @@
 #pragma once
 #include "controles.hpp"
 
+#include <thread>
 #include <chrono>
 
 class SimulationObject;
@@ -12,6 +13,8 @@ namespace objectLists
 	inline Vector<std::shared_ptr<PhysicsPlanet>> physicsPlanets;
 	inline Vector<std::shared_ptr<Rocket>> rockets;
 	inline Vector<std::shared_ptr<fileSystem::Instructions>> instructions;
+
+	inline std::thread simThread;
 }
 
 namespace timeObjects {

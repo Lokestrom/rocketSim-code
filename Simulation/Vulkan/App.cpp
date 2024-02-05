@@ -2,8 +2,6 @@
 
 #include "frameInfo.hpp"
 #include "PeripheralInputDevice.hpp"
-#include "windowFunctions/WindowTypeSpecificInfo.hpp"
-#include "callbackFunctions.hpp"
 #include "UI.hpp"
 
 // libs
@@ -21,15 +19,18 @@
 
 #include "../ObjectRenderingCashing.hpp"
 #include "../helpers/simulationObjects.hpp"
+#include "windowFunctions/windowFunctions.hpp"
+
+#include "../rocket/Rocket.hpp"
 
 glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
 
-WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType, void* windowTypeSpecificInfo)
+WindowInfo::WindowInfo(unsigned int id, std::string name, windows::Type windowType, void* windowTypeSpecificInfo)
     : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), 
     typeSpecificInfo((windowTypeSpecificInfo == nullptr)
-        ? getWindowSpecificInfo(type) 
+        ? windows::createInfo(type) 
         : windowTypeSpecificInfo)
 {
     window = std::make_unique<Window>(Vulkan::WIDTH, Vulkan::HEIGHT, name);
@@ -81,6 +82,22 @@ WindowInfo::WindowInfo(unsigned int id, std::string name, WindowType windowType,
     camera = std::make_unique<Camera>();
 }
 
+void WindowInfo::prepereForTypeSwap()
+{
+    device->device().waitIdle();
+    gameObjects3d.clear();
+    UIElements.clear();
+    staticTexts.clear();
+    varyinglds.clear();
+
+    textInputFields.clear();
+    buttons.clear();
+
+    background.reset();
+
+    windows::getDeleteInfoFunction(type)(typeSpecificInfo);
+}
+
 WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
 {
     ID = windowInfo.ID;
@@ -127,8 +144,7 @@ WindowInfo::~WindowInfo()
     window.reset();
     device.reset();
 
-    if(typeSpecificInfo != nullptr)
-        delete typeSpecificInfo;
+    windows::getDeleteInfoFunction(type)(typeSpecificInfo);
 }
 
 WindowInfo& WindowInfo::getWindowInfo(GLFWwindow* glfwWindow)
@@ -137,14 +153,12 @@ WindowInfo& WindowInfo::getWindowInfo(GLFWwindow* glfwWindow)
         if (i.second->window->getGLFWwindow() == glfwWindow)
             return *i.second.get();
     }
-    throw error("no WindowInfo with contains the given glfwWindow");
+    Error("no WindowInfo with contains the given glfwWindow", Error::exitCodes::codeFault);
 }
 
 Vulkan::Vulkan() 
 {
-    Vulkan::addWindow(WindowInfo::createWindowInfo("startup", )
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Main", WindowType::Menu), loadMainWindow);
-    Vulkan::addWindow(WindowInfo::createWindowInfo("Freecam", WindowType::FreeCam), loadFreeCamWindow);
+    windows::createWindow(windows::Type::StartMenu);
 }
 
 Vulkan::~Vulkan() {
@@ -174,7 +188,7 @@ bool Vulkan::update() {
             continue;
         }
 
-        if(it->second->type == WindowType::FreeCam)
+        if(it->second->type == windows::Type::FreeCam)
             for (auto& [id, transform] : _currentSimulationState.objects) {
                 it->second->gameObjects3d.at(id).transform = transform;
             }

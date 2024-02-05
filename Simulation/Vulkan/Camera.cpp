@@ -149,7 +149,7 @@ void Camera::update(WindowInfo& window, double dt, Keyboard& keyboard, Mouse& mo
             break;
 
         default:
-            throw error("the camera setting is invalid", exitCodes::codeFault);
+             Error("the camera setting is invalid", Error::exitCodes::codeFault);
         }
     }
 

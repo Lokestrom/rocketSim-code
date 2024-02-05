@@ -6,6 +6,8 @@
 #include <freetype/ftbbox.h>
 #include <freetype/ftadvanc.h>
 
+#include <filesystem>
+
 #include "App.hpp"
 #include FT_FREETYPE_H
 
@@ -128,6 +130,8 @@ void CharacterGlyphCache::clear()
 
 void CharacterGlyphCache::setFont(std::string fontPath)
 {
+    if (!std::filesystem::exists(fontPath))
+        Error("The system does not have a font file named: " + fontPath, Error::exitCodes::fileFault, Error::recoveryType::ignore);
     clear();
     _fontPath = fontPath;
 }
@@ -164,11 +168,15 @@ std::shared_ptr<StaticText> StaticText::createText(WindowInfo& window, glm::vec2
 
 void StaticText::assignText(std::string text)
 {
+    _characters.clear();
+    _characters.reserve(text.size());
+
+    if (text.length() == 0)
+        return;
+
     glm::vec2 nextCharacterPos = { 0,0 };
     glm::vec2 textSize = {0,0};
     Character newChar;
-    _characters.clear();
-    _characters.reserve(text.size());
     for (auto& c : text) {
         if (c != '\n') {
             newChar.pos = nextCharacterPos;
@@ -190,6 +198,7 @@ void StaticText::assignText(std::string text)
     for (auto& i : _characters) {
         i.pos -= textSize;
     }
+    createVertexBuffer();
 }
 
 void StaticText::removeText()

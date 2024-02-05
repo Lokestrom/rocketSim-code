@@ -1,4 +1,4 @@
-#include "Instructions.hpp"
+#include "RocketInstructions.hpp"
 
 #include "fileSystem.hpp"
 #include "../helpers/simulationObjects.hpp"
@@ -11,44 +11,39 @@ namespace fileSystem {
 	Instructions::Instructions(std::shared_ptr<Rocket> rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + rocket->getID().getName() + ".txt"));
 		if (!_file.is_open())
-			throw error("File \"" + rocket->getID().getName() + ".txt" + "\" couldn't be opened.", exitCodes::fileFault);
+			Error("File \"" + rocket->getID().getName() + ".txt" + "\" couldn't be opened.", Error::exitCodes::fileFault);
 		_rocket = rocket;
 		getInstruction();
 	}
 	Instructions::Instructions(String fileName, std::shared_ptr<Rocket> rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
 		if (!_file.is_open())
-			throw error("File \"" + fileName + "\" couldn't be opened.", exitCodes::fileFault);
+			Error("File \"" + fileName + "\" couldn't be opened.", Error::exitCodes::fileFault);
 		_rocket = rocket;
 		getInstruction();
 	}
 
 	void Instructions::run(bool& exitSimulation) {
-		try {
-			while (timeObjects::currentTime >= _nextInstructionTime) {
-				for (auto& i : _nextInstruction) {
-					if (i.contains("=")) {
-						Vector<String> variable = returnVariableAndValue(i);
-						setVariable(variable[0], variable[1]);
-						continue;
-					}
-					if (i.contains("(")) {
-						runInstruction(std::move(i), exitSimulation);
-						if (exitSimulation)
-							return;
-						continue;
-					}
-					throw error("The instruction \"" + i + "\" is not valid." +
-						"\nThe instruction must be formed like this:\n" +
-						"\"timestamp:instruction(args)\" or \"timestamp:setting=value", exitCodes::badUserBehavior);
+		while (timeObjects::currentTime >= _nextInstructionTime) {
+			for (auto& i : _nextInstruction) {
+				if (i.contains("=")) {
+					Vector<String> variable = returnVariableAndValue(i);
+					setVariable(variable[0], variable[1]);
+					continue;
 				}
-				getInstruction();
+				if (i.contains("(")) {
+					runInstruction(std::move(i), exitSimulation);
+					if (exitSimulation)
+						return;
+					continue;
+				}
+				Error("The instruction \"" + i + "\" is not valid." +
+					"\nThe instruction must be formed like this:\n" +
+					"\"timestamp:instruction(args)\" or \"timestamp:setting=value", 
+					Error::exitCodes::badUserBehavior);
 			}
+			getInstruction();
 		}
-		catch (const error& e) {
-			throw error("While runing instructions for rocket: \"" + _rocket->getID().getName() + "\" an error apeared:\n" + e.what, e.code);
-		}
-
 	}
 
 	void Instructions::getInstruction() {
@@ -100,7 +95,8 @@ namespace fileSystem {
 			options::physicsTimestepSize = SToull(value);
 
 		else
-			throw error("The variable \"" + variable + "\" is not a valid variable.", exitCodes::badUserBehavior);
+			 Error("The variable \"" + variable + "\" is not a valid variable.", 
+				Error::exitCodes::badUserBehavior);
 	}
 
 	void Instructions::runInstruction(String instruction, bool& exitSimulation) {
@@ -119,7 +115,8 @@ namespace fileSystem {
 				_rocket->burn(STold(args[0]), returnVectorID(args[1]));
 				break;
 			default:
-				throw error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
+				Error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.",
+					Error::exitCodes::badUserBehavior);
 				break;
 			}
 		}
@@ -133,7 +130,8 @@ namespace fileSystem {
 				_rocket->shutdown(returnVectorID(args[0]));
 				break;
 			default:
-				throw error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.", exitCodes::badUserBehavior);
+				Error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.",
+					Error::exitCodes::badUserBehavior);
 				break;
 			}
 		}
@@ -145,16 +143,12 @@ namespace fileSystem {
 		else if (instruction == "no more instructions in file")
 			_nextInstructionTime = LDBL_MAX;
 		else
-			throw error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.", exitCodes::badUserBehavior);
+			Error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.",
+				Error::exitCodes::badUserBehavior);
 		exitSimulation = false;
 	}
 
 	void assignRocketInstructions(std::shared_ptr<Rocket> rocket) {
-		try {
-			objectLists::instructions.pushBack(std::make_shared<Instructions>(rocket->getID().getName() + ".txt", rocket));
-		}
-		catch (error& e) {
-			throw error("When assigning instructions to rocket \"" + rocket->getID().getName() + "\" an error has acured:\n\t" + e.what, e.code);
-		}
+		objectLists::instructions.pushBack(std::make_shared<Instructions>(rocket->getID().getName() + ".txt", rocket));
 	}
 } //fileSystem

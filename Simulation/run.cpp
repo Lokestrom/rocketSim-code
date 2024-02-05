@@ -1,10 +1,11 @@
+#include "run.hpp"
 
 #include <iostream>
 #include <math.h>
 #include <thread>
 
 #include "rocket/Rocket.hpp"
-#include "FileSystem/Instructions.hpp"
+#include "FileSystem/RocketInstructions.hpp"
 #include "FileSystem/LoadManager.hpp"
 #include "FileSystem/logging.hpp"
 #include "Vulkan/App.hpp"
@@ -13,6 +14,7 @@
 #include "helpers/simulationObjects.hpp"
 
 
+bool simulationStillRunning;
 bool programStillRunning;
 
 bool update()
@@ -44,16 +46,41 @@ bool update()
 	return true;
 }
 
+void deloadSimulation() {
+	simulationStillRunning = false;
+	objectLists::simThread.join();
+	fileSystem::loggingEnd();
+}
+
 void simulationLoop() {
-	while (programStillRunning) {
+	while (simulationStillRunning && programStillRunning) {
 		if (objectLists::objectCash.getSize() > options::cashSize)
 			continue;
 		if (!update())
-			programStillRunning = false;
+			simulationStillRunning = false;
 	}
 }
 
-void loadSimulationFiles(String folder, String runName) {
+void vulcanLoop() {
+	while (programStillRunning) {
+		if (!simulationStillRunning) {
+			if (!Vulkan::update())
+				programStillRunning = false;
+			continue;
+		}
+		timeObjects::realRunTime = timeObjects::getTimeSinceEpoch() - timeObjects::realStartTimeEpoch;
+		if (objectLists::objectCash.getSize() == 0)
+			continue;
+		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realRunTime)
+			continue;
+		if (!Vulkan::update())
+			programStillRunning = false;
+	}
+	if (simulationStillRunning)
+		deloadSimulation();
+};
+
+void  loadSimulationFiles(String folder, String runName) {
 	fileSystem::objects::simulationFolder = folder + '/';
 	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
 	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
@@ -65,55 +92,19 @@ void loadSimulationFiles(String folder, String runName) {
 	std::cout << "Loaded in Objects\n";
 	fileSystem::loggingStartup();
 	std::cout << "Started logging\n";
+
+	simulationStillRunning = true;
+	timeObjects::realStartTimeEpoch = timeObjects::getTimeSinceEpoch();
+	objectLists::simThread = std::thread(simulationLoop);
 }
 
-void deloadSimulationFiles() {
-	fileSystem::loggingEnd();
-}
-
-void run(String folder, String runName) {
+void run() {
+	simulationStillRunning = false;
 	programStillRunning = true;
 
-	loadSimulationFiles(folder, runName);
-
 	Vulkan vulkanRenderer;
-	vulkanRenderer.startup();
+	Vulkan::startup();
 	std::cout << "Started vulkan\n";
 
-	timeObjects::realStartTimeEpoch = timeObjects::getTimeSinceEpoch();
-
-	std::cout << "Starting sim loop\n";
-
-	std::thread simThread(simulationLoop);
-
-	while (programStillRunning) {
-		timeObjects::realRunTime = timeObjects::getTimeSinceEpoch() - timeObjects::realStartTimeEpoch;
-		if (objectLists::objectCash.getSize() == 0)
-			continue;
-		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realRunTime)
-			continue;
-		if (!vulkanRenderer.update())
-			programStillRunning = false;
-	}
-
-	/*while (true) {
-		timeObjects::realCurrentTime = std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() - timeObjects::realStartTime;
-		if (objectLists::objectCash.getSize() < 10)
-			if (!update())
-				break;
-
-		if (objectLists::objectCash.getSize() == 0)
-			continue;
-		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realCurrentTime)
-			continue;
-		if (!vulkanRenderer.update())
-			break;
-	}*/
-
-	simThread.join();
-	std::cout << "Simulation loop ended\n";
-
-	deloadSimulationFiles();
-	std::cout << "Ended logging\n";
-	std::cout << "Program ended\n";
+	vulcanLoop();
 }

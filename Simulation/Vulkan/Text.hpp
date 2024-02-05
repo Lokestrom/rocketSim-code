@@ -114,6 +114,7 @@ public:
     id_t getId() { return _id; }
     float getScale() { return _scale;  }
     glm::vec4 getPos() { return { _pos, 0, 0 }; }
+    bool empty() { return _characters.size() == 0; }
 
     void assignText(std::string text);
     void removeText();
@@ -125,6 +126,8 @@ public:
 
 private:
     StaticText(Device& device, id_t id, glm::vec2 pos, glm::vec4 color, float scale, std::string text) : _device(device), _id(id), _pos(pos), _color(color), _scale(scale) {
+        if (text.length() == 0)
+            return;
         assignText(text);
         createVertexBuffer();
     }
@@ -229,7 +232,7 @@ inline std::string VaryingText<T>::VaryingTextString::getString()
         }
         else {
             if (planeStringIndex == _planeText.size())
-                throw OutOfRange("There are variables out of range");
+                 OutOfRange("There are variables out of range");
             ans.push_back(_planeText[planeStringIndex]);
             planeStringIndex++;
         }
@@ -241,7 +244,7 @@ inline std::string VaryingText<T>::VaryingTextString::getString()
 template<typename T>
 inline std::string VaryingText<T>::VaryingTextString::toS(T& var)
 {
-    throw InvalidArgument("Can't convert input to text.");
+     InvalidArgument("Can't convert input to text.");
 }
 
 template<>

@@ -9,8 +9,10 @@ namespace fileSystem {
 	void loggingEnd();
 
 	void createGeneralRunInfo();
+	void loggError(Error error);
 
 	void createLoggingFilesForNewRocket(const std::shared_ptr<Rocket> rocket);
+
 
 	void createNewRocketLoggingFile(const IDview& ID);
 	void createNewRocketStageLoggingFile(const IDview& ID);

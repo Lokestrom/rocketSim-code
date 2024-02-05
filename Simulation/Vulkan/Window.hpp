@@ -19,20 +19,17 @@ public:
 	const bool wasWindowResized() { return _framebufferResized; }
 	void resetWindowResizedFlag() { _framebufferResized = false; }
 	GLFWwindow* getGLFWwindow() const { return _window; }
-	std::string getName() const { return _windowName; }
 
 	void createWindowSurface(vk::Instance instance, vk::SurfaceKHR* surface);
 
 private:
 	static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
-	void initWindow();
 
 private:
 	int _width;
 	int _height;
 	bool _framebufferResized = false;
 
-	std::string _windowName;
 	GLFWwindow* _window;
 };
 

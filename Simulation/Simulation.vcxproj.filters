@@ -24,7 +24,7 @@
     <ClCompile Include="Planet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem\Instructions.cpp">
+    <ClCompile Include="FileSystem\RocketInstructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileSystem\LoadManager.cpp">
@@ -117,9 +117,6 @@
     <ClCompile Include="Vulkan\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\callbackFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vulkan\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
     <ClCompile Include="Vulkan\windowFunctions\startMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\openWindowFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Vulkan\windowFunctions\newSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -195,6 +189,15 @@
     <ClCompile Include="Vulkan\windowFunctions\instructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vulkan\windowFunctions\windowFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan\windowFunctions\confirmationScrean.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan\windowFunctions\error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="planet.hpp">
@@ -203,7 +206,7 @@
     <ClInclude Include="DragSim.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileSystem\Instructions.hpp">
+    <ClInclude Include="FileSystem\RocketInstructions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FileSystem\LoadManager.hpp">
@@ -302,13 +305,7 @@
     <ClInclude Include="Vulkan\Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\callbackFunctions.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vulkan\UI.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\WindowTypeSpecificInfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h">
@@ -350,9 +347,6 @@
     <ClInclude Include="Vulkan\windowFunctions\startMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\openWindowFunctions.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vulkan\windowFunctions\windowFunctions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -387,6 +381,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vulkan\windowFunctions\instructions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan\windowFunctions\confirmationScrean.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan\windowFunctions\error.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

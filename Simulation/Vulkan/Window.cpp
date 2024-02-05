@@ -2,31 +2,26 @@
 
 #include <stdexcept>
 
-Window::Window(int w, int h, std::string name) : _width{ w }, _height{ h }, _windowName{ name } {
-    initWindow();
+Window::Window(int w, int h, std::string name) : _width{ w }, _height{ h } {
+    glfwInit();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+    _window = glfwCreateWindow(_width, _height, name.c_str(), nullptr, nullptr);
+    glfwSetWindowUserPointer(_window, this);
+    glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+    glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 }
 
 Window::~Window() {
     glfwDestroyWindow(_window);
 }
 
-void Window::initWindow() {
-    glfwInit();
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-    _window = glfwCreateWindow(_width, _height, _windowName.c_str(), nullptr, nullptr);
-    glfwSetWindowUserPointer(_window, this);
-    glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
-    glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    glfwSetInputMode(_window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-
-}
-
 void Window::createWindowSurface(vk::Instance instance, vk::SurfaceKHR* surface) {
     VkSurfaceKHR cSurface;
     if (glfwCreateWindowSurface(instance, _window, nullptr, &cSurface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to craete window surface");
+         std::runtime_error("failed to craete window surface");
     }
     *surface = cSurface;
 }

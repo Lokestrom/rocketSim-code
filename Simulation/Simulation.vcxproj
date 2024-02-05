@@ -69,6 +69,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>
+    </LinkIncremental>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -102,7 +106,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>database.lib;vulkan-1.lib;glfw3.lib;freetype.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -110,6 +114,7 @@
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -118,15 +123,18 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;$(SolutionDir)../externalLibs/database;D:\code\codeLibs\vulkan\Lib;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
-      <AdditionalDependencies>database.lib;vulkan-1.lib;glfw3.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;database.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Vulkan\windowFunctions\error.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\confirmationScrean.cpp" />
     <ClCompile Include="Vulkan\windowFunctions\instructions.cpp" />
     <ClCompile Include="Vulkan\windowFunctions\alarms.cpp" />
     <ClCompile Include="Vulkan\windowFunctions\freeCam.cpp" />
@@ -146,16 +154,14 @@
     <ClCompile Include="ObjectRenderingCashing.cpp" />
     <ClCompile Include="helpers\physics.cpp" />
     <ClCompile Include="helpers\simulationObjects.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\openWindowFunctions.cpp" />
     <ClCompile Include="SimulationModel.cpp" />
     <ClCompile Include="rocket\SimulationObject.cpp" />
     <ClCompile Include="helpers\math\Vector2.cpp" />
     <ClCompile Include="Vulkan\windowFunctions\startMenu.cpp" />
     <ClCompile Include="Vulkan\UI.cpp" />
-    <ClCompile Include="Vulkan\callbackFunctions.cpp" />
     <ClCompile Include="DragSim.cpp" />
     <ClCompile Include="FileSystem\fileSystem.cpp" />
-    <ClCompile Include="FileSystem\Instructions.cpp" />
+    <ClCompile Include="FileSystem\RocketInstructions.cpp" />
     <ClCompile Include="FileSystem\LoadManager.cpp" />
     <ClCompile Include="FileSystem\logging.cpp" />
     <ClCompile Include="helpers\controles.cpp" />
@@ -187,8 +193,11 @@
     <ClCompile Include="Vulkan\systems\TextSystem.cpp" />
     <ClCompile Include="Vulkan\Text.cpp" />
     <ClCompile Include="Vulkan\Window.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\windowFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Vulkan\windowFunctions\error.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\confirmationScrean.hpp" />
     <ClInclude Include="Vulkan\windowFunctions\instructions.hpp" />
     <ClInclude Include="Vulkan\windowFunctions\alarms.hpp" />
     <ClInclude Include="Vulkan\windowFunctions\freeCam.hpp" />
@@ -208,17 +217,15 @@
     <ClInclude Include="ObjectRenderingCashing.hpp" />
     <ClInclude Include="helpers\physics.hpp" />
     <ClInclude Include="helpers\simulationObjects.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\openWindowFunctions.hpp" />
     <ClInclude Include="SimulationModel.hpp" />
     <ClInclude Include="rocket\SimulationObject.hpp" />
     <ClInclude Include="helpers\math\Vector2.hpp" />
     <ClInclude Include="Vulkan\windowFunctions\startMenu.hpp" />
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
-    <ClInclude Include="Vulkan\callbackFunctions.hpp" />
     <ClInclude Include="DragSim.hpp" />
     <ClInclude Include="FileSystem\fileSystem.hpp" />
-    <ClInclude Include="FileSystem\Instructions.hpp" />
+    <ClInclude Include="FileSystem\RocketInstructions.hpp" />
     <ClInclude Include="FileSystem\LoadManager.hpp" />
     <ClInclude Include="FileSystem\logging.hpp" />
     <ClInclude Include="helpers\controles.hpp" />
@@ -252,7 +259,6 @@
     <ClInclude Include="Vulkan\Text.hpp" />
     <ClInclude Include="Vulkan\Window.hpp" />
     <ClInclude Include="Vulkan\windowFunctions\windowFunctions.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\WindowTypeSpecificInfo.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Rocket simulation.txt" />

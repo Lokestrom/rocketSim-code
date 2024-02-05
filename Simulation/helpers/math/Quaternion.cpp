@@ -1,7 +1,7 @@
 #include "Quaternion.hpp"
 
 #include "Vector3.hpp"
-#include "math.hpp"
+#include "../math.hpp"
 
 /*operators*/
 Quaternion Quaternion::operator+(const Quaternion& other) const noexcept

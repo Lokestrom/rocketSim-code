@@ -105,7 +105,7 @@ vk::Result SwapChain::submitCommandBuffers(const vk::CommandBuffer* buffers, uin
 
     _device.device().resetFences(1, &_inFlightFences[_currentFrame]);
     if (_device.graphicsQueue().submit(1, &submitInfo, _inFlightFences[_currentFrame]) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to submit draw command buffer!");
+         std::runtime_error("failed to submit draw command buffer!");
     }
 
     vk::PresentInfoKHR presentInfo = {};
@@ -175,7 +175,7 @@ void SwapChain::createSwapChain() {
                                                         : _oldSwapChain->_swapChain;
 
     if (_device.device().createSwapchainKHR(&createInfo, nullptr, &_swapChain) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to create swap chain!");
+         std::runtime_error("failed to create swap chain!");
     }
     
 
@@ -204,7 +204,7 @@ void SwapChain::createImageViews() {
         viewInfo.subresourceRange.layerCount = 1;
 
         if (_device.device().createImageView(&viewInfo, nullptr, &_swapChainImageViews[i]) != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create texture image view!");
+             std::runtime_error("failed to create texture image view!");
         }
     }
 }
@@ -282,7 +282,7 @@ void SwapChain::createRenderPass() {
     renderPassInfo.pDependencies = &dependency;
 
     if (_device.device().createRenderPass(&renderPassInfo, nullptr, &_renderPass) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to create render pass!");
+         std::runtime_error("failed to create render pass!");
     }
 }
 
@@ -301,7 +301,7 @@ void SwapChain::createFramebuffers() {
         framebufferInfo.layers = 1;
 
         if (_device.device().createFramebuffer(&framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create framebuffer!");
+             std::runtime_error("failed to create framebuffer!");
         }
     }
 }
@@ -350,7 +350,7 @@ void SwapChain::createDepthResources() {
         viewInfo.subresourceRange.layerCount = 1;
 
         if (_device.device().createImageView(&viewInfo, nullptr, &_depthImageViews[i]) != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create texture image view!");
+             std::runtime_error("failed to create texture image view!");
         }
         
     }
@@ -400,7 +400,7 @@ void SwapChain::createTextResources()
         viewInfo.subresourceRange.layerCount = 1;
 
         if (_device.device().createImageView(&viewInfo, nullptr, &_textImageViews[i]) != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create texture image view!");
+             std::runtime_error("failed to create texture image view!");
         }
 
     }
@@ -425,7 +425,7 @@ void SwapChain::createSyncObjects() {
             _device.device().createSemaphore(&semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) !=
             vk::Result::eSuccess ||
             _device.device().createFence(&fenceInfo, nullptr, &_inFlightFences[i]) != vk::Result::eSuccess) {
-            throw std::runtime_error("failed to create synchronization objects for a frame!");
+             std::runtime_error("failed to create synchronization objects for a frame!");
         }
         
     }

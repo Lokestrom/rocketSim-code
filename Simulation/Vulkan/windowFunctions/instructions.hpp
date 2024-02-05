@@ -1,9 +1,21 @@
 #pragma once
 
-#include "../App.hpp"
+#include "windowFunctions.hpp"
 
-void loadInstructionsWindow(WindowInfo& window);
+namespace windows {
 
-void edit(WindowInfo& window);
-void submitChanges(WindowInfo& window);
-void RevertChanges(WindowInfo& window);
+	class Instructions {
+	public:
+		static inline String name = "Instructions";
+		static inline windows::Type type = windows::Type::Instructions;
+		struct Info {
+			Vector<String> openFiles;
+		};
+
+		static void load(WindowInfo& window);
+		static void open(WindowInfo& window);
+		static void swapTo(WindowInfo& window);
+		static void* createInfo();
+		static void deleteInfo(void* info);
+	};
+}

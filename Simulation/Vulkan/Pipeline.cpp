@@ -29,7 +29,7 @@ std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file{ enginePath, std::ios::ate | std::ios::binary };
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file: " + enginePath);
+         std::runtime_error("failed to open file: " + enginePath);
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());
@@ -102,7 +102,7 @@ void Pipeline::createGraphicsPipeline(
     pipelineInfo.basePipelineHandle = nullptr;
 
     if (_device.device().createGraphicsPipelines(nullptr, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to create graphics pipeline");
+         std::runtime_error("failed to create graphics pipeline");
     }
 }
 

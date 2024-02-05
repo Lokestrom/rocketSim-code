@@ -9,7 +9,7 @@
 #include "systems/RenderSystem.hpp"
 #include "systems/RenderSystem2D.hpp"
 #include "systems/TextSystem.hpp"
-#include "windowFunctions/WindowTypeSpecificInfo.hpp"
+#include "windowFunctions/windowFunctions.hpp"
 #include "PeripheralInputDevice.hpp"
 #include "UI.hpp"
 
@@ -23,7 +23,7 @@ class GameObject3D;
 
 struct WindowInfo {
 	unsigned int ID;
-	WindowType type;
+	windows::Type type;
 
 	std::unique_ptr<Window> window;
 	std::unique_ptr<Renderer> renderer;
@@ -50,22 +50,26 @@ struct WindowInfo {
 
 	std::chrono::steady_clock::time_point currentTime;
 
-	std::shared_ptr<void> typeSpecificInfo;
+	void* typeSpecificInfo;
 
-	static WindowInfo createWindowInfo(std::string name, WindowType type, void* typeSpecificInfo = nullptr) {
+	static WindowInfo createWindowInfo(std::string name, windows::Type type, void* typeSpecificInfo = nullptr) {
 		static unsigned int currentId = 0;
 		return WindowInfo{ currentId++, name, type, typeSpecificInfo };
 	}
+
+	void prepereForTypeSwap();
 	
 	WindowInfo(const WindowInfo&) = delete;
-	WindowInfo(WindowInfo&& window) noexcept;
+
+	WindowInfo& operator=(WindowInfo&&) noexcept = default;
+	WindowInfo(WindowInfo&&) noexcept;
 
 	~WindowInfo();
 
 	static WindowInfo& getWindowInfo(GLFWwindow* glfwWindow);
 
 private:
-	WindowInfo(unsigned int id, std::string name, WindowType type, void* typeSpecificInfo);
+	WindowInfo(unsigned int id, std::string name, windows::Type type, void* typeSpecificInfo);
 };
 
 class Vulkan

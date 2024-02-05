@@ -6,4 +6,7 @@ using namespace Database;
 
 bool update();
 
-void run(String folder, String runName);
+void run();
+
+void loadSimulationFiles(String folder, String runName);
+void deloadSimulation();

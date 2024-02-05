@@ -1,6 +1,11 @@
 #include "startMenu.hpp"
 
 #include "windowFunctions.hpp"
+#include "../UI.hpp"
+
+#include "../App.hpp"
+
+using namespace windows;
 
 void StartMenu::load(WindowInfo& window)
 {
@@ -14,19 +19,19 @@ void StartMenu::load(WindowInfo& window)
 
     auto button = Button::createButton(window, grid[0], buttonSize);
     button->changeColor(buttonColor, window);
-    button->setClickFunction(swapToNewSimulationWindow);
+    button->setClickFunction(getSwapFunction(Type::StartMenu));
 
     StaticText::createText(window, { grid[0].x, grid[0].y }, textColor, textScale, "New simulation");
 
     button = Button::createButton(window, grid[1], buttonSize);
     button->changeColor(buttonColor, window);
-    button->setClickFunction(swapToLoadInConfingWindow);
+    button->setClickFunction(getSwapFunction(Type::LoadInConfig));
 
     StaticText::createText(window, { grid[1].x, grid[1].y }, textColor, textScale, "Load in an existing config");
 
     button = Button::createButton(window, grid[2], buttonSize);
     button->changeColor(buttonColor, window);
-    button->setClickFunction(swapToLoadInRunWindow);
+    button->setClickFunction(getSwapFunction(Type::LoadInRun));
 
     StaticText::createText(window, { grid[2].x, grid[2].y }, textColor, textScale, "Load in a run");
 
@@ -37,10 +42,19 @@ void StartMenu::load(WindowInfo& window)
 
 void StartMenu::open(WindowInfo& window)
 {
-    createWindow(WindowType::Startmenu);
+    createWindow(type);
 }
 
 void StartMenu::swapTo(WindowInfo& window)
 {
-    swapWindowType(window, WindowType::Startmenu);
+    swapWindowType(window, type);
+}
+
+void* StartMenu::createInfo()
+{
+    return new Info();
+}
+void StartMenu::deleteInfo(void* info) {
+    Info* infoObj = static_cast<Info*>(info);
+    delete infoObj;
 }

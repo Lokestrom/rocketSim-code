@@ -3,7 +3,7 @@
 #include "../planet.hpp"
 #include "../FileSystem/fileSystem.hpp"
 #include "../FileSystem/logging.hpp"
-#include "../FileSystem/Instructions.hpp"
+#include "../FileSystem/RocketInstructions.hpp"
 #include "../helpers/simulationObjects.hpp"
 #include "../helpers/physics.hpp"
 #include "../DragSim.hpp"
@@ -158,12 +158,7 @@ void Rocket::stage()
 
 	objectLists::rockets.pushBack(std::make_unique<Rocket>(newRocket));
 	fileSystem::createLoggingFilesForNewRocket(objectLists::rockets[objectLists::rockets.size() - 1]);
-	try {
-		objectLists::instructions.pushBack(std::make_unique<fileSystem::Instructions>(objectLists::rockets[objectLists::rockets.size() - 1]));
-	}
-	catch (const error& e) {
-		throw error("When staging the stage: " + _rocketStages[0]->getID().getName() + "from the rocket: " + _id.getName() + "an error apeared:\n" + e.what, e.code);
-	}
+	objectLists::instructions.pushBack(std::make_unique<fileSystem::Instructions>(objectLists::rockets[objectLists::rockets.size() - 1]));
 }
 
 void Rocket::updateCenterOfGravity() noexcept 
@@ -193,7 +188,7 @@ ld Rocket::deltaV(const String& name) const
 	for (auto& i : _rocketStages)
 		if (i->getID().getName() == name)
 			return i->deltaV();
-	throw error("Rocket does not have a stage with that ID", exitCodes::badUserBehavior);
+	 Error("Rocket does not have a stage with that ID", Error::exitCodes::badUserBehavior);
 }
 ld Rocket::altitude(const String& planetID) const 
 {
@@ -206,7 +201,7 @@ ld Rocket::altitude(const String& planetID) const
 	if (pp != nullptr) {
 		return pp->altitude(this->pos());
 	}
-	throw error(("The planet: " + planetID + " does not excist").cstr(), exitCodes::badUserBehavior);
+	 Error(("The planet: " + planetID + " does not excist").cstr(), Error::exitCodes::badUserBehavior);
 
 	return 0;
 }

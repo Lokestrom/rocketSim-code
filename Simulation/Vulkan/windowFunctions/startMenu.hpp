@@ -1,16 +1,20 @@
 #pragma once
 
-#include "../App.hpp"
+#include "windowFunctions.hpp"
 
-struct StartMenu {
-	static inline String name = "start menu";
-	static inline WindowType type = WindowType::Startmenu;
-	struct Info {
-	
+namespace windows {
+
+	struct StartMenu {
+	public:
+		static inline String name = "start menu";
+		static inline Type type = Type::StartMenu;
+		struct Info {
+		};
+
+		static void load(WindowInfo& window);
+		static void open(WindowInfo& window);
+		static void swapTo(WindowInfo& window);
+		static void* createInfo();
+		static void deleteInfo(void* info);
 	};
-
-	static void load(WindowInfo& window);
-	static void open(WindowInfo& window);
-	static void swapTo(WindowInfo& window);
-	static void* createInfo();
-};
+}

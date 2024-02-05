@@ -48,9 +48,7 @@ namespace fileSystem {
 		for (auto& [key, val] : objects::planetFiles)
 			val.close();
 
-#ifndef _DEBUG
 		objects::errorLogFile.close();
-#endif
 	}
 
 	void createGeneralRunInfo() {
@@ -58,6 +56,15 @@ namespace fileSystem {
 		file << "randomSeed=" << toS(options::randomSeed) << std::endl;
 		file << "totalTime=" << toS(timeObjects::currentTime);
 		file.close();
+	}
+
+	void loggError(Error error)
+	{
+		objects::errorLogFile << "Function: " << error._function << " in file: " << error._file << " on line: " << error._line << ", \n"
+			<< "what: " << error._what << ",\n"
+			<< "code: " << Error::exitCodesNames.at(error._code) << ",\n"
+			<< "recovery type: " << Error::recoveryTypeName.at(error._recoveryType) << ",\n"
+			<< "error accured during recovery attempt: " << (error._duringRecoveryAttempt) ? "true" : "false";
 	}
 
 	void createLoggingFilesForNewRocket(const std::shared_ptr<Rocket> rocket) {

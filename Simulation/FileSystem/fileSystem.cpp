@@ -1,22 +1,12 @@
 #include "fileSystem.hpp"
 
 namespace fileSystem {
-#ifdef _DEBUG
-	void writeError(error e) {
-		std::cout << e.what << "\n";
-	}
-#else
-	void writeError(error e) {
-		objects::errorLogFile << e.what << "\n";
-	}
-#endif
-
 	Vector<String> returnVariableAndValue(String line) {
 		line.remove(' ');
 		line.lower();
 		Vector<String> ans = line.split('=');
 		if (ans.size() > 2)
-			throw error("Too many arguments. Not alowed", exitCodes::badUserBehavior);
+			Error("Too many arguments. Arguments: " + line, Error::exitCodes::badUserBehavior);
 		return ans;
 	}
 
@@ -66,7 +56,7 @@ namespace fileSystem {
 
 	Vector3 returnVector3(String arg) {
 		if (arg.split('{').size() != 1) {
-			throw error("The arg is labeld with: " + arg.split('{')[0] + " may not be a vector3", exitCodes::badUserBehavior);
+			Error("The arg is labeld with: " + arg.split('{')[0] + " may not be a vector3", Error::exitCodes::badUserBehavior, Error::recoveryType::ignore);
 		}
 		arg.popBack();
 		arg.remove(' ');
@@ -76,7 +66,7 @@ namespace fileSystem {
 
 	Quaternion returnQuaternion(String arg) {
 		if (arg.split('{')[0] != "quat") {
-			throw error("The arg is not labeld a Quaternion. The arg may not be a quaternion", exitCodes::badUserBehavior);
+			Error("The arg is not labeld a Quaternion. The arg may not be a quaternion", Error::exitCodes::badUserBehavior, Error::recoveryType::ignore);
 		}
 		arg.popBack();
 		arg.remove(' ');
