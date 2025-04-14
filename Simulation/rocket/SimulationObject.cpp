@@ -8,6 +8,11 @@ std::shared_ptr<SimulationObject> SimulationObject::createSimulationObject(const
 	return objectLists::simulationObjects[objectLists::simulationObjects.size() - 1];
 }
 
+bool SimulationObject::pointInside(const Vector3& point) noexcept
+{
+	return false;
+}
+
 SimulationObject::SimulationObject(const Builder& builder)
 	: boundingSphre(builder.model.simulationModel->vertices)
 {

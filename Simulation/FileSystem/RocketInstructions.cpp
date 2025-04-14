@@ -11,14 +11,14 @@ namespace fileSystem {
 	Instructions::Instructions(std::shared_ptr<Rocket> rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + rocket->getID().getName() + ".txt"));
 		if (!_file.is_open())
-			Error("File \"" + rocket->getID().getName() + ".txt" + "\" couldn't be opened.", Error::exitCodes::fileFault);
+			Error("File \"" + rocket->getID().getName() + ".txt" + "\" couldn't be opened.", Error::Type::fileFault);
 		_rocket = rocket;
 		getInstruction();
 	}
 	Instructions::Instructions(String fileName, std::shared_ptr<Rocket> rocket) {
 		_file.open(toSTD(objects::simulationFolder + "rocket/instructions/" + fileName));
 		if (!_file.is_open())
-			Error("File \"" + fileName + "\" couldn't be opened.", Error::exitCodes::fileFault);
+			Error("File \"" + fileName + "\" couldn't be opened.", Error::Type::fileFault);
 		_rocket = rocket;
 		getInstruction();
 	}
@@ -40,7 +40,7 @@ namespace fileSystem {
 				Error("The instruction \"" + i + "\" is not valid." +
 					"\nThe instruction must be formed like this:\n" +
 					"\"timestamp:instruction(args)\" or \"timestamp:setting=value", 
-					Error::exitCodes::badUserBehavior);
+					Error::Type::badUserBehavior);
 			}
 			getInstruction();
 		}
@@ -96,7 +96,7 @@ namespace fileSystem {
 
 		else
 			 Error("The variable \"" + variable + "\" is not a valid variable.", 
-				Error::exitCodes::badUserBehavior);
+				Error::Type::badUserBehavior);
 	}
 
 	void Instructions::runInstruction(String instruction, bool& exitSimulation) {
@@ -116,7 +116,7 @@ namespace fileSystem {
 				break;
 			default:
 				Error("The Instruction \"burn\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.",
-					Error::exitCodes::badUserBehavior);
+					Error::Type::badUserBehavior);
 				break;
 			}
 		}
@@ -131,7 +131,7 @@ namespace fileSystem {
 				break;
 			default:
 				Error("The Instruction \"shutdown\" at timestamp\"" + toS(_nextInstructionTime) + "\" has to many arguments or a speling error.",
-					Error::exitCodes::badUserBehavior);
+					Error::Type::badUserBehavior);
 				break;
 			}
 		}
@@ -144,7 +144,7 @@ namespace fileSystem {
 			_nextInstructionTime = LDBL_MAX;
 		else
 			Error("Instruction \"" + instruction + "\" at timestamp\"" + _nextInstructionTime + "\" is not a valid instruction.",
-				Error::exitCodes::badUserBehavior);
+				Error::Type::badUserBehavior);
 		exitSimulation = false;
 	}
 

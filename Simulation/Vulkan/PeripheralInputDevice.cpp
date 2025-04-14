@@ -59,7 +59,7 @@ void Keyboard::rotate(GLFWwindow* window, double dt, TotalTransformComponent3D& 
         rotation -= rollRotate;
 
     if (rotation != Vector3::null()) {
-        transform.rotation += getStepQuaternion(transform.rotation, transform.rotation * toQuaternion(rotation), (int)(1 / (dt * _lookSpeed)), 2 * glm::pi<double>());
+        transform.rotation += getStepQuaternion(transform.rotation, transform.rotation * toQuaternion(rotation), (int)(1 / (dt * _rotationSpeed)), 2 * glm::pi<double>());
         transform.rotation = transform.rotation.normalized();
     }
 }
@@ -77,7 +77,7 @@ void Keyboard::lookAtRotate(GLFWwindow* window, double dt, TotalTransformCompone
         rotation -= rollRotate;
 
     if (rotation != Vector3::null()) {
-        transform.rotation += getStepQuaternion(transform.rotation, transform.rotation * toQuaternion(rotation), (int)(1 / (dt * _lookSpeed)), 2 * glm::pi<double>());
+        transform.rotation += getStepQuaternion(transform.rotation, transform.rotation * toQuaternion(rotation), (int)(1 / (dt * _rotationSpeed)), 2 * glm::pi<double>());
         transform.rotation = transform.rotation.normalized();
     }
 
@@ -86,6 +86,13 @@ void Keyboard::lookAtRotate(GLFWwindow* window, double dt, TotalTransformCompone
 bool Keyboard::pausePressed(GLFWwindow* window)
 {
     return glfwGetKey(window, _keys.pause) == GLFW_PRESS;
+}
+
+void Keyboard::changeLookSpeed(double mouseScroll)
+{
+    _moveSpeed += mouseScroll * _moveSpeed/100;
+	if (_moveSpeed < 0)
+		_moveSpeed = 0;
 }
 
 void Keyboard::lookAtMove(GLFWwindow* window, double dt, TotalTransformComponent3D& transform, TotalTransformComponent3D& lookAtTransform)
@@ -130,6 +137,8 @@ void Keyboard::followMove(GLFWwindow* window, double dt, TotalTransformComponent
 /*--------------------------Mouse------------------------------*/
 void Mouse::rotate(Window& window, TotalTransformComponent3D& transform)
 {
+    if (!enabled)
+        return;
     if (glfwGetWindowAttrib(window.getGLFWwindow(), GLFW_FOCUSED) != 1)
         return;
 
@@ -140,8 +149,8 @@ void Mouse::rotate(Window& window, TotalTransformComponent3D& transform)
     glfwGetCursorPos(window.getGLFWwindow(), &mouseX, &mouseY);
 
     Vector3 rotation;
-    Vector3 upRotate = Vector3::UnitX() * _lookSpeed;
-    Vector3 rightRotate = Vector3::UnitY() * _lookSpeed;
+    Vector3 upRotate = Vector3::UnitX() * _rotationSpeed;
+    Vector3 rightRotate = Vector3::UnitY() * _rotationSpeed;
 
     if (mouseX < centerX) {
         rotation += rightRotate * (mouseX - centerX);

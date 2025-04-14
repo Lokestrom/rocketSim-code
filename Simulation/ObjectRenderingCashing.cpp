@@ -24,8 +24,6 @@ SimulationTimeCash ObjectRenderingCash::getsimulationTimeCash(ld time)
 		ans = std::move(_cash.pushOff());
 		size--;
 	} while (ans.time <= time-timeObjects::dt && !(size == 0));
-	std::cout << "Sim cash time: " << ans.time << "\n";
-	std::cout << "real time: " << time << "\n";
 	return ans;
 }
 
@@ -39,6 +37,15 @@ ld ObjectRenderingCash::getNextCashTime()
 sizeT ObjectRenderingCash::getSize()
 {
 	return size;
+}
+
+void ObjectRenderingCash::clear()
+{
+	std::lock_guard<std::mutex> lock(mtx);
+	while (size != 0) {
+		_cash.pushOff();
+		size--;
+	}
 }
 
 void addSimulationTransforms()

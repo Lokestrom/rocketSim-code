@@ -26,7 +26,6 @@ void SwapChain::init() {
     createImageViews();
     createRenderPass();
     createDepthResources();
-    createTextResources();
     createFramebuffers();
     createSyncObjects();
 }
@@ -224,20 +223,6 @@ void SwapChain::createRenderPass() {
     depthAttachmentRef.attachment = 1;
     depthAttachmentRef.layout = vk::ImageLayout::eDepthStencilAttachmentOptimal;
 
-    vk::AttachmentDescription textAttachment{};
-    textAttachment.format = findTextFormat();
-    textAttachment.samples = vk::SampleCountFlagBits::e1;
-    textAttachment.loadOp = vk::AttachmentLoadOp::eClear;
-    textAttachment.storeOp = vk::AttachmentStoreOp::eStore;
-    textAttachment.stencilStoreOp = vk::AttachmentStoreOp::eDontCare;
-    textAttachment.stencilLoadOp = vk::AttachmentLoadOp::eDontCare;
-    textAttachment.initialLayout = vk::ImageLayout::eUndefined;
-    textAttachment.finalLayout = vk::ImageLayout::eTransferDstOptimal;
-
-    vk::AttachmentReference textAttachmentRef{};
-    textAttachmentRef.attachment = 2;
-    textAttachmentRef.layout = vk::ImageLayout::eTransferDstOptimal;
-
     vk::AttachmentDescription colorAttachment = {};
     colorAttachment.format = getSwapChainImageFormat();
     colorAttachment.samples = vk::SampleCountFlagBits::e1;
@@ -252,7 +237,7 @@ void SwapChain::createRenderPass() {
     colorAttachmentRef.attachment = 0;
     colorAttachmentRef.layout = vk::ImageLayout::eColorAttachmentOptimal;
 
-    std::array<vk::AttachmentReference, 2> colorAttachments = { colorAttachmentRef, textAttachmentRef };
+    std::array<vk::AttachmentReference, 1> colorAttachments = { colorAttachmentRef };
 
     vk::SubpassDescription subpass = {};
     subpass.pipelineBindPoint = vk::PipelineBindPoint::eGraphics;
@@ -271,7 +256,7 @@ void SwapChain::createRenderPass() {
     dependency.srcStageMask =
         vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests;
 
-    std::array<vk::AttachmentDescription, 3> attachments = { colorAttachment, depthAttachment, textAttachment };
+    std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
     vk::RenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = vk::StructureType::eRenderPassCreateInfo;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -289,7 +274,7 @@ void SwapChain::createRenderPass() {
 void SwapChain::createFramebuffers() {
     _swapChainFramebuffers.resize(imageCount());
     for (size_t i = 0; i < imageCount(); i++) {
-        std::array<vk::ImageView, 3> attachments = { _swapChainImageViews[i], _depthImageViews[i], _textImageViews[i] };
+        std::array<vk::ImageView, 2> attachments = { _swapChainImageViews[i], _depthImageViews[i] };
 
         vk::Extent2D swapChainExtent = getSwapChainExtent();
         vk::FramebufferCreateInfo framebufferInfo = {};
@@ -353,56 +338,6 @@ void SwapChain::createDepthResources() {
              std::runtime_error("failed to create texture image view!");
         }
         
-    }
-}
-
-void SwapChain::createTextResources()
-{
-    vk::Format textFormat = findTextFormat();
-    _swapChainTextFormat = textFormat;
-    vk::Extent2D swapChainExtent = getSwapChainExtent();
-
-    _textImages.resize(imageCount());
-    _textImageMemorys.resize(imageCount());
-    _textImageViews.resize(imageCount());
-
-    for (int i = 0; i < _textImages.size(); i++) {
-        vk::ImageCreateInfo imageInfo{};
-        imageInfo.imageType = vk::ImageType::e2D;
-        imageInfo.extent.width = swapChainExtent.width;
-        imageInfo.extent.height = swapChainExtent.height;
-        imageInfo.extent.depth = 1;
-        imageInfo.mipLevels = 1;
-        imageInfo.arrayLayers = 1;
-        imageInfo.format = textFormat;
-        imageInfo.tiling = vk::ImageTiling::eOptimal;
-        imageInfo.initialLayout = vk::ImageLayout::eUndefined;
-        imageInfo.usage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferDst;
-        imageInfo.samples = vk::SampleCountFlagBits::e1;
-        imageInfo.sharingMode = vk::SharingMode::eExclusive;
-        imageInfo.flags = vk::ImageCreateFlagBits();
-
-        _device.createImageWithInfo(
-            imageInfo,
-            vk::MemoryPropertyFlagBits::eDeviceLocal,
-            _textImages[i],
-            _textImageMemorys[i]);
-
-        vk::ImageViewCreateInfo viewInfo{};
-        viewInfo.sType = vk::StructureType::eImageViewCreateInfo;
-        viewInfo.image = _textImages[i];
-        viewInfo.viewType = vk::ImageViewType::e2D;
-        viewInfo.format = textFormat;
-        viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-        viewInfo.subresourceRange.baseMipLevel = 0;
-        viewInfo.subresourceRange.levelCount = 1;
-        viewInfo.subresourceRange.baseArrayLayer = 0;
-        viewInfo.subresourceRange.layerCount = 1;
-
-        if (_device.device().createImageView(&viewInfo, nullptr, &_textImageViews[i]) != vk::Result::eSuccess) {
-             std::runtime_error("failed to create texture image view!");
-        }
-
     }
 }
 
@@ -474,14 +409,7 @@ vk::Extent2D SwapChain::chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capab
 
 vk::Format SwapChain::findDepthFormat() {
     return _device.findSupportedFormat(
-        { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint },
+        { vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint },
         vk::ImageTiling::eOptimal,
         vk::FormatFeatureFlagBits::eDepthStencilAttachment);
-}
-
-vk::Format SwapChain::findTextFormat() {
-    return _device.findSupportedFormat(
-        { vk::Format::eR8Unorm },
-        vk::ImageTiling::eOptimal,
-        vk::FormatFeatureFlagBits::eColorAttachment | vk::FormatFeatureFlagBits::eTransferDst);
 }

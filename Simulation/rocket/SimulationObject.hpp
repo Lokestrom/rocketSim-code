@@ -21,7 +21,8 @@ public:
 	BoundingSphre boundingSphre;
 
 	static std::shared_ptr<SimulationObject> createSimulationObject(const Builder& builder);
+	
+	bool pointInside(const Vector3& point) noexcept;
 private:
 	SimulationObject(const Builder& builder);
 };
-

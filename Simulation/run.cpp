@@ -13,7 +13,6 @@
 
 #include "helpers/simulationObjects.hpp"
 
-
 bool simulationStillRunning;
 bool programStillRunning;
 
@@ -52,6 +51,18 @@ void deloadSimulation() {
 	fileSystem::loggingEnd();
 }
 
+void reset()
+{
+	deloadSimulation();
+	objectLists::objectCash.clear();
+	fileSystem::objects::reset();
+	objectLists::modelCash.clear();
+	timeObjects::reset();
+	reLoadSimulationFiles();
+	reloadModelsInWindows();
+	Vulkan::resetInProgres();
+}
+
 void simulationLoop() {
 	while (simulationStillRunning && programStillRunning) {
 		if (objectLists::objectCash.getSize() > options::cashSize)
@@ -80,22 +91,52 @@ void vulcanLoop() {
 		deloadSimulation();
 };
 
-void  loadSimulationFiles(String folder, String runName) {
-	fileSystem::objects::simulationFolder = folder + '/';
-	fileSystem::objects::runFolder = fileSystem::objects::simulationFolder + "run data/" + runName + "/";
+void reLoadSimulationFiles() {
 	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
-	objectLists::fixedOrbitPlanets = Vector< std::shared_ptr<FixedOrbitPlanet>>();
+	objectLists::fixedOrbitPlanets = Vector<std::shared_ptr<FixedOrbitPlanet>>();
 	objectLists::rockets = Vector< std::shared_ptr<Rocket>>();
 	objectLists::instructions = Vector<std::shared_ptr<fileSystem::Instructions>>();
 
 	fileSystem::loadInObjects();
-	std::cout << "Loaded in Objects\n";
 	fileSystem::loggingStartup();
-	std::cout << "Started logging\n";
 
 	simulationStillRunning = true;
 	timeObjects::realStartTimeEpoch = timeObjects::getTimeSinceEpoch();
 	objectLists::simThread = std::thread(simulationLoop);
+}
+
+void  loadSimulationFiles(String folder, String runName) {
+	fileSystem::objects::simulationFolder = folder + "/config/";
+	fileSystem::objects::runFolder = folder + "/run data/" + runName + "/";
+
+	reLoadSimulationFiles();
+}
+
+void startSimulationRun() {
+	objectLists::physicsPlanets = Vector<std::shared_ptr<PhysicsPlanet>>();
+	objectLists::fixedOrbitPlanets = Vector<std::shared_ptr<FixedOrbitPlanet>>();
+	objectLists::rockets = Vector<std::shared_ptr<Rocket>>();
+	objectLists::instructions = Vector<std::shared_ptr<fileSystem::Instructions>>();
+
+	fileSystem::loadInObjects();
+	fileSystem::loggingStartup();
+	startSimulation();
+}
+
+void endSimulationRun() {
+	stopSimulation();
+	fileSystem::loggingEnd();
+}
+
+void startSimulation() {
+	simulationStillRunning = true;
+	timeObjects::realStartTimeEpoch = timeObjects::getTimeSinceEpoch();
+	objectLists::simThread = std::thread(simulationLoop);
+}
+
+void stopSimulation() {
+	simulationStillRunning = false;
+	objectLists::simThread.join();
 }
 
 void run() {
@@ -104,7 +145,6 @@ void run() {
 
 	Vulkan vulkanRenderer;
 	Vulkan::startup();
-	std::cout << "Started vulkan\n";
 
 	vulcanLoop();
 }

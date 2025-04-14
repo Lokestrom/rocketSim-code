@@ -3,7 +3,6 @@
 layout (location = 0) in vec2 fragOffset;
 
 layout (location = 0) out vec4 outColor;
-layout (location = 1) out vec4 def;
 
 
 struct PointLight {
@@ -37,5 +36,4 @@ void main() {
 
   	float cosDis = 0.5 * (cos(dis * M_PI) + 1.0); // ranges from 1 -> 0
   	outColor = vec4(push.color.xyz + 0.5 * cosDis, cosDis);
-	def = vec4(0,0,0,0);
 }

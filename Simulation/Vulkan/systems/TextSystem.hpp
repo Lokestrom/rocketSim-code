@@ -27,7 +27,7 @@ private:
 private:
 	Device& _device;
 
-	std::unique_ptr<Pipeline> _pipeline;
+	std::unique_ptr<Pipeline> _hardPipeline, _becierPipeline, _boxPipeline;
 	vk::PipelineLayout _pipelineLayout;
 };
 

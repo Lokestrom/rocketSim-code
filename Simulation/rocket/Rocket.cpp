@@ -14,6 +14,7 @@ Rocket::Rocket(const Builder& builder)
 	: _id(ID::createID(builder.name, builder.localID)),
 	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
 	_vel(builder.velosity), _acc(builder.accseleration),
+	_rotationVel(0,0,0,0), _rotationAcc(0,0,0,0),
 	_RCS(false)
 {
 	for (const auto& i : builder.stages)
@@ -99,14 +100,13 @@ void Rocket::update() noexcept
 	//drag(d);
 
 	newAcc = (t + g) / currmMass;
-	newRotationAcc = toQuaternion(rt);
+	newRotationAcc = Quaternion(0, rt.x, rt.y, rt.z);
 
 	Vector3 withoutRotationPos = -_transform->rotation.rotate(_centerOfMass);
 
 	_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
 	_transform->rotation = _transform->rotation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
-	_rotationVel = _rotationVel.normalized();
 
 	Vector3 withRotationPos = -_transform->rotation.rotate(_centerOfMass);
 	_transform->translation += vel()*timeObjects::dt + (withRotationPos - withoutRotationPos) + acc() * (timeObjects::dt * timeObjects::dt * 0.5);
@@ -188,7 +188,7 @@ ld Rocket::deltaV(const String& name) const
 	for (auto& i : _rocketStages)
 		if (i->getID().getName() == name)
 			return i->deltaV();
-	 Error("Rocket does not have a stage with that ID", Error::exitCodes::badUserBehavior);
+	 Error("Rocket does not have a stage with that ID", Error::Type::badUserBehavior);
 }
 ld Rocket::altitude(const String& planetID) const 
 {
@@ -201,7 +201,7 @@ ld Rocket::altitude(const String& planetID) const
 	if (pp != nullptr) {
 		return pp->altitude(this->pos());
 	}
-	 Error(("The planet: " + planetID + " does not excist").cstr(), Error::exitCodes::badUserBehavior);
+	 Error(("The planet: " + planetID + " does not excist").cstr(), Error::Type::badUserBehavior);
 
 	return 0;
 }

@@ -24,6 +24,9 @@ struct PipelineConfigInfo {
     vk::PipelineLayout pipelineLayout = nullptr;
     vk::RenderPass renderPass = nullptr;
     uint32_t subpass = 0;
+
+    std::string vertFilepath = "";
+    std::string fragFilepath = "";
 };
 
 class Pipeline
@@ -31,8 +34,6 @@ class Pipeline
 public:
     Pipeline(
         Device& device,
-        const std::string& vertFilepath,
-        const std::string& fragFilepath,
         const PipelineConfigInfo& configInfo);
     ~Pipeline();
 
@@ -44,6 +45,9 @@ public:
     static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
     static void defaultPipelineConfigInfo3D(PipelineConfigInfo& configInfo);
     static void defaultPipelineConfigInfoText(PipelineConfigInfo& configInfo);
+    static void hardPipelineConfigInfoText(PipelineConfigInfo& configInfo);
+    static void becierPipelineConfigInfoText(PipelineConfigInfo& configInfo);
+    static void boxPipelineConfigInfoText(PipelineConfigInfo& configInfo);
     static void defaultPipelineConfigInfo2D(PipelineConfigInfo& configInfo);
     static void enableAlphaBlending(PipelineConfigInfo& configInfo);
 
@@ -51,8 +55,6 @@ private:
     static std::vector<char> readFile(const std::string& filepath);
 
     void createGraphicsPipeline(
-        const std::string& vertFilepath,
-        const std::string& fragFilepath,
         const PipelineConfigInfo& configInfo);
 
     vk::ShaderModule createShaderModule(const std::vector<char>& code);

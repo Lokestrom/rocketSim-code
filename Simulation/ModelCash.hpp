@@ -11,7 +11,6 @@ struct ModelCashNode {
 	std::shared_ptr<SimulationModel> simulationModel;
 };
 
-
 class ModelCash
 {
 public:
@@ -21,6 +20,8 @@ public:
 
 	void addModel(ID::GlobaleID_T id, const ModelCashNode& node);
 
+	void clear();
+
 private:
 	std::unordered_map<ID::GlobaleID_T, ModelCashNode> _cash;
 };
@@ -28,4 +29,3 @@ private:
 namespace objectLists {
 	inline ModelCash modelCash;
 }
-

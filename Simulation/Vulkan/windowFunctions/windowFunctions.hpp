@@ -10,8 +10,10 @@ namespace windows {
 	enum class Type {
 		StartMenu,
 		NewSimulation,
+		Editor,
 		LoadInConfig,
 		LoadInRun,
+
 		Menu,
 		Telemetry,
 		FreeCam,
@@ -20,9 +22,13 @@ namespace windows {
 		MapView,
 		Instructions,
 		Time,
+
 		Confirmation,
+		TextInputPopup,
+
 		ErrorList,
-		ErrorPopup
+		ErrorPopup,
+		WarningPopup
 	};
 
 	struct Data
@@ -38,11 +44,11 @@ namespace windows {
 		
 
 		template<class T>
-		static void addWindow() {
+		static constexpr void addWindow() {
 			Data data;
 #ifdef _DEBUG
 			if (dataMap.count(T::type))
-				Error("there can't be multiple datas for window type: " + toS((int)T::type), Error::exitCodes::codeFault);
+				Error("there can't be multiple datas for window type: " + toS((int)T::type), Error::Type::codeFault);
 			try {
 #endif // _DEBUG
 				data.name = T::name.cstr();
@@ -54,7 +60,7 @@ namespace windows {
 #ifdef _DEBUG
 			}
 			catch (...) {
-				Error("mising definisinon for a function for window: " + toS((int)T::type), Error::exitCodes::codeFault);
+				Error("mising definisinon for a function for window: " + toS((int)T::type), Error::Type::codeFault);
 			}
 #endif // _DEBUG
 
@@ -64,7 +70,7 @@ namespace windows {
 		static Data& getWindowData(Type type) {
 #ifdef _DEBUG
 			if (!dataMap.count(type))
-				Error("there is no window data defined for the WindowType: " + (int)type, Error::exitCodes::codeFault);
+				Error("there is no window data defined for the WindowType: " + (int)type, Error::Type::codeFault);
 #endif // _DEBUG
 			return dataMap.at(type);
 		}
@@ -80,6 +86,8 @@ namespace windows {
 	void(*getSwapFunction(Type type))(WindowInfo& window);
 	void* createInfo(Type type);
 	void(*getDeleteInfoFunction(Type type))(void* info);
+
+	void closeWindow(WindowInfo& window);
 
 	WindowInfo createWindowInfo(windows::Type type, void* info = nullptr);
 	void swapWindowType(WindowInfo& window, windows::Type newType, void*  info = nullptr);

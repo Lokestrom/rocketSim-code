@@ -3,7 +3,6 @@
 layout(location = 0) in vec4 color;
 
 layout (location = 0) out vec4 outColor;
-layout (location = 1) out vec4 def;
 
 struct PointLight {
   	vec4 position; // ignore w
@@ -27,5 +26,4 @@ layout(push_constant) uniform Push {
 
 void main() {
 	outColor = color;
-	def = vec4(0,0,0,0);
 }

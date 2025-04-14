@@ -37,4 +37,4 @@ ld findLongitude(Vector3 pos, Vector3 otherPos);
 
 geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos);
 
-Vector<Vector2> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove = Vector2::null());
+Vector<Vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove = Vector2::null());

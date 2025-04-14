@@ -25,6 +25,8 @@ public:
 	SimulationTimeCash getsimulationTimeCash(ld time);
 	ld getNextCashTime();
 	sizeT getSize();
+
+	void clear();
 private:
 	std::mutex mtx;
 	sizeT size = 0;

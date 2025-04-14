@@ -31,17 +31,19 @@ public:
 
     bool pausePressed(GLFWwindow* window);
 
-private:
+    void changeLookSpeed(double mouseScroll);
+
+public:
     KeyMappings _keys{};
-    double _lookSpeed{ 1.5 };
+    double _rotationSpeed{ 1.5 };
     double _moveSpeed{ 3. };
 };
 
 class Mouse {
 public:
-
+    bool enabled{ true };
     void rotate(Window& window, TotalTransformComponent3D& transform);
 
-    double _lookSpeed{ 0.005 };
+    double _rotationSpeed{ 0.005 };
 };
 

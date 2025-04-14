@@ -11,11 +11,9 @@
 
 Pipeline::Pipeline(
     Device& device,
-    const std::string& vertFilepath,
-    const std::string& fragFilepath,
     const PipelineConfigInfo& configInfo)
     : _device{ device } {
-    createGraphicsPipeline(vertFilepath, fragFilepath, configInfo);
+    createGraphicsPipeline(configInfo);
 }
 
 Pipeline::~Pipeline() {
@@ -29,7 +27,7 @@ std::vector<char> Pipeline::readFile(const std::string& filepath) {
     std::ifstream file{ enginePath, std::ios::ate | std::ios::binary };
 
     if (!file.is_open()) {
-         std::runtime_error("failed to open file: " + enginePath);
+         Error("Failed to open shader file: " + enginePath, Error::Type::fileFault, Error::recoveryType::restart);
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());
@@ -43,8 +41,6 @@ std::vector<char> Pipeline::readFile(const std::string& filepath) {
 }
 
 void Pipeline::createGraphicsPipeline(
-    const std::string& vertFilepath,
-    const std::string& fragFilepath,
     const PipelineConfigInfo& configInfo) {
     assert(
         configInfo.pipelineLayout != NULL &&
@@ -53,25 +49,32 @@ void Pipeline::createGraphicsPipeline(
         configInfo.renderPass != NULL &&
         "Cannot create graphics pipeline: no renderPass provided in configInfo");
 
-    auto vertCode = readFile(vertFilepath);
-    auto fragCode = readFile(fragFilepath);
+    vk::PipelineShaderStageCreateInfo* shaderStages = new vk::PipelineShaderStageCreateInfo[!configInfo.vertFilepath.empty() + !configInfo.fragFilepath.empty()];
 
-    _vertShaderModule = createShaderModule(vertCode);
-    _fragShaderModule = createShaderModule(fragCode);
+    if (!configInfo.vertFilepath.empty()) {
+        auto vertCode = readFile(configInfo.vertFilepath);
 
-    vk::PipelineShaderStageCreateInfo shaderStages[2];
-    shaderStages[0].stage = vk::ShaderStageFlagBits::eVertex;
-    shaderStages[0].module = _vertShaderModule;
-    shaderStages[0].pName = "main";
-    shaderStages[0].flags = vk::PipelineShaderStageCreateFlags();
-    shaderStages[0].pNext = nullptr;
-    shaderStages[0].pSpecializationInfo = nullptr;
-    shaderStages[1].stage = vk::ShaderStageFlagBits::eFragment;
-    shaderStages[1].module = _fragShaderModule;
-    shaderStages[1].pName = "main";
-    shaderStages[1].flags = vk::PipelineShaderStageCreateFlags();
-    shaderStages[1].pNext = nullptr;
-    shaderStages[1].pSpecializationInfo = nullptr;
+        _vertShaderModule = createShaderModule(vertCode);
+        shaderStages[0].stage = vk::ShaderStageFlagBits::eVertex;
+        shaderStages[0].module = _vertShaderModule;
+        shaderStages[0].pName = "main";
+        shaderStages[0].flags = vk::PipelineShaderStageCreateFlags();
+        shaderStages[0].pNext = nullptr;
+        shaderStages[0].pSpecializationInfo = nullptr;
+    }
+    if (!configInfo.fragFilepath.empty()) {
+        auto fragCode = readFile(configInfo.fragFilepath);
+
+        _fragShaderModule = createShaderModule(fragCode);
+
+        shaderStages[!configInfo.vertFilepath.empty()].stage = vk::ShaderStageFlagBits::eFragment;
+        shaderStages[!configInfo.vertFilepath.empty()].module = _fragShaderModule;
+        shaderStages[!configInfo.vertFilepath.empty()].pName = "main";
+        shaderStages[!configInfo.vertFilepath.empty()].flags = vk::PipelineShaderStageCreateFlags();
+        shaderStages[!configInfo.vertFilepath.empty()].pNext = nullptr;
+        shaderStages[!configInfo.vertFilepath.empty()].pSpecializationInfo = nullptr;
+    }
+
 
     auto& bindingDescriptions = configInfo.bindingDescriptions;
     auto& attributeDescriptions = configInfo.attributeDescriptions;
@@ -83,7 +86,7 @@ void Pipeline::createGraphicsPipeline(
     vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 
     vk::GraphicsPipelineCreateInfo pipelineInfo{};
-    pipelineInfo.stageCount = 2;
+    pipelineInfo.stageCount = !configInfo.vertFilepath.empty() + !configInfo.fragFilepath.empty();
     pipelineInfo.pStages = shaderStages;
     pipelineInfo.pVertexInputState = &vertexInputInfo;
     pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
@@ -102,7 +105,7 @@ void Pipeline::createGraphicsPipeline(
     pipelineInfo.basePipelineHandle = nullptr;
 
     if (_device.device().createGraphicsPipelines(nullptr, 1, &pipelineInfo, nullptr, &_graphicsPipeline) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create graphics pipeline");
+         Error("Failed to create graphics pipeline", Error::Type::vulkan, Error::recoveryType::restart);
     }
 }
 
@@ -158,17 +161,6 @@ void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
         vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
     });
 
-    configInfo.colorBlendAttachment.push_back(vk::PipelineColorBlendAttachmentState{
-        VK_FALSE,
-        vk::BlendFactor::eOne,   // Optional
-        vk::BlendFactor::eZero,  // Optional
-        vk::BlendOp::eAdd,              // Optional
-        vk::BlendFactor::eOne,   // Optional
-        vk::BlendFactor::eZero,  // Optional
-        vk::BlendOp::eAdd,            // Optional
-        vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
-    });
-
     configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
     configInfo.colorBlendInfo.logicOp = vk::LogicOp::eCopy;  // Optional
     configInfo.colorBlendInfo.attachmentCount = static_cast<uint32_t>(configInfo.colorBlendAttachment.size());
@@ -204,6 +196,43 @@ void Pipeline::defaultPipelineConfigInfo3D(PipelineConfigInfo& configInfo) {
 void Pipeline::defaultPipelineConfigInfoText(PipelineConfigInfo& configInfo)
 {
     defaultPipelineConfigInfo(configInfo);
+    configInfo.depthStencilInfo.stencilTestEnable = VK_TRUE;
+    configInfo.depthStencilInfo.front.compareMask = 1;
+    configInfo.depthStencilInfo.front.writeMask = 1;
+    configInfo.depthStencilInfo.front.reference = 1;
+    enableAlphaBlending(configInfo);
+}
+
+void Pipeline::hardPipelineConfigInfoText(PipelineConfigInfo& configInfo)
+{
+    defaultPipelineConfigInfoText(configInfo);
+
+    configInfo.inputAssemblyInfo.topology = vk::PrimitiveTopology::eTriangleFan;
+    configInfo.depthStencilInfo.front.compareOp = vk::CompareOp::eNever;
+    configInfo.depthStencilInfo.front.failOp = vk::StencilOp::eIncrementAndWrap;
+    configInfo.depthStencilInfo.back = configInfo.depthStencilInfo.front;
+    configInfo.bindingDescriptions = StaticText::Vertex::getBindingDescriptions();
+    configInfo.attributeDescriptions = StaticText::Vertex::getAttributeDescriptions();
+}
+
+void Pipeline::becierPipelineConfigInfoText(PipelineConfigInfo& configInfo)
+{
+    defaultPipelineConfigInfoText(configInfo);
+    configInfo.depthStencilInfo.front.compareOp = vk::CompareOp::eNever;
+    configInfo.depthStencilInfo.front.failOp = vk::StencilOp::eIncrementAndWrap;
+    configInfo.depthStencilInfo.back = configInfo.depthStencilInfo.front;
+    configInfo.bindingDescriptions = StaticText::BecierVertex::getBindingDescriptions();
+    configInfo.attributeDescriptions = StaticText::BecierVertex::getAttributeDescriptions();
+}
+
+void Pipeline::boxPipelineConfigInfoText(PipelineConfigInfo& configInfo)
+{
+    defaultPipelineConfigInfoText(configInfo);
+    configInfo.depthStencilInfo.front.compareOp = vk::CompareOp::eEqual;
+    configInfo.depthStencilInfo.front.failOp = vk::StencilOp::eKeep;
+    configInfo.depthStencilInfo.front.depthFailOp = vk::StencilOp::eKeep;
+    configInfo.depthStencilInfo.front.passOp = vk::StencilOp::eKeep;
+    configInfo.depthStencilInfo.back = configInfo.depthStencilInfo.front;
     configInfo.bindingDescriptions = StaticText::Vertex::getBindingDescriptions();
     configInfo.attributeDescriptions = StaticText::Vertex::getAttributeDescriptions();
 }

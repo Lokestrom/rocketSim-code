@@ -80,7 +80,7 @@ namespace fileSystem {
 
 	void createNewRocketLoggingFile(const IDview& id)
 	{
-		objects::rocketFiles.insert({ id.getID(),  WriteFile<ld>(objects::runFolder + "rocket\\" + id.getName() + "." + id.getLocalID() + ".db")});
+		objects::rocketFiles.insert({ id.getID(),  WriteFile<ld>(objects::runFolder + "rocket\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
 		objects::rocketFiles[id.getID()].addcolumns({"time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",
@@ -94,13 +94,13 @@ namespace fileSystem {
 
 	void createNewRocketStageLoggingFile(const IDview& id)
 	{
-		objects::rocketStageFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\" + id.getName() + "." + id.getLocalID() + ".db")});
+		objects::rocketStageFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
 		objects::rocketStageFiles[id.getID()].addcolumns({ "time", "staged"});
 	}
 
 	void createNewEngineLoggingFile(const IDview& id)
 	{
-		objects::engineFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\engine\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::engineFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\engine\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
 		objects::engineFiles[id.getID()].addcolumns({ "time",
 			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
 			"active", "thrustPercent"
@@ -109,7 +109,7 @@ namespace fileSystem {
 
 	void createNewFuelTankLoggingFile(const IDview& id)
 	{
-		objects::fuelTankFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\fuelTank\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::fuelTankFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\fuelTank\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
 		objects::fuelTankFiles[id.getID()].addcolumns({ "time",
 			"fuelMass"
 			});
@@ -117,7 +117,7 @@ namespace fileSystem {
 
 	void createNewPlanetLoggingFile(const IDview& id)
 	{
-		objects::planetFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "planet\\" + id.getName() + "." + id.getLocalID() + ".db") });
+		objects::planetFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "planet\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
 		objects::planetFiles[id.getID()].addcolumns({ "time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",

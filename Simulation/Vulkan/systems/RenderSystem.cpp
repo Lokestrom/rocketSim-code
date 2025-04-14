@@ -56,10 +56,10 @@ void RenderSystem3D::createPipeline(vk::RenderPass renderPass) {
     Pipeline::defaultPipelineConfigInfo3D(pipelineConfig);
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = _pipelineLayout;
+    pipelineConfig.vertFilepath = ".\\Vulkan\\shaders\\simple_shader.vert.spv";
+    pipelineConfig.fragFilepath = ".\\Vulkan\\shaders\\simple_shader.frag.spv";
     _pipeline = std::make_unique<Pipeline>(
         _device,
-        ".\\Vulkan\\shaders\\simple_shader.vert.spv",
-        ".\\Vulkan\\shaders\\simple_shader.frag.spv",
         pipelineConfig);
 }
 

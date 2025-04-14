@@ -4,5 +4,8 @@ D:\code\codeLibs\vulkan\Bin\glslc.exe simple_shader.frag -o simple_shader.frag.s
 D:\code\codeLibs\vulkan\Bin\glslc.exe simple_shader.vert -o simple_shader.vert.spv
 D:\code\codeLibs\vulkan\Bin\glslc.exe shader2d.frag -o shader2d.frag.spv
 D:\code\codeLibs\vulkan\Bin\glslc.exe shader2d.vert -o shader2d.vert.spv
-D:\code\codeLibs\vulkan\Bin\glslc.exe shaderText.frag -o shaderText.frag.spv
-D:\code\codeLibs\vulkan\Bin\glslc.exe shaderText.vert -o shaderText.vert.spv
+D:\code\codeLibs\vulkan\Bin\glslc.exe text/hard.vert -o text/hard.vert.spv
+D:\code\codeLibs\vulkan\Bin\glslc.exe text/box.vert -o text/box.vert.spv
+D:\code\codeLibs\vulkan\Bin\glslc.exe text/box.frag -o text/box.frag.spv
+D:\code\codeLibs\vulkan\Bin\glslc.exe text/becier.vert -o text/becier.vert.spv
+D:\code\codeLibs\vulkan\Bin\glslc.exe text/becier.frag -o text/becier.frag.spv

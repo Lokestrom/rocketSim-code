@@ -9,7 +9,7 @@ Fuelmap::Fuelmap(String name, ld mass)
 Fuelmap::Fuelmap(Vector<String> name, Vector<ld> mass) 
 {
 	if (name.size() != mass.size())
-		 Error("Name and mass vectors are not of eaqual size\nName vector size: " + toS(name.size()) + ".\n Mass vector size: " + toS(mass.size()), Error::exitCodes::badUserBehavior);
+		 Error("Name and mass vectors are not of eaqual size\nName vector size: " + toS(name.size()) + ".\n Mass vector size: " + toS(mass.size()), Error::Type::badUserBehavior);
 	for (int i = 0; i < name.size(); i++) {
 		_fuelmap[name[i]] = mass[i];
 	}
@@ -42,7 +42,7 @@ Fuelmap Fuelmap::operator+=(const Fuelmap& other)
 {
 	for (auto& [key, val] : other._fuelmap) {
 		if (!this->_fuelmap.count(key))
-			 Error("Input Fuelmap includes the fuel" + key + ", it does not exist in this Fuelmap.", Error::exitCodes::badUserBehavior);
+			 Error("Input Fuelmap includes the fuel" + key + ", it does not exist in this Fuelmap.", Error::Type::badUserBehavior);
 		this->_fuelmap[key] += val;
 	}
 	return *this;
@@ -54,7 +54,7 @@ Fuelmap Fuelmap::operator-=(const Fuelmap& other)
 			continue;
 		this->_fuelmap[key] -= val;
 		if (this->_fuelmap[key] < 0)
-			 Error("The fuel being removed is now below 0, this is not valid.", Error::exitCodes::badUserBehavior);
+			 Error("The fuel being removed is now below 0, this is not valid.", Error::Type::badUserBehavior);
 	}
 	return *this;
 }

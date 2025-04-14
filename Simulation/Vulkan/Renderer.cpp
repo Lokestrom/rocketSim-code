@@ -15,10 +15,10 @@ Renderer::~Renderer() { freeCommandBuffers(); }
 
 void Renderer::recreateSwapChain() {
     auto extent = _window.getExtent();
-    while (extent.width == 0 || extent.height == 0) {
-        extent = _window.getExtent();
-        glfwWaitEvents();
-    }
+    if (extent.width == 0 || extent.height == 0)
+        return;
+    extent = _window.getExtent();
+    glfwWaitEvents();
     _device.device().waitIdle();
 
     if (_swapChain == nullptr) {

@@ -35,7 +35,6 @@ public:
         return static_cast<double>(_swapChainExtent.width) / static_cast<double>(_swapChainExtent.height);
     }
     vk::Format findDepthFormat();
-    vk::Format findTextFormat();
 
     vk::Result acquireNextImage(uint32_t* imageIndex);
     vk::Result submitCommandBuffers(const vk::CommandBuffer* buffers, uint32_t* imageIndex);
@@ -50,7 +49,6 @@ private:
     void createSwapChain();
     void createImageViews();
     void createDepthResources();
-    void createTextResources();
     void createRenderPass();
     void createFramebuffers();
     void createSyncObjects();

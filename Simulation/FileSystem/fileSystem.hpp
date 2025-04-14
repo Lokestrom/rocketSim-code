@@ -27,9 +27,13 @@ namespace fileSystem {
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> engineFiles;
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> fuelTankFiles;
 		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> planetFiles;
+
+		void reset();
 		
 		inline std::ofstream errorLogFile;
 	}
+
+	void createFileTemplate(const String& path);
 
 	Vector<String> returnVariableAndValue(String line);
 	Vector<String> returnArgs(String args);

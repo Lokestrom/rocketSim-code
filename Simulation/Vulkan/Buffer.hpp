@@ -46,8 +46,8 @@ private:
 private:
     Device& _device;
     void* _mapped = nullptr;
-    vk::Buffer _buffer = VK_NULL_HANDLE;
-    vk::DeviceMemory _memory = VK_NULL_HANDLE;
+    vk::Buffer _buffer = nullptr;
+    vk::DeviceMemory _memory = nullptr;
 
     vk::DeviceSize _bufferSize;
     uint32_t _instanceCount;

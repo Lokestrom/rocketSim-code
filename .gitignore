@@ -1,7 +1,6 @@
 #vs files
 /.vs
 /Simulation/.vs/Simulation
-/Simulation/x64/Debug
+/Simulation/x64
 
-/externalLibs
 /graffDrawer

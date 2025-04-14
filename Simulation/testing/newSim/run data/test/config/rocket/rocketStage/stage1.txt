@@ -1,0 +1,17 @@
+setup{
+dryMass=80
+centerOfMass={0,0,0}
+mesh=a
+model=saturnv
+}
+
+Engines{
+0=Engine1({0,0,0})
+}
+
+reaction thrusters{
+}
+
+FuelTanks{
+0=FuelTank1({0,0,0})
+}

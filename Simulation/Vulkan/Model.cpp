@@ -1,5 +1,7 @@
 #include "Model.hpp"
 
+#include "App.hpp"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "external/tiny_obj_loader.h"
 #define GLM_ENABLE_EXPERIMENTAL
@@ -52,9 +54,6 @@ std::unique_ptr<Model2D> Model2D::createModelFromFile(Device& device, const std:
 std::unique_ptr<Model2D> Model2D::createModelFromVertices(Device& device, const std::vector<Vertex>& vertices) {
     Builder builder{};
     builder.vertices = vertices;
-    builder.indices.reserve(vertices.size());
-    for (uint32_t i = 0; i < vertices.size(); i++)
-        builder.indices.push_back(i);
     
     return std::make_unique<Model2D>(device, builder);
 }
@@ -77,6 +76,13 @@ void Model2D::draw(vk::CommandBuffer commandBuffer)
     }
     else {
         commandBuffer.draw(_vertexCount, 1, 0, 0);
+    }
+}
+
+void Model2D::changeColor(glm::vec4 color)
+{
+    for (Vertex* vertex = reinterpret_cast<Vertex*>(_vertexBuffer->getMappedMemory()); vertex != reinterpret_cast<Vertex*>(_vertexBuffer->getMappedMemory()) + sizeof(Vertex) * _vertexBuffer->getBufferSize(); vertex++) {
+        vertex->color = color;
     }
 }
 
@@ -204,7 +210,9 @@ Model3D::Model3D(Device& device, const Model3D::Builder& builder) : _device{ dev
     createIndexBuffers(builder.indices);
 }
 
-Model3D::~Model3D() {}
+Model3D::~Model3D() {
+	_device.device().waitIdle();
+}
 
 std::unique_ptr<Model3D> Model3D::createModelFromFile(
     Device& device, const std::string& filepath) {
@@ -362,6 +370,16 @@ void Model3D::Builder::loadModel(const std::string& filepath) {
                 vertices.push_back(vertex);
             }
             indices.push_back(uniqueVertices[vertex]);
+        }
+    }
+}
+
+void reloadModelsInWindows()
+{
+    for (auto& [key, window] : Vulkan::getWindows()) {
+        if (window->type == windows::Type::FreeCam) {
+            windows::FreeCam::clear3dModels(*window);
+            windows::FreeCam::load3dModels(*window);
         }
     }
 }

@@ -52,6 +52,8 @@ public:
     void bind(vk::CommandBuffer commandBuffer);
     void draw(vk::CommandBuffer commandBuffer);
 
+    void changeColor(glm::vec4 color);
+
 private:
     void createVertexBuffers(const std::vector<Vertex>& vertices);
     void createIndexBuffers(const std::vector<uint32_t>& indices);
@@ -119,4 +121,8 @@ private:
     std::unique_ptr<Buffer> _indexBuffer;
     uint32_t _indexCount;
 };
+
+#include "windowFunctions/core/freeCam.hpp"
+
+void reloadModelsInWindows();
 

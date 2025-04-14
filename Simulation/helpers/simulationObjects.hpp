@@ -25,9 +25,17 @@ namespace timeObjects {
 	inline ld realStartTimeEpoch;
 	inline ld realRunTime;
 	inline ld pauseStartTimeEpoch;
+	inline ld fps = 0;
 
 	void updateTime() noexcept;
 	inline ld getTimeSinceEpoch() noexcept {
 		return std::chrono::duration<ld>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+	}
+	inline void reset() noexcept {
+		currentTime = 0;
+		dtInstancesSinceLastLogging = 0;
+		realStartTimeEpoch = getTimeSinceEpoch();
+		realRunTime = 0;
+		pauseStartTimeEpoch = 0;
 	}
 }

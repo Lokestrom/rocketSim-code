@@ -113,8 +113,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;$(SolutionDir)../externalLibs/database/include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\codeLibs\glm;D:\code\codeLibs\vulkan\Include;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\include;D:\code\codeLibs\database\database\Include;D:\code\codeLibs\freeType\freetype-2.13.1\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\code\codeLibs\freeType\freetype-2.13.1\objs;D:\code\codeLibs\database\bin;D:\code\codeLibs\glfw-3.3.8.bin.WIN64\lib-vc2022;D:\code\codeLibs\vulkan\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -133,31 +134,33 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Vulkan\windowFunctions\error.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\confirmationScrean.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\instructions.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\alarms.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\freeCam.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\start\newSimulation.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\helpers\TextInputPopup.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\helpers\error.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\helpers\confirmationScrean.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\instructions.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\alarms.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\freeCam.cpp" />
     <ClCompile Include="helpers\ID.cpp" />
     <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\TransformComponent3D.cpp" />
     <ClCompile Include="helpers\math\matrix2.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\loadInConfig.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\loadInRun.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\mainMenu.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\mapView.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\start\loadInConfig.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\start\loadInRun.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\mainMenu.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\mapView.cpp" />
     <ClCompile Include="ModelCash.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\options.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\telemetry.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\timeControles.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\newSimulation.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\options.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\telemetry.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\core\timeControles.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\start\editor.cpp" />
     <ClCompile Include="ObjectRenderingCashing.cpp" />
     <ClCompile Include="helpers\physics.cpp" />
     <ClCompile Include="helpers\simulationObjects.cpp" />
     <ClCompile Include="SimulationModel.cpp" />
     <ClCompile Include="rocket\SimulationObject.cpp" />
     <ClCompile Include="helpers\math\Vector2.cpp" />
-    <ClCompile Include="Vulkan\windowFunctions\startMenu.cpp" />
+    <ClCompile Include="Vulkan\windowFunctions\start\startMenu.cpp" />
     <ClCompile Include="Vulkan\UI.cpp" />
     <ClCompile Include="DragSim.cpp" />
     <ClCompile Include="FileSystem\fileSystem.cpp" />
@@ -196,31 +199,33 @@
     <ClCompile Include="Vulkan\windowFunctions\windowFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vulkan\windowFunctions\error.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\confirmationScrean.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\instructions.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\alarms.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\freeCam.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\start\newSimulation.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\helpers\TextInputPopup.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\helpers\error.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\helpers\confirmationScrean.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\instructions.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\alarms.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\freeCam.hpp" />
     <ClInclude Include="helpers\ID.hpp" />
     <ClInclude Include="helpers\math.hpp" />
     <ClInclude Include="helpers\TransformComponent3D.hpp" />
     <ClInclude Include="helpers\math\matrix2.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\loadInConfig.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\loadInRun.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\mainMenu.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\mapView.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\start\loadInConfig.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\start\loadInRun.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\mainMenu.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\mapView.hpp" />
     <ClInclude Include="ModelCash.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\options.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\telemetry.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\timeControles.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\newSimulation.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\options.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\telemetry.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\core\timeControles.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\start\editor.hpp" />
     <ClInclude Include="ObjectRenderingCashing.hpp" />
     <ClInclude Include="helpers\physics.hpp" />
     <ClInclude Include="helpers\simulationObjects.hpp" />
     <ClInclude Include="SimulationModel.hpp" />
     <ClInclude Include="rocket\SimulationObject.hpp" />
     <ClInclude Include="helpers\math\Vector2.hpp" />
-    <ClInclude Include="Vulkan\windowFunctions\startMenu.hpp" />
+    <ClInclude Include="Vulkan\windowFunctions\start\startMenu.hpp" />
     <ClInclude Include="Vulkan\external\tiny_obj_loader.h" />
     <ClInclude Include="Vulkan\UI.hpp" />
     <ClInclude Include="DragSim.hpp" />

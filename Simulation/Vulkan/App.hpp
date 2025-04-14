@@ -5,21 +5,34 @@
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Window.hpp"
-#include "systems/PointLightSystem.hpp"
-#include "systems/RenderSystem.hpp"
-#include "systems/RenderSystem2D.hpp"
-#include "systems/TextSystem.hpp"
-#include "windowFunctions/windowFunctions.hpp"
 #include "PeripheralInputDevice.hpp"
+#include "windowFunctions/core/timeControles.hpp"
 #include "UI.hpp"
+#include "Text.hpp"
 
 #include "../ObjectRenderingCashing.hpp"
 
 // std
 #include <chrono>
 #include <memory>
+#include <unordered_map>
 
-class GameObject3D;
+class RenderSystem3D;
+class RenderSystem2D;
+class PointLightSystem;
+class TextRenderer;
+
+class UiElement;
+class Background;
+class Button;
+class Forum;
+class ScrollField;
+class TextInputField;
+
+class Camera;
+
+//switch from pure windowed solution to something more like a container window hybrid
+//create somthing like chrome tabs and also allow for somthing like in viusal studio
 
 struct WindowInfo {
 	unsigned int ID;
@@ -32,10 +45,12 @@ struct WindowInfo {
 	GameObject3D::Map gameObjects3d;
 	UIElement::Map UIElements;
 	StaticText::Map staticTexts;
-	VaryingText<long double>::Map varyinglds;
+	VaryingText::Map varyingTexts;
 
 	Vector<std::shared_ptr<TextInputField>> textInputFields;
 	Vector<std::shared_ptr<Button>> buttons;
+	Vector<std::shared_ptr<Forum>> forum;
+	Vector<std::shared_ptr<ScrollField>> scrollFields;
 	
 	std::optional<Background> background;
 
@@ -51,6 +66,7 @@ struct WindowInfo {
 	std::chrono::steady_clock::time_point currentTime;
 
 	void* typeSpecificInfo;
+	bool closeWindow;
 
 	static WindowInfo createWindowInfo(std::string name, windows::Type type, void* typeSpecificInfo = nullptr) {
 		static unsigned int currentId = 0;
@@ -74,8 +90,11 @@ private:
 
 class Vulkan
 {
+	friend void TextInputField::mouseCallback(GLFWwindow* window, int button, int action, int mods);
+	friend void windows::TimeControles::pause(WindowInfo& window);
+
 public:
-	static constexpr int WIDTH = 1100;
+	static constexpr int WIDTH = 900;
 	static constexpr int HEIGHT = 900;
 
 	Vulkan();
@@ -92,11 +111,17 @@ public:
 	static void addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&));
 
 	static void resetCallback(GLFWwindow* window);
+	static void resetInProgres() { _reset = true; }
+
+	static bool getPause() { return _pause; }
+
+	static double* getCameraSpeed() { return &_keyboard._moveSpeed; }
 
 private:
 
 	static void keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouseInput(GLFWwindow* window, int button, int action, int mods);
+	static void scrollInput(GLFWwindow* window, double xpos, double ypos);
 
 private:
 	inline static std::unordered_map<unsigned int, std::unique_ptr<WindowInfo>> _windows;
@@ -106,6 +131,6 @@ private:
 
 	inline static SimulationTimeCash _currentSimulationState;
 
-	inline static bool _pause;
+	inline static bool _pause = false;
+	inline static bool _reset = false;
 };
-

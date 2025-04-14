@@ -44,15 +44,16 @@ void RenderSystem2D::createPipelineLayout(vk::DescriptorSetLayout globalSetLayou
 }
 
 void RenderSystem2D::createPipeline(vk::RenderPass renderPass) {
+    assert(_pipelineLayout != NULL && "Cannot create pipeline before pipeline layout");
 
     PipelineConfigInfo pipelineConfig{};
     Pipeline::defaultPipelineConfigInfo2D(pipelineConfig);
     pipelineConfig.renderPass = renderPass;
     pipelineConfig.pipelineLayout = _pipelineLayout;
+    pipelineConfig.vertFilepath = ".\\Vulkan\\shaders\\shader2d.vert.spv";
+    pipelineConfig.fragFilepath = ".\\Vulkan\\shaders\\shader2d.frag.spv";
     _pipeline = std::make_unique<Pipeline>(
         _device,
-        ".\\Vulkan\\shaders\\shader2d.vert.spv",
-        ".\\Vulkan\\shaders\\shader2d.frag.spv",
         pipelineConfig);
 }
 
@@ -62,8 +63,13 @@ void RenderSystem2D::renderGameObjects(FrameInfo& frameInfo) {
     frameInfo.commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, _pipelineLayout, 0, 1, &frameInfo.globalDescriptorSet, 0, nullptr);
 
     for (auto& kv : frameInfo.UIelements) {
+		if (!kv.second.get()->draw) 
+            continue;
+
         auto& obj = *kv.second;
-        if (obj.model == nullptr) continue;
+        if (obj.model == nullptr) 
+            continue;
+
         RenderSystem2DPushConstants push{};
         push.position = { obj.transform.translation, obj.transform.rotation};
         push.scale = obj.transform.scale;

@@ -1,10 +1,31 @@
 #include "controles.hpp"
 
 #include "../Vulkan/windowFunctions/windowFunctions.hpp"
-#include "../Vulkan/windowFunctions/error.hpp"
+#include "../Vulkan/windowFunctions/helpers/error.hpp"
 #include "simulationObjects.hpp"
 
-Error::Error(const String& what, exitCodes code, recoveryType recoveryType, String function, String file, int line)
+Warning::Warning(const String& what, Type type, 
+	void (*changeFunction)(WindowInfo&), void (*continueFunction)(WindowInfo&), 
+	String function, String file, int line)
+{
+	_what = what;
+	_type = type;
+
+	_function = function;
+	_file = file;
+	_line = line;
+
+	list.push_back(*this);
+
+	auto info = (windows::WarningPopup::Info*)windows::createInfo(windows::Type::WarningPopup);
+	info->warning = this;
+	info->changeFunction = changeFunction;
+	info->continueFunction = continueFunction;
+
+	windows::createWindow(windows::Type::WarningPopup, info);
+}
+
+Error::Error(const String& what, Type code, recoveryType recoveryType, String function, String file, int line)
 {
 	_what = what;
 	_code = code;
@@ -63,3 +84,4 @@ bool Error::deloadSimulation()
 {
 	return false;
 }
+

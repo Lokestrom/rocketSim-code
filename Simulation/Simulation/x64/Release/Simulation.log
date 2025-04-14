@@ -1,0 +1,163 @@
+﻿  App.cpp
+  Camera.cpp
+  Text.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56): warning C4267: 'argument': conversion from 'size_t' to 'uint32_t', possible loss of data
+  (compiling source file 'Vulkan/Text.cpp')
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\memory(3434,56):
+  the template instantiation context (the oldest one first) is
+  	D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\Text.cpp(399,30):
+  	see reference to function template instantiation 'std::unique_ptr<Buffer,std::default_delete<Buffer>> std::make_unique<Buffer,Device&,size_t,unsigned __int64,vk::Flags<vk::BufferUsageFlagBits>,vk::MemoryPropertyFlagBits,0>(Device &,size_t &&,unsigned __int64 &&,vk::Flags<vk::BufferUsageFlagBits> &&,vk::MemoryPropertyFlagBits &&)' being compiled
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244: 'argument': conversion from 'FT_Pos' to 'float', possible loss of data
+  (compiling source file 'Vulkan/Text.cpp')
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76):
+  the template instantiation context (the oldest one first) is
+  	D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\Text.cpp(104,16):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::emplace_back<FT_Pos&,FT_Pos&,char&,short&>(FT_Pos &,FT_Pos &,char &,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(862,24):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_one_at_back<FT_Pos&,FT_Pos&,char&,short&>(FT_Pos &,FT_Pos &,char &,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(780,20):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<FT_Pos&,FT_Pos&,char&,short&>(FT_Pos &,FT_Pos &,char &,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(798,27):
+  	see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,FT_Pos&,FT_Pos&,char&,short&>(_Alloc &,_Objty *const ,FT_Pos &,FT_Pos &,char &,short &)' being compiled
+          with
+          [
+              _Alloc=std::allocator<CharacterGlyph::createCharacter::Point>,
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xmemory(725,14):
+  	see reference to function template instantiation '_Ty *std::construct_at<_Objty,FT_Pos&,FT_Pos&,char&,short&,0x0>(_Ty *const ,FT_Pos &,FT_Pos &,char &,short &) noexcept(<expr>)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244:             _Ty=FT_Pos
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76): warning C4244:         ]
+  (compiling source file 'Vulkan/Text.cpp')
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(241,76):
+  the template instantiation context (the oldest one first) is
+  	D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\Text.cpp(106,20):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::emplace_back<FT_Pos,FT_Pos,int,short&>(FT_Pos &&,FT_Pos &&,int &&,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(862,24):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_one_at_back<long,long,int,short&>(long &&,long &&,int &&,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(780,20):
+  	see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<long,long,int,short&>(long &&,long &&,int &&,short &)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(798,27):
+  	see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,long,long,int,short&>(_Alloc &,_Objty *const ,long &&,long &&,int &&,short &)' being compiled
+          with
+          [
+              _Alloc=std::allocator<CharacterGlyph::createCharacter::Point>,
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xmemory(725,14):
+  	see reference to function template instantiation '_Ty *std::construct_at<_Objty,long,long,int,short&,0x0>(_Ty *const ,long &&,long &&,int &&,short &) noexcept(<expr>)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244: 'argument': conversion from 'FT_Pos' to 'float', possible loss of data
+  (compiling source file 'Vulkan/Text.cpp')
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90):
+  the template instantiation context (the oldest one first) is
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(798,27):
+  	see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,FT_Pos&,FT_Pos&,char&,short&>(_Alloc &,_Objty *const ,FT_Pos &,FT_Pos &,char &,short &)' being compiled
+          with
+          [
+              _Alloc=std::allocator<CharacterGlyph::createCharacter::Point>,
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xmemory(725,14):
+  	see reference to function template instantiation '_Ty *std::construct_at<_Objty,FT_Pos&,FT_Pos&,char&,short&,0x0>(_Ty *const ,FT_Pos &,FT_Pos &,char &,short &) noexcept(false)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244:             _Ty=FT_Pos
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90): warning C4244:         ]
+  (compiling source file 'Vulkan/Text.cpp')
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xutility(242,90):
+  the template instantiation context (the oldest one first) is
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\vector(798,27):
+  	see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,long,long,int,short&>(_Alloc &,_Objty *const ,long &&,long &&,int &&,short &)' being compiled
+          with
+          [
+              _Alloc=std::allocator<CharacterGlyph::createCharacter::Point>,
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  	C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\xmemory(725,14):
+  	see reference to function template instantiation '_Ty *std::construct_at<_Objty,long,long,int,short&,0x0>(_Ty *const ,long &&,long &&,int &&,short &) noexcept(false)' being compiled
+          with
+          [
+              _Ty=CharacterGlyph::createCharacter::Point,
+              _Objty=CharacterGlyph::createCharacter::Point
+          ]
+  
+  UI.cpp
+  alarms.cpp
+  freeCam.cpp
+  instructions.cpp
+  mainMenu.cpp
+  mapView.cpp
+  options.cpp
+  telemetry.cpp
+  timeControles.cpp
+  TextInputPopup.cpp
+  confirmationScrean.cpp
+  error.cpp
+  loadInConfig.cpp
+  loadInRun.cpp
+  newSimulation.cpp
+  startMenu.cpp
+  windowFunctions.cpp
+  Generating Code...
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\App.cpp(159,1): warning C4715: 'WindowInfo::getWindowInfo': not all control paths return a value
+  Compiling...
+  controles.cpp
+  main.cpp
+  run.cpp
+  Generating Code...
+  database.lib(String.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  Finished generating code
+  Simulation.vcxproj -> D:\code\codeProjects\rocketSimulation\Simulation\x64\Release\Simulation.exe

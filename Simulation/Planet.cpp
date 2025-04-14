@@ -23,7 +23,7 @@ Planet::Planet(const SimulationObject::Builder& simObjectBuilder, ld mass, ld ra
 	_mass(mass), _radius(radius)
 {
 	if (mass == 0)
-		Error("Planet mass must be nonzero", Error::exitCodes::badUserBehavior);
+		Error("Planet mass must be nonzero", Error::Type::badUserBehavior);
 }
 
 IDview Planet::getID() const noexcept
@@ -77,29 +77,45 @@ void Planet::setVel(Vector3 newVel) noexcept
 
 ld Planet::atmosphreDensity(ld altitude)
 {
-	//0 is altitude, 1 is the density at that altitude
-	Vector<Vector<ld>> data(2);
-	for (auto i = 0; data[1][0] < altitude; i++) {
-		data[0] = data[1];
-		_atmosphereCondisions.getRow(data[1], i);
+	[[likely]] if (altitude > topOfAtmosphre)
+		return 0;
+	if (_atmosphereCondisions.has_value()) {
+		//0 is altitude, 1 is the density at that altitude
+		ld data[2][2] = { {0,0},{0,0} };
+		for (auto i = 0; data[1][0] < altitude; i++) {
+			data[0][0] = data[1][0];
+			data[0][1] = data[1][1];
+			data[1][0] = _atmosphereCondisions.value()[i].altitude;
+			data[1][1] = _atmosphereCondisions.value()[i].densety;
+		}
+		return (data[1][1] * (altitude - data[0][0]) + data[0][1] * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
 	}
-	return (data[1][1] * (altitude - data[0][0]) + data[0][1] * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
+	return _atmosphereDensityFunction.value()(altitude);
 }
 
 Vector3 Planet::atmosphreWind(ld altitude)
 {
-	//0 is altitude, 2,3,4 is the wind at that altitude
-	Vector<Vector<ld>> data(2);
-	data.pushBack(Vector<ld>(5));
-	data.pushBack(Vector<ld>(5));
-	Vector3 windTop, windBottom;
-	for (auto i = 0; data[1][0] < altitude; i++) {
-		data[0] = data[1];
-		_atmosphereCondisions.getRow(data[1], i);
+	[[likely]] if (altitude > topOfAtmosphre)
+		return { 0,0,0 };
+	if (_atmosphereCondisions.has_value()) {
+		//0 is altitude, 1,2,3 is the wind at that altitude
+		ld data[2][4] = { {0,0,0,0},{0,0,0,0} };
+		for (auto i = 0; data[1][0] < altitude; i++) {
+			data[0][0] = data[1][0];
+			data[0][1] = data[1][1];
+			data[0][2] = data[1][2];
+			data[0][3] = data[1][3];
+			data[1][0] = _atmosphereCondisions.value()[i].altitude;
+			data[1][1] = _atmosphereCondisions.value()[i].Wind.x;
+			data[1][2] = _atmosphereCondisions.value()[i].Wind.y;
+			data[1][3] = _atmosphereCondisions.value()[i].Wind.z;
+		}
+		Vector3 windTop, windBottom;
+		windTop = { data[1][2], data[1][3], data[1][4] };
+		windBottom = { data[0][2], data[0][3], data[0][4] };
+		return (windTop * (altitude - data[0][0]) + windBottom * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
 	}
-	windTop = { data[1][2], data[1][3], data[1][4] };
-	windBottom = { data[0][2], data[0][3], data[0][4] };
-	return (windTop * (altitude - data[0][0]) + windBottom * (data[1][0] - altitude)) / (data[1][0] - data[0][0]);
+	return _atmosphereWindFunction.value()(altitude);
 }
 
 ld Planet::altitude(const Vector3& position)

@@ -153,49 +153,55 @@
     <ClCompile Include="helpers\math\matrix2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\startMenu.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\start\startMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\newSimulation.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\start\editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\loadInConfig.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\start\loadInConfig.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\loadInRun.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\start\loadInRun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\mainMenu.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\mainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\freeCam.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\freeCam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\telemetry.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\telemetry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\mapView.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\mapView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\options.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\timeControles.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\timeControles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\alarms.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\alarms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\instructions.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\core\instructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vulkan\windowFunctions\windowFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\confirmationScrean.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\helpers\confirmationScrean.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan\windowFunctions\error.cpp">
+    <ClCompile Include="Vulkan\windowFunctions\helpers\error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan\windowFunctions\helpers\TextInputPopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan\windowFunctions\start\newSimulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -344,49 +350,55 @@
     <ClInclude Include="helpers\math\matrix2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\startMenu.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\start\startMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vulkan\windowFunctions\windowFunctions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\newSimulation.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\start\editor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\loadInConfig.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\start\loadInConfig.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\loadInRun.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\start\loadInRun.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\mainMenu.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\mainMenu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\freeCam.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\freeCam.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\telemetry.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\telemetry.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\mapView.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\mapView.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\options.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\options.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\timeControles.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\timeControles.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\alarms.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\alarms.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\instructions.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\core\instructions.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\confirmationScrean.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\helpers\confirmationScrean.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan\windowFunctions\error.hpp">
+    <ClInclude Include="Vulkan\windowFunctions\helpers\error.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan\windowFunctions\helpers\TextInputPopup.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan\windowFunctions\start\newSimulation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

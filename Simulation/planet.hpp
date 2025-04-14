@@ -11,6 +11,8 @@
 #include "helpers/ID.hpp"
 #include "ModelCash.hpp"
 
+#include <map>
+
 #include "rocket/SimulationObject.hpp"
 
 struct Obstruction 
@@ -28,17 +30,28 @@ struct Obstruction
 
 class Planet 
 {
-public:
+	friend class PhysicsPlanet;
+	friend class FixedOrbitPlanet;
+private:
 	ld _mass, _radius;
 	Vector3 _vel;
 	Quaternion _spin;
 	Vector<std::shared_ptr<Obstruction>> _obstructions;
-	ReadFile<ld> _atmosphereCondisions;
+	struct AtmosphereCondision {
+		ld altitude;
+		ld densety;
+		Vector3 Wind;
+	};
+	std::optional<std::vector<AtmosphereCondision>> _atmosphereCondisions;
+	std::optional<ld(*)(ld)> _atmosphereDensityFunction;
+	std::optional<Vector3(*)(ld)> _atmosphereWindFunction;
+	ld topOfAtmosphre;
 
 	std::shared_ptr<SimulationObject> _simObject;
 
 	Planet(const SimulationObject::Builder& simObjectBuilder, ld mass, ld radius);
 
+public:
 	IDview getID() const noexcept;
 	Vector3 getPos() const noexcept;
 	Vector3 getVel() const noexcept;

@@ -92,13 +92,14 @@ geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos)
     return { findLatitude(pos, otherPos), findLongitude(pos, otherPos) };
 }
 
-Vector<Vector2> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove)
+Vector<Vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove)
 {
-    Vector<Vector2> grid;
+    Vector<Vector<Vector2>> grid;
     Vector2 currPlace = posMove;
     for (int i = 0; i < dimentions.x; i++) {
+        grid.pushBack(Vector<Vector2>());
         for (int j = 0; j < dimentions.y; j++) {
-            grid.pushBack(currPlace);
+            grid[i].pushBack(currPlace);
             currPlace.y += seperation.y;
         }
         currPlace.x += seperation.x;

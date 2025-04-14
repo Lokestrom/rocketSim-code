@@ -1,6 +1,156 @@
-﻿  UI.cpp
-  database.lib(String.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Generating code
-  Finished generating code
-  Simulation.vcxproj -> D:\code\codeProjects\rocketSimulation\Simulation\x64\Release\Simulation.exe
+﻿  TextInputPopup.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  error.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  confirmationScrean.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\helpers\confirmationScrean.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  instructions.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  alarms.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  freeCam.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  math.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  TransformComponent3D.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  loadInConfig.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\loadInConfig.cpp(80,16): error C2440: '<function-style-cast>': cannot convert from 'initializer list' to 'Warning'
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\loadInConfig.cpp(80,16): message : No constructor could take the source type, or constructor overload resolution was ambiguous
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\loadInConfig.cpp(93,16): error C2440: '<function-style-cast>': cannot convert from 'initializer list' to 'Warning'
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\loadInConfig.cpp(93,16): message : No constructor could take the source type, or constructor overload resolution was ambiguous
+  loadInRun.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\loadInRun.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  mainMenu.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\core\mainMenu.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  mapView.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\core\mapView.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  ModelCash.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  options.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\core\options.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  telemetry.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\core\telemetry.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  timeControles.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\core\timeControles.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  newSimulation.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\newSimulation.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  ObjectRenderingCashing.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  physics.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  simulationObjects.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Generating Code...
+  Compiling...
+  SimulationObject.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  startMenu.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\start\startMenu.hpp(3,10): fatal error C1083: Cannot open include file: 'windowFunctions.hpp': No such file or directory
+  UI.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  DragSim.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  fileSystem.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  RocketInstructions.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  LoadManager.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  logging.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  controles.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.cpp(4,10): fatal error C1083: Cannot open include file: '../Vulkan/windowFunctions/error.hpp': No such file or directory
+  Mesh.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Quaternion.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  run.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  main.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\main.cpp(37,27): error C2838: 'success': illegal qualified name in member declaration
+D:\code\codeProjects\rocketSimulation\Simulation\main.cpp(37,34): error C2065: 'success': undeclared identifier
+  Planet.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Engine.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Fuelmap.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  FuelTank.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Rocket.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  RocketStage.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  App.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Generating Code...
+  Compiling...
+  Buffer.cpp
+  Camera.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  GameObject.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Model.cpp
+  PeripheralInputDevice.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Pipeline.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  PointLightSystem.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  RenderSystem.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  RenderSystem2D.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  TextSystem.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  Text.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+  windowFunctions.cpp
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,26): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\helpers\controles.hpp(40,75): error C2061: syntax error: identifier 'WindowInfo'
+D:\code\codeProjects\rocketSimulation\Simulation\Vulkan\windowFunctions\windowFunctions.cpp(3,10): fatal error C1083: Cannot open include file: 'startMenu.hpp': No such file or directory
+  Generating Code...

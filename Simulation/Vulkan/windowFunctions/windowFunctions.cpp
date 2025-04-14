@@ -1,40 +1,54 @@
 #include "windowFunctions.hpp"
 
-#include "startMenu.hpp"
-#include "mainMenu.hpp"
-#include "alarms.hpp"
-#include "freeCam.hpp"
-#include "instructions.hpp"
-#include "loadInConfig.hpp"
-#include "loadInRun.hpp"
-#include "mapView.hpp"
-#include "newSimulation.hpp"
-#include "options.hpp"
-#include "telemetry.hpp"
-#include "timeControles.hpp"
-#include "confirmationScrean.hpp"
-#include "error.hpp"
+#include "start/startMenu.hpp"
+#include "start/loadInConfig.hpp"
+#include "start/loadInRun.hpp"
+#include "start/newSimulation.hpp"
+
+#include "core/mainMenu.hpp"
+#include "core/alarms.hpp"
+#include "core/freeCam.hpp"
+#include "core/instructions.hpp"
+#include "core/mapView.hpp"
+#include "core/options.hpp"
+#include "core/telemetry.hpp"
+#include "core/timeControles.hpp"
+
+#include "helpers/confirmationScrean.hpp"
+#include "helpers/error.hpp"
+#include "helpers/TextInputPopup.hpp"
+
+#include "start/editor.hpp"
 
 #include "../App.hpp"
 
 using namespace windows;
 
 void windows::createWindowData() {
+	//start
 	Data::addWindow<StartMenu>();
+	Data::addWindow<LoadInConfig>();
+	Data::addWindow<LoadInRun>();
+	Data::addWindow<NewSimulation>();
+	Data::addWindow<Editor>();
+
+
+	//core
 	Data::addWindow<MainMenu>();
 	Data::addWindow<Alarms>();
 	Data::addWindow<FreeCam>();
 	Data::addWindow<Instructions>();
-	Data::addWindow<LoadInConfig>();
-	Data::addWindow<LoadInRun>();
 	Data::addWindow<MapView>();
-	Data::addWindow<NewSimulation>();
 	Data::addWindow<Options>();
 	Data::addWindow<Telemetry>();
 	Data::addWindow<TimeControles>();
-	Data::addWindow<ConfirmationScrean>();
+
+	//helpers
 	Data::addWindow<ErrorList>();
 	Data::addWindow<ErrorPopup>();
+	Data::addWindow<WarningPopup>();
+	Data::addWindow<ConfirmationScrean>();
+	Data::addWindow<TextInputPopup>();
 }
 
 String windows::getName(Type type) {
@@ -54,6 +68,11 @@ void* windows::createInfo(Type type) {
 }
 void(*windows::getDeleteInfoFunction(Type type))(void* info) {
 	return Data::getWindowData(type).deleteInfoFunction;
+}
+
+void windows::closeWindow(WindowInfo& window)
+{
+	window.closeWindow = true;
 }
 
 void windows::swapWindowType(WindowInfo& window, Type newType, void* info) {

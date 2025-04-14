@@ -19,19 +19,34 @@
 
 #include "../ObjectRenderingCashing.hpp"
 #include "../helpers/simulationObjects.hpp"
+#include "UI.hpp"
 #include "windowFunctions/windowFunctions.hpp"
 
+#include "Camera.hpp"
+
+#include "systems/PointLightSystem.hpp"
+#include "systems/RenderSystem.hpp"
+#include "systems/RenderSystem2D.hpp"
+#include "systems/TextSystem.hpp"
+
 #include "../rocket/Rocket.hpp"
+#include "Renderer.hpp"
+#include "Device.hpp"
+#include "Window.hpp"
+#include "Buffer.hpp"
+#include "SwapChain.hpp"
+#include <string>
 
 glm::vec4 toVec4(Vector3 v, double r);
 Vector3 toVector3(glm::vec3 v);
 glm::vec3 toVec3(Vector3 v);
 
 WindowInfo::WindowInfo(unsigned int id, std::string name, windows::Type windowType, void* windowTypeSpecificInfo)
-    : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT), 
+    : ID(id), type(windowType), uboBuffer(SwapChain::MAX_FRAMES_IN_FLIGHT), globalDescriptorSet(SwapChain::MAX_FRAMES_IN_FLIGHT),
     typeSpecificInfo((windowTypeSpecificInfo == nullptr)
         ? windows::createInfo(type) 
-        : windowTypeSpecificInfo)
+        : windowTypeSpecificInfo),
+    closeWindow(false), background()
 {
     window = std::make_unique<Window>(Vulkan::WIDTH, Vulkan::HEIGHT, name);
     device = std::make_unique<Device>(*window);
@@ -67,15 +82,15 @@ WindowInfo::WindowInfo(unsigned int id, std::string name, windows::Type windowTy
         *device,
         renderer->getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout()));
-    renderSystem2D = (std::make_unique<RenderSystem2D>(
-        *device,
-        renderer->getSwapChainRenderPass(),
-        globalSetLayout->getDescriptorSetLayout()));
     pointLightSystem = (std::make_unique<PointLightSystem>(
         *device,
         renderer->getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout()));
     textRenderSystem = (std::make_unique<TextRenderer>(
+        *device,
+        renderer->getSwapChainRenderPass(),
+        globalSetLayout->getDescriptorSetLayout()));
+    renderSystem2D = (std::make_unique<RenderSystem2D>(
         *device,
         renderer->getSwapChainRenderPass(),
         globalSetLayout->getDescriptorSetLayout()));
@@ -88,7 +103,8 @@ void WindowInfo::prepereForTypeSwap()
     gameObjects3d.clear();
     UIElements.clear();
     staticTexts.clear();
-    varyinglds.clear();
+    varyingTexts.clear();
+    forum.clear();
 
     textInputFields.clear();
     buttons.clear();
@@ -108,7 +124,7 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     gameObjects3d.swap(windowInfo.gameObjects3d);
     UIElements.swap(windowInfo.UIElements);
     staticTexts.swap(windowInfo.staticTexts);
-    varyinglds.swap(windowInfo.varyinglds);
+    varyingTexts.swap(windowInfo.varyingTexts);
     uboBuffer.swap(windowInfo.uboBuffer);
     globalDescriptorSet.swap(windowInfo.globalDescriptorSet);
     renderSystem3D.swap(windowInfo.renderSystem3D);
@@ -120,6 +136,7 @@ WindowInfo::WindowInfo(WindowInfo&& windowInfo) noexcept
     typeSpecificInfo = windowInfo.typeSpecificInfo;
     windowInfo.typeSpecificInfo = nullptr;
     type = windowInfo.type;
+    closeWindow = windowInfo.closeWindow;
 }
 
 WindowInfo::~WindowInfo()
@@ -138,7 +155,7 @@ WindowInfo::~WindowInfo()
     gameObjects3d.clear();
     UIElements.clear();
     staticTexts.clear();
-    varyinglds.clear();
+    varyingTexts.clear();
 
     renderer.reset();
     window.reset();
@@ -153,7 +170,7 @@ WindowInfo& WindowInfo::getWindowInfo(GLFWwindow* glfwWindow)
         if (i.second->window->getGLFWwindow() == glfwWindow)
             return *i.second.get();
     }
-    Error("no WindowInfo with contains the given glfwWindow", Error::exitCodes::codeFault);
+    Error("no WindowInfo with contains the given glfwWindow", Error::Type::codeFault);
 }
 
 Vulkan::Vulkan() 
@@ -167,8 +184,7 @@ Vulkan::~Vulkan() {
 
 void Vulkan::startup() {
     for (auto& [key, window] : _windows) {
-        glfwSetKeyCallback(window->window->getGLFWwindow(), keyBoardInput);
-        glfwSetMouseButtonCallback(window->window->getGLFWwindow(), mouseInput);
+        resetCallback(window->window->getGLFWwindow());
         keyBoardInput(window->window->getGLFWwindow(), 0, 0, 0, 0);
     }
 
@@ -177,16 +193,27 @@ void Vulkan::startup() {
 }
 
 bool Vulkan::update() {
-    if (_windows.empty())
+    if (_windows.empty()) [[unlikely]]
         return false;
     if(!_pause)
         _currentSimulationState = objectLists::objectCash.getsimulationTimeCash(timeObjects::realRunTime);
+    
     for (auto it = _windows.begin(); it != _windows.end();) {
         glfwPollEvents();
-        if (it->second->window->shouldClose()) {
+        if (_reset) [[unlikely]] {
+            it++;
+            continue;
+        }
+        if (it->second->window->shouldClose() || it->second->closeWindow) [[unlikely]] {
             it = _windows.erase(it);
             continue;
         }
+
+        for (auto& [_, i] : it->second->varyingTexts) {
+            i->update();
+        }
+        for (auto i : it->second->textInputFields)
+            i->update(*it->second);
 
         if(it->second->type == windows::Type::FreeCam)
             for (auto& [id, transform] : _currentSimulationState.objects) {
@@ -196,6 +223,7 @@ bool Vulkan::update() {
         auto newTime = std::chrono::high_resolution_clock::now();
         float deltaTime =
             std::chrono::duration<float, std::chrono::seconds::period>(newTime - it->second->currentTime).count();
+        timeObjects::fps = 1 / deltaTime;
         it->second->currentTime = newTime;
 
         it->second->camera->update(*it->second, deltaTime, _keyboard, _mouse, _pause);
@@ -235,9 +263,10 @@ bool Vulkan::update() {
 
             it->second->renderer->endSwapChainRenderPass(commandBuffer);
             it->second->renderer->endFrame();
+            it++;
         }
-        it++;
     }
+    _reset = false;
     return true;
 }
 
@@ -245,8 +274,7 @@ void Vulkan::addWindow(WindowInfo window, void (*loadFunction)(WindowInfo&))
 {
     unsigned int id = window.ID;
     _windows.emplace(id, std::make_unique<WindowInfo>(std::move(window)));
-    glfwSetKeyCallback(_windows[id]->window->getGLFWwindow(), keyBoardInput);
-    glfwSetMouseButtonCallback(_windows[id]->window->getGLFWwindow(), mouseInput);
+	resetCallback(_windows[id]->window->getGLFWwindow());
     keyBoardInput(_windows[id]->window->getGLFWwindow(), 0, 0, 0, 0);
     loadFunction(*_windows[id]);
 }
@@ -256,12 +284,13 @@ void Vulkan::resetCallback(GLFWwindow* window)
     glfwSetKeyCallback(window, keyBoardInput);
     glfwSetMouseButtonCallback(window, mouseInput);
     glfwSetCharCallback(window, nullptr);
+    glfwSetScrollCallback(window, scrollInput);
 }
 
 
 void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (action != GLFW_PRESS)
+    if (action != GLFW_PRESS) [[likely]]
         return;
     if (key == GLFW_KEY_ESCAPE) {
         _pause = !_pause;
@@ -276,6 +305,17 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
             glfwSetCursorPos(window, w / 2, h / 2);
             timeObjects::realStartTimeEpoch += timeObjects::getTimeSinceEpoch() - timeObjects::pauseStartTimeEpoch;
 
+        }
+    }
+
+    if (key == GLFW_KEY_M) {
+        if (_mouse.enabled) {
+            _mouse.enabled = false;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+        else {
+            _mouse.enabled = true;
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
 
@@ -332,4 +372,9 @@ void Vulkan::mouseInput(GLFWwindow* window, int button, int action, int mods) {
                 return;
         }
     }
+}
+
+void Vulkan::scrollInput(GLFWwindow* window, double xoffset, double yoffset)
+{
+	_keyboard.changeLookSpeed(yoffset);
 }
