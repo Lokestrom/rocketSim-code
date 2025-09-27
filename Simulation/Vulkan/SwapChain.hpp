@@ -58,7 +58,7 @@ private:
         const std::vector<vk::SurfaceFormatKHR>& availableFormats);
     vk::PresentModeKHR chooseSwapPresentMode(
         const std::vector<vk::PresentModeKHR>& availablePresentModes);
-    vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+    vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities) const;
 
 private:
     vk::Format _swapChainImageFormat;

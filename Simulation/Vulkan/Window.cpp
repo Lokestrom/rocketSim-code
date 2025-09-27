@@ -21,7 +21,7 @@ Window::~Window() {
 void Window::createWindowSurface(vk::Instance instance, vk::SurfaceKHR* surface) {
     VkSurfaceKHR cSurface;
     if (glfwCreateWindowSurface(instance, _window, nullptr, &cSurface) != VK_SUCCESS) {
-         std::runtime_error("failed to craete window surface");
+         throw std::runtime_error("failed to craete window surface");
     }
     *surface = cSurface;
 }

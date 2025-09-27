@@ -108,13 +108,16 @@ void Engine::update()
 
 Vector3 Engine::thrust(Vector3& rotationalAcc, Fuelmap& usedFuel, Vector3 centerOfMass, Quaternion rocketOrientation, ld mass) noexcept
 {
-	usedFuel.addFuel(_fuelPerSecond* timeObjects::dt);
+	usedFuel.addFuel(_fuelPerSecond * timeObjects::dt);
 	Vector3 engineThrust = simObject->transform->getTotalRotation().rotate(_exitVel * (_fuelPerSecond * timeObjects::dt).totalMass());
+	centerOfMass = rocketOrientation.rotate(centerOfMass);
 	Vector3 rotDirVec = centerOfMass.cross(engineThrust);
 	ld radius = centerOfMass.length();
-
-	if (radius)
+	//ka in i helvete skjer med rotasjons kraften gir faen ikke mening
+	if (radius) {
 		rotationalAcc += (rotDirVec * 2) / (mass * radius * radius);
+		engineThrust *= centerOfMass.normal().dot(engineThrust.normal());
+	}
 	return engineThrust;
 }
 

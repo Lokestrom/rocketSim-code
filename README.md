@@ -1,6 +1,6 @@
 # Rocket simulation code
-Code that simulates a self defined rocket and self defined planets.<br>
+Code that simulates a rocket and planets.<br>
 Units: SI<br>
 
-### External libraryes
+### External libraries
 * [Database](https://github.com/Lokestrom/database)<br>

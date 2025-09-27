@@ -1,5 +1,5 @@
 setup{
-dryMass=80
+dryMass=50
 centerOfMass={0,0,0}
 mesh=a
 model=saturnv

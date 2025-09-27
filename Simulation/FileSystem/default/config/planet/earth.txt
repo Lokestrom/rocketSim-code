@@ -1,6 +1,6 @@
 setup{
 FixedOrbit=false
-mass=1E13
+mass=1E8
 radius=1
 pos={0,0,0}
 model=sphere

@@ -4,7 +4,8 @@
 
 FuelTank::FuelTank(const Builder& builder)
 	: simObject(SimulationObject::createSimulationObject(builder.simObjectBuilder)),
-	_fuel(builder.fuelType, builder.fuelLoad), _density(builder.fuelDensity)
+	_fuel(builder.fuelType, builder.fuelLoad), _density(builder.fuelDensity),
+	_height(builder.height), _radius(builder.radius)
 {
 }
 

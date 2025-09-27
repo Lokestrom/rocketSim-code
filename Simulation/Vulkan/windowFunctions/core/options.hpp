@@ -17,5 +17,6 @@ namespace windows {
 		static void swapTo(WindowInfo& window);
 		static void* createInfo();
 		static void deleteInfo(void* info);
+
 	};
 }

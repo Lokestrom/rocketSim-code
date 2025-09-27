@@ -3,13 +3,12 @@
 #include "App.hpp"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include "external/tiny_obj_loader.h"
+#include "../FileSystem/external/tiny_obj_loader.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
 // std
 #include <cassert>
-#include <cstring>
 #include <unordered_map>
 
 template <typename T, typename... Rest>
@@ -171,7 +170,7 @@ void Model2D::Builder::loadModel(const std::string& filepath) {
     std::string warn, err;
 
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
-         std::runtime_error(warn + err);
+         throw std::runtime_error(warn + err);
     }
 
     vertices.clear();
@@ -325,7 +324,7 @@ void Model3D::Builder::loadModel(const std::string& filepath) {
     std::string warn, err;
 
     if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str())) {
-         std::runtime_error(warn + err);
+         throw std::runtime_error(warn + err);
     }
 
     vertices.clear();

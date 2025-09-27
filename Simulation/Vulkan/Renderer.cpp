@@ -29,7 +29,7 @@ void Renderer::recreateSwapChain() {
         _swapChain = std::make_unique<SwapChain>(_device, extent, oldSwapChain);
 
         if (!oldSwapChain->compareSwapFormats(*_swapChain.get())) {
-             std::runtime_error("Swap chain image(or depth) format has changed!");
+             throw std::runtime_error("Swap chain image(or depth) format has changed!");
         }
     }
 }
@@ -61,7 +61,7 @@ vk::CommandBuffer Renderer::beginFrame() {
     }
 
     if (result != vk::Result::eSuccess && result != vk::Result::eSuboptimalKHR) {
-         std::runtime_error("failed to acquire swap chain image!");
+         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
     _isFrameStarted = true;
@@ -70,7 +70,7 @@ vk::CommandBuffer Renderer::beginFrame() {
     vk::CommandBufferBeginInfo beginInfo{};
 
     if (commandBuffer.begin(&beginInfo) != vk::Result::eSuccess) {
-         std::runtime_error("failed to begin recording command buffer!");
+        throw  std::runtime_error("failed to begin recording command buffer!");
     }
     
     return commandBuffer;
@@ -88,7 +88,7 @@ void Renderer::endFrame() {
         recreateSwapChain();
     }
     else if (result != vk::Result::eSuccess) {
-         std::runtime_error("failed to present swap chain image!");
+         throw std::runtime_error("failed to present swap chain image!");
     }
 
     _isFrameStarted = false;

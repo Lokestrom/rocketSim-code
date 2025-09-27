@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../windowFunctions.hpp"
+#include "../../helpers/math/Vector3.hpp"
+#include <memory>
 
 namespace windows {
 	class FreeCam {
@@ -19,5 +21,10 @@ namespace windows {
 
 		static void clear3dModels(WindowInfo& window);
 		static void load3dModels(WindowInfo& window);
+		static void setCameraPosition(WindowInfo& window, String position);
+
+		static Vector3 getRocketVel();
+		static Vector3 getRocketAcc();
+		static Vector3 getRocketPos();
 	};
 }

@@ -86,8 +86,8 @@ namespace fileSystem {
 			"vel.x", "vel.y", "vel.z",
 			"acc.x", "acc.y", "acc.z",
 			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
-			"rotationVel.w", "rotationVel.x", "rotationVel.y", "rotationVel.z",
-			"rotationAcc.w", "rotationAcc.x", "rotationAcc.y", "rotationAcc.z",
+			"rotationVel.x", "rotationVel.y", "rotationVel.z",
+			"rotationAcc.x", "rotationAcc.y", "rotationAcc.z",
 			"RCS"
 			});
 	}
@@ -164,8 +164,8 @@ namespace fileSystem {
 			rocket.vel().x, rocket.vel().y, rocket.vel().z,
 			rocket.acc().x, rocket.acc().y, rocket.acc().z,
 			rocket.orientation().w, rocket.orientation().x, rocket.orientation().y, rocket.orientation().z,
-			rocket.rotationVel().w, rocket.rotationVel().x, rocket.rotationVel().y, rocket.rotationVel().z,
-			rocket.rotationAcc().w, rocket.rotationAcc().x, rocket.rotationAcc().y, rocket.rotationAcc().z,
+			rocket.rotationVel().x, rocket.rotationVel().y, rocket.rotationVel().z,
+			rocket.rotationAcc().x, rocket.rotationAcc().y, rocket.rotationAcc().z,
 			(rocket.RCS()) ? 1.0l : 0.0l
 			});
 	}

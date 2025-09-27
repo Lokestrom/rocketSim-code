@@ -53,12 +53,12 @@ Device::~Device() {
 
 void Device::createInstance() {
     if (enableValidationLayers && !checkValidationLayerSupport()) {
-         std::runtime_error("validation layers requested, but not available!");
+         throw std::runtime_error("validation layers requested, but not available!");
     }
 
     uint32_t version = 0;
     if (vk::enumerateInstanceVersion(&version) != vk::Result::eSuccess)
-         std::runtime_error("cant find version!");
+         throw std::runtime_error("cant find version!");
 
     std::cout << "System can support Vulkan Variant: " << VK_API_VERSION_VARIANT(version)
         << ", Major: " << VK_API_VERSION_MAJOR(version)
@@ -102,7 +102,7 @@ void Device::createInstance() {
 void Device::pickPhysicalDevice() {
     std::vector<vk::PhysicalDevice> devices = _instance.enumeratePhysicalDevices();
     if (devices.size() == 0) {
-         std::runtime_error("failed to find GPUs with Vulkan support!");
+         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
     std::cout << "Device count: " << devices.size() << std::endl;
 
@@ -114,7 +114,7 @@ void Device::pickPhysicalDevice() {
         }
     }
 
-     std::runtime_error("failed to find a suitable GPU!");
+     throw std::runtime_error("failed to find a suitable GPU!");
 }
 
 void Device::createLogicalDevice() {
@@ -158,7 +158,7 @@ void Device::createLogicalDevice() {
     }
     
     if (_physicalDevice.createDevice(&createInfo, nullptr, &_logicalDevice) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create logical device!");
+         throw std::runtime_error("failed to create logical device!");
     }
 
     _logicalDevice.getQueue(indices.graphicsFamily.value(), 0, &_graphicsQueue);
@@ -175,7 +175,7 @@ void Device::createCommandPool() {
     
     
     if (_logicalDevice.createCommandPool(&poolInfo, nullptr, &_commandPool) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create command pool!");
+         throw std::runtime_error("failed to create command pool!");
     }
 }
 
@@ -255,7 +255,7 @@ void Device::hasGflwRequiredInstanceExtensions() {
     for (const auto& required : requiredExtensions) {
         std::cout << "\t" << required << std::endl;
         if (available.find(required) == available.end()) {
-             std::runtime_error("Missing required glfw extension");
+             throw std::runtime_error("Missing required glfw extension");
         }
     }
 }
@@ -296,18 +296,18 @@ QueueFamilyIndices Device::findQueueFamilies(vk::PhysicalDevice device) {
 SwapChainSupportDetails Device::querySwapChainSupport(vk::PhysicalDevice device) {
     SwapChainSupportDetails details;
     if (device.getSurfaceCapabilitiesKHR(_surface, &details.capabilities) != vk::Result::eSuccess) {
-         std::runtime_error("cant find the surface capabilities");
+         throw std::runtime_error("cant find the surface capabilities");
     }
 
     uint32_t formatCount;
     if (device.getSurfaceFormatsKHR(_surface, &formatCount, nullptr) != vk::Result::eSuccess) {
-         std::runtime_error("cant find surface formats");
+         throw std::runtime_error("cant find surface formats");
     }
 
     if (formatCount != 0) {
         details.formats.resize(formatCount);
         if (device.getSurfaceFormatsKHR(_surface, &formatCount, details.formats.data()) != vk::Result::eSuccess) {
-             std::runtime_error("cant get surface formats");
+             throw std::runtime_error("cant get surface formats");
         }
     }
 
@@ -329,7 +329,7 @@ vk::Format Device::findSupportedFormat(
             return format;
         }
     }
-     std::runtime_error("failed to find supported format!");
+    throw std::runtime_error("failed to find supported format!");
 }
 
 uint32_t Device::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties) {
@@ -342,7 +342,7 @@ uint32_t Device::findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags pro
         }
     }
 
-     std::runtime_error("failed to find suitable memory type!");
+     throw std::runtime_error("failed to find suitable memory type!");
 }
 
 void Device::createBuffer(
@@ -358,7 +358,7 @@ void Device::createBuffer(
     bufferInfo.sharingMode = vk::SharingMode::eExclusive;
 
     if (_logicalDevice.createBuffer(&bufferInfo, nullptr, &buffer) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create vertex buffer!");
+         throw std::runtime_error("failed to create vertex buffer!");
     }
 
     
@@ -373,7 +373,7 @@ void Device::createBuffer(
     
 
     if (_logicalDevice.allocateMemory(&allocInfo, nullptr, &bufferMemory) != vk::Result::eSuccess) {
-         std::runtime_error("failed to allocate vertex buffer memory!");
+         throw std::runtime_error("failed to allocate vertex buffer memory!");
     }
     
     vkBindBufferMemory(_logicalDevice, buffer, bufferMemory, 0);
@@ -388,7 +388,7 @@ vk::CommandBuffer Device::beginSingleTimeCommands() {
     
     vk::CommandBuffer commandBuffer;
     if (_logicalDevice.allocateCommandBuffers(&allocInfo, &commandBuffer) != vk::Result::eSuccess) {
-         std::runtime_error("cant allocate comand buffer");
+         throw std::runtime_error("cant allocate comand buffer");
     }
 
     vk::CommandBufferBeginInfo beginInfo{};
@@ -396,7 +396,7 @@ vk::CommandBuffer Device::beginSingleTimeCommands() {
     beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
 
     if (commandBuffer.begin(&beginInfo) != vk::Result::eSuccess) {
-         std::runtime_error("cant begin comand buffer");
+         throw std::runtime_error("cant begin comand buffer");
     }
     return commandBuffer;
 }
@@ -410,7 +410,7 @@ void Device::endSingleTimeCommands(vk::CommandBuffer commandBuffer) {
     submitInfo.pCommandBuffers = &commandBuffer;
 
     if (_graphicsQueue.submit(1, &submitInfo, nullptr) != vk::Result::eSuccess) {
-         std::runtime_error("cant submit to graphics queue");
+         throw std::runtime_error("cant submit to graphics queue");
     }
     _graphicsQueue.waitIdle();
 
@@ -457,7 +457,7 @@ void Device::createImageWithInfo(
     vk::Image& image,
     vk::DeviceMemory& imageMemory) {
     if (_logicalDevice.createImage(&imageInfo, nullptr, &image) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create image!");
+         throw std::runtime_error("failed to create image!");
     }
 
     vk::MemoryRequirements memRequirements;
@@ -469,7 +469,7 @@ void Device::createImageWithInfo(
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
    
     if (_logicalDevice.allocateMemory(&allocInfo, nullptr, &imageMemory) != vk::Result::eSuccess) {
-         std::runtime_error("failed to allocate image memory!");
+         throw std::runtime_error("failed to allocate image memory!");
     }
     
     _logicalDevice.bindImageMemory(image, imageMemory, 0);

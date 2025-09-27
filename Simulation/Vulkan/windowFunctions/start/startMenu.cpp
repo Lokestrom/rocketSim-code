@@ -11,53 +11,53 @@ using namespace windows;
 
 void StartMenu::load(WindowInfo& window)
 {
-    Vector2 buttonSize = { .8,.15 };
-    Vector3 buttonColor = { 0,0,1 };
+	Vector2 buttonSize = { .8,.15 };
+	Vector3 buttonColor = { 0,0,1 };
 
-    auto grid = createGrid({ 1,3 }, { .8, .4 }, { 0,-.5 });
+	auto grid = createGrid({ 1,3 }, { .8, .4 }, { 0,-.5 });
 
-    float textScale = 0.00005;
-    glm::vec4 textColor = { 1,0,0,1 };
+	float textScale = 0.00005;
+	glm::vec4 textColor = { 1,0,0,1 };
 
-    auto button = Button::createButton(window, grid[0][0], buttonSize);
-    button->changeColor(buttonColor, window);
-    button->setClickFunction(getSwapFunction(Type::NewSimulation));
+	auto button = Button::createButton(window, grid[0][0], buttonSize);
+	button->changeColor(buttonColor, window);
+	button->setClickFunction(getSwapFunction(Type::NewSimulation));
 
-    StaticText::createText(window, { grid[0][0].x, grid[0][0].y }, textColor, textScale, "New simulation");
+	StaticText::createText(window, { grid[0][0].x, grid[0][0].y }, textColor, textScale, "New simulation");
 
-    button = Button::createButton(window, grid[0][1], buttonSize);
-    button->changeColor(buttonColor, window);
-    button->setClickFunction(getSwapFunction(Type::LoadInConfig));
+	button = Button::createButton(window, grid[0][1], buttonSize);
+	button->changeColor(buttonColor, window);
+	button->setClickFunction(getSwapFunction(Type::LoadInConfig));
 
-    StaticText::createText(window, { grid[0][1].x, grid[0][1].y }, textColor, textScale, "Load in an existing config");
+	StaticText::createText(window, { grid[0][1].x, grid[0][1].y }, textColor, textScale, "Load in an existing config");
 
-    button = Button::createButton(window, grid[0][2], buttonSize);
-    button->changeColor(buttonColor, window);
-    button->setClickFunction(getSwapFunction(Type::LoadInRun));
+	button = Button::createButton(window, grid[0][2], buttonSize);
+	button->changeColor(buttonColor, window);
+	button->setClickFunction(getSwapFunction(Type::LoadInRun));
 
-    StaticText::createText(window, { grid[0][2].x, grid[0][2].y }, textColor, textScale, "Load in a run");
+	StaticText::createText(window, { grid[0][2].x, grid[0][2].y }, textColor, textScale, "Load in a run");
 
-    Background::createBackground(window, { 0,1,1 });
+	Background::createBackground(window, { 0,1,1 });
 
-    window.camera->setting = CameraSettings::normal2d;
+	window.camera->setting = CameraSettings::normal2d;
 }
 
 
 void StartMenu::open(WindowInfo& window)
 {
-    createWindow(type);
+	createWindow(type);
 }
 
 void StartMenu::swapTo(WindowInfo& window)
 {
-    swapWindowType(window, type);
+	swapWindowType(window, type);
 }
 
 void* StartMenu::createInfo()
 {
-    return new Info();
+	return new Info();
 }
 void StartMenu::deleteInfo(void* info) {
-    Info* infoObj = static_cast<Info*>(info);
-    delete infoObj;
+	Info* infoObj = static_cast<Info*>(info);
+	delete infoObj;
 }

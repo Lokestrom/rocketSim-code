@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../windowFunctions.hpp"
+#include <memory>
 
 namespace windows {
 

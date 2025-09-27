@@ -1,7 +1,0 @@
-setup{
-FixedOrbit=false
-mass=1E13
-radius=1
-pos={0,0,0}
-model=sphere
-}

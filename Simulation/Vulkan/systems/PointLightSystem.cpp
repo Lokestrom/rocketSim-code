@@ -58,7 +58,7 @@ void PointLightSystem::createPipelineLayout(vk::DescriptorSetLayout globalSetLay
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
     if (_device.device().createPipelineLayout(&pipelineLayoutInfo, nullptr, &_pipelineLayout) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create pipeline layout!");
+         throw std::runtime_error("failed to create pipeline layout!");
     }
     
 }

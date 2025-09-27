@@ -8,18 +8,12 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <glm/gtc/constants.hpp>
 
 // std
-#include <array>
-#include <cassert>
 #include <chrono>
-#include <stdexcept>
-#include <iostream>
 
 #include "../ObjectRenderingCashing.hpp"
 #include "../helpers/simulationObjects.hpp"
-#include "UI.hpp"
 #include "windowFunctions/windowFunctions.hpp"
 
 #include "Camera.hpp"
@@ -29,7 +23,6 @@
 #include "systems/RenderSystem2D.hpp"
 #include "systems/TextSystem.hpp"
 
-#include "../rocket/Rocket.hpp"
 #include "Renderer.hpp"
 #include "Device.hpp"
 #include "Window.hpp"
@@ -171,6 +164,7 @@ WindowInfo& WindowInfo::getWindowInfo(GLFWwindow* glfwWindow)
             return *i.second.get();
     }
     Error("no WindowInfo with contains the given glfwWindow", Error::Type::codeFault);
+	return *Vulkan::getWindows().begin()->second.get();
 }
 
 Vulkan::Vulkan() 
@@ -320,30 +314,20 @@ void Vulkan::keyBoardInput(GLFWwindow* window, int key, int scancode, int action
     }
 
     if (key == GLFW_KEY_V) {
-        for (auto& [key, val] : _windows) {
-            if (val->window->getGLFWwindow() != window)
+        for (auto& [key, windowInfo] : _windows) {
+            if (windowInfo->window->getGLFWwindow() != window)
                 continue;
-            switch (val->camera->setting)
+            switch (windowInfo->camera->setting)
             {
             case CameraSettings::normal:
-                val->camera->setting = CameraSettings::follow;
-                val->camera->followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
-                val->camera->transform.translation -= val->gameObjects3d.at(val->camera->followObj.value()).transform.translation;
+                windowInfo->camera->setCameraSetting(*windowInfo, CameraSettings::follow);
                 break;
-
-            case CameraSettings::follow:
-                val->camera->setting = CameraSettings::lookAt;
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-                val->camera->transform.translation += val->gameObjects3d.at(val->camera->followObj.value()).transform.translation;
-                val->camera->followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+			case CameraSettings::follow:
+				windowInfo->camera->setCameraSetting(*windowInfo, CameraSettings::lookAt);
                 break;
-
-            case CameraSettings::lookAt:
-                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-                val->camera->setting = CameraSettings::normal;
-                val->camera->followObj.reset();
-                break;
-
+			case CameraSettings::lookAt:
+				windowInfo->camera->setCameraSetting(*windowInfo, CameraSettings::normal);
+				break;
             default:
                 break;
             }

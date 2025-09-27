@@ -1,6 +1,8 @@
 #include "Camera.hpp"
 
 #include "App.hpp"
+#include "../helpers/simulationObjects.hpp"
+#include "../rocket/Rocket.hpp"
 
 // std
 #include <cassert>
@@ -152,5 +154,31 @@ void Camera::update(WindowInfo& window, double dt, Keyboard& keyboard, Mouse& mo
     }
 
     double aspect = window.renderer->getAspectRatio();
-    window.camera->setPerspectiveProjection(glm::radians(70.f), aspect, 0.1f, 100.f);
+    window.camera->setPerspectiveProjection(glm::radians(70.f), aspect, 0.1f, 20000000.f);
+}
+
+void Camera::setCameraSetting(WindowInfo& window, CameraSettings setting)
+{
+    switch (setting)
+    {
+    case CameraSettings::lookAt:
+        this->setting = CameraSettings::lookAt;
+        followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+        break;
+
+    case CameraSettings::follow:
+        this->setting = CameraSettings::follow;
+        glfwSetInputMode(window.window->getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+        break;
+
+    case CameraSettings::normal:
+        glfwSetInputMode(window.window->getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        this->setting = CameraSettings::normal;
+        followObj.reset();
+        break;
+
+    default:
+        break;
+    }
 }

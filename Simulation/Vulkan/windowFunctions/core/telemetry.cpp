@@ -53,7 +53,6 @@ void Telemetry::loadPosTelemetryView(WindowInfo& window) {
     pos->addVariable(info.rocket->transform()->translation.x, 12);
     pos->addVariable(info.rocket->transform()->translation.y, 16);
     pos->addVariable(info.rocket->transform()->translation.z, 20);
-    window.varyingTexts.emplace(pos->getId(), std::move(pos));
 
     auto changeRelativeText = StaticText::createText(window, { 1,1 }, { 1,1,1,1 }, 1, "Change relative");
 }

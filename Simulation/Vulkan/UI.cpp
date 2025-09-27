@@ -206,6 +206,20 @@ void TextInputField::keyCallback(GLFWwindow* window, int key, int scancode, int 
     for (auto& i : windowInfo.textInputFields)
         if (i->isSelected())
             textField = i;
+    if (mods == GLFW_MOD_CONTROL) {
+		if (key == GLFW_KEY_C) {
+			glfwSetClipboardString(window, textField->_text.cstr());
+			return;
+		}
+		if (key == GLFW_KEY_V) {
+			String clipboard(glfwGetClipboardString(window));
+			textField->_text.insert(textField->_cursorPos + (textField->_cursorPos != 0), clipboard);
+			textField->_renderText.lock()->assignText(toSTD(textField->_text));
+			textField->_cursorPos += clipboard.length();
+			textField->placeCurrsor();
+			return;
+		}
+    }
     if (key == GLFW_KEY_ESCAPE) {
         textField->_selected = false;
         Vulkan::resetCallback(window);
@@ -281,7 +295,7 @@ TextInputField::TextInputField(WindowInfo& window, const Vector2& pos, const Vec
 	currsor->draw = false;
 	_currsor = currsor;
 
-    _renderText = StaticText::createText(window, { pos.x-0.5, pos.y }, { 1,1,1,1 }, size.y / 1200, "", StaticText::Alignment::left);
+    _renderText = StaticText::createText(window, { pos.x, pos.y }, { 1,1,1,1 }, size.y / 1200, "", StaticText::Alignment::left);
 
     _text = "";
     _selected = false;

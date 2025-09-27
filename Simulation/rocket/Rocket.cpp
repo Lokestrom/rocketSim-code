@@ -1,7 +1,6 @@
 #include "Rocket.hpp"
 
 #include "../planet.hpp"
-#include "../FileSystem/fileSystem.hpp"
 #include "../FileSystem/logging.hpp"
 #include "../FileSystem/RocketInstructions.hpp"
 #include "../helpers/simulationObjects.hpp"
@@ -14,7 +13,7 @@ Rocket::Rocket(const Builder& builder)
 	: _id(ID::createID(builder.name, builder.localID)),
 	_transform(std::make_shared<TransformComponent3D>(builder.transform)),
 	_vel(builder.velosity), _acc(builder.accseleration),
-	_rotationVel(0,0,0,0), _rotationAcc(0,0,0,0),
+	_rotationVel(0,0,0), _rotationAcc(0,0,0),
 	_RCS(false)
 {
 	for (const auto& i : builder.stages)
@@ -42,11 +41,11 @@ Quaternion Rocket::orientation() const noexcept
 {
 	return  _transform->rotation;
 }
-Quaternion Rocket::rotationVel() const noexcept
+Vector3 Rocket::rotationVel() const noexcept
 {
 	return _rotationVel;
 }
-Quaternion Rocket::rotationAcc() const noexcept
+Vector3 Rocket::rotationAcc() const noexcept
 {
 	return _rotationAcc;
 }
@@ -92,7 +91,7 @@ void Rocket::update() noexcept
 	updateCenterOfGravity();
 	engineShutdownChecker();
 	Vector3 g, d, t, rt, newAcc;
-	Quaternion newRotationAcc;
+	Vector3 newRotationAcc;
 	ld currmMass = mass();
 
 	gravity(g);
@@ -100,17 +99,18 @@ void Rocket::update() noexcept
 	//drag(d);
 
 	newAcc = (t + g) / currmMass;
-	newRotationAcc = Quaternion(0, rt.x, rt.y, rt.z);
+	newRotationAcc = Vector3(rt.x, rt.y, rt.z);
 
 	Vector3 withoutRotationPos = -_transform->rotation.rotate(_centerOfMass);
 
-	_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
+	//to do integrate ridig body physics corect
+	//_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
 	_transform->rotation = _transform->rotation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
 
 	Vector3 withRotationPos = -_transform->rotation.rotate(_centerOfMass);
 	_transform->translation += vel()*timeObjects::dt + (withRotationPos - withoutRotationPos) + acc() * (timeObjects::dt * timeObjects::dt * 0.5);
-	_vel += (_acc + newAcc) * timeObjects::dt * 0.5;
+	_vel += (_acc + newAcc) * 0.5;
 
 	_acc = newAcc;
 	_rotationAcc = newRotationAcc;
@@ -122,7 +122,7 @@ void Rocket::burn(ld burnTime, Vector<ID::ID_T> engines) noexcept
 		for (const auto& i : _rocketStages[0]->getEngineIDs())
 			engines.pushBack(i.getLocalID());
 	for (auto& i : engines) {
-		engineShutDownTime[i] = burnTime + timeObjects::currentTime;
+		engineShutDownTime[i] = burnTime + timeObjects::currentTime - timeObjects::dt;
 		_rocketStages[0]->engineSearch(i)->toggle(true);
 	}
 }
@@ -189,6 +189,7 @@ ld Rocket::deltaV(const String& name) const
 		if (i->getID().getName() == name)
 			return i->deltaV();
 	 Error("Rocket does not have a stage with that ID", Error::Type::badUserBehavior);
+	 return -1;
 }
 ld Rocket::altitude(const String& planetID) const 
 {

@@ -4,10 +4,8 @@
 #include  <freetype/ftglyph.h>
 #include  <freetype/freetype.h>
 #include <freetype/ftbbox.h>
-#include <freetype/ftadvanc.h>
 
 #include <filesystem>
-#include <iostream>
 
 #include "App.hpp"
 #include "windowFunctions/windowFunctions.hpp"
@@ -550,7 +548,12 @@ std::string VaryingText::VaryingTextString::Variable::get()
         return std::format("{{{:.3f}, {:.3f}, {:.3f}}}", static_cast<Vector3*>(variable)->x, static_cast<Vector3*>(variable)->y, static_cast<Vector3*>(variable)->z);
     case Type::Quaternion:
         return std::format("{{{:.3f}, {:.3f}, {:.3f}, {:.3f}}}", static_cast<::Quaternion*>(variable)->x, static_cast<::Quaternion*>(variable)->y, static_cast<::Quaternion*>(variable)->z, static_cast<::Quaternion*>(variable)->w);
+
+    case Type::FungtionVec3:
+		Vector3 vec = (*static_cast<Vector3(*)()>(variable))();
+		return std::format("{{{:.3f}, {:.3f}, {:.3f}}}", vec.x, vec.y, vec.z);
     }
 
 	assert(false && "VaryingText::VaryingTextString::Variable::get: No specialization for this type");
+	return "Invalid type";
 }

@@ -1,7 +1,6 @@
 #include "run.hpp"
 
 #include <iostream>
-#include <math.h>
 #include <thread>
 
 #include "rocket/Rocket.hpp"
@@ -12,6 +11,25 @@
 #include "ObjectRenderingCashing.hpp"
 
 #include "helpers/simulationObjects.hpp"
+
+#include "openGL/OpenGLApp.hpp"
+
+#ifdef VulkanRendering
+#ifdef OpenGLRendering
+#error "must only enable one at a time"
+#endif
+#endif
+
+#ifdef OpenGLRendering
+#include "openGL/windows/core/renderWindow.hpp"
+#include "openGL/windows/core/timeWindow.hpp"
+#include "openGL/windows/startup/Launcher.hpp"
+#endif
+
+#ifdef VulkanRendering
+#include "Vulkan/Text.hpp"
+#include "Vulkan/windowFunctions/windowFunctions.hpp"
+#endif
 
 bool simulationStillRunning;
 bool programStillRunning;
@@ -63,7 +81,7 @@ void reset()
 	Vulkan::resetInProgres();
 }
 
-void simulationLoop() {
+static void simulationLoop() {
 	while (simulationStillRunning && programStillRunning) {
 		if (objectLists::objectCash.getSize() > options::cashSize)
 			continue;
@@ -72,10 +90,37 @@ void simulationLoop() {
 	}
 }
 
-void vulcanLoop() {
+static void vulcanLoop() {
+	ld lastFPS = 0;
+	int fps = 0;
 	while (programStillRunning) {
 		if (!simulationStillRunning) {
 			if (!Vulkan::update())
+				programStillRunning = false;
+			continue;
+		}
+		timeObjects::realRunTime = timeObjects::getTimeSinceEpoch() - timeObjects::realStartTimeEpoch;
+		if (timeObjects::realStartTimeEpoch > lastFPS + 1) {
+			lastFPS = timeObjects::realStartTimeEpoch;
+			std::cout << "FPS: " << timeObjects::fps << '\n';
+			fps = 0;
+		}
+		if (objectLists::objectCash.getSize() == 0)
+			continue;
+		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realRunTime)
+			continue;
+		if (!Vulkan::update())
+			programStillRunning = false;
+		fps++;
+	}
+	if (simulationStillRunning)
+		deloadSimulation();
+};
+
+static void OpenGLLoop() {
+	while (programStillRunning) {
+		if (!simulationStillRunning) {
+			if (!OpenGL::App::update())
 				programStillRunning = false;
 			continue;
 		}
@@ -84,7 +129,7 @@ void vulcanLoop() {
 			continue;
 		if (objectLists::objectCash.getNextCashTime() >= timeObjects::realRunTime)
 			continue;
-		if (!Vulkan::update())
+		if (!OpenGL::App::update())
 			programStillRunning = false;
 	}
 	if (simulationStillRunning)
@@ -143,8 +188,30 @@ void run() {
 	simulationStillRunning = false;
 	programStillRunning = true;
 
+#ifdef OpenGLRendering
+	OpenGL::App::startup();
+
+	OpenGL::App::addWindow(std::make_unique<OpenGL::FreeCamWindow>());
+	OpenGL::App::addWindow(std::make_unique<OpenGL::Launcher>());
+	OpenGL::App::addWindow(std::make_unique<OpenGL::TimeWindow>());
+
+	std::filesystem::remove_all("testing\\newSim");
+	fileSystem::createFileTemplate("testing\\newSim");
+
+	loadSimulationFiles("testing\\newSim", "test");
+
+	OpenGLLoop();
+
+	OpenGL::App::shutdown();
+#elif VulkanRendering
+	windows::createWindowData();
+	CharacterGlyphCache::setFontFolder("C:\\Windows\\Fonts\\");
+	CharacterGlyphCache::setFont("arial");
+
 	Vulkan vulkanRenderer;
 	Vulkan::startup();
 
 	vulcanLoop();
+#endif // OpenGLRendering
+
 }

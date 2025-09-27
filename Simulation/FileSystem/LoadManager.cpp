@@ -16,6 +16,7 @@ namespace fileSystem {
 			renderModel.loadModel(entry.path().string());
 			LoadManagerMaps::simulationModel[String(entry.path().filename().string()).split('.')[0]] = loadSimulationModel(renderModel);
 			LoadManagerMaps::renderModel[String(entry.path().filename().string()).split('.')[0]] = std::move(renderModel);
+			LoadManagerMaps::openGLModels[String(entry.path().filename().string()).split('.')[0]] = entry.path();
 		}
 		for (const auto& entry : fs::directory_iterator(toSTD(objects::simulationFolder + "rocket\\engine"))) {
 			Engine::Builder engine = loadEngine(entry.path().string());
@@ -128,6 +129,7 @@ namespace fileSystem {
 		simObject.name = engineFile.split('\\')[engineFile.split('\\').size() - 1].split('.')[0];
 		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[map["model"]]);
 		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[map["model"]]);
+		simObject.model.openGLModel = std::make_shared<OpenGL::Model>(LoadManagerMaps::openGLModels[map["model"]]);
 
 		engine.simObjectBuilder = simObject;
 		engine.mass = STold(map["mass"]);
@@ -181,6 +183,7 @@ namespace fileSystem {
 		simObject.name = FuelTankFile.split('\\')[FuelTankFile.split('\\').size() - 1].split('.')[0];
 		simObject.model.renderModel = std::make_shared<Model3D::Builder> (LoadManagerMaps::renderModel[map["model"]]);
 		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[map["model"]]);
+		simObject.model.openGLModel = std::make_shared<OpenGL::Model>(LoadManagerMaps::openGLModels[map["model"]]);
 
 		fuelTank.simObjectBuilder = simObject;
 		fuelTank.fuelType = map["fueltype"];
@@ -232,6 +235,7 @@ namespace fileSystem {
 		simObject.name = rocketStageFile.split('\\')[rocketStageFile.split('\\').size() - 1].split('.')[0];
 		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[data["setup"]["model"]]);
 		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[data["setup"]["model"]]);
+		simObject.model.openGLModel = std::make_shared<OpenGL::Model>(LoadManagerMaps::openGLModels[data["setup"]["model"]]);
 
 		rocketStage.simObjectBuilder = simObject;
 		rocketStage.dryMass = STold(data["setup"]["drymass"]);
@@ -258,7 +262,10 @@ namespace fileSystem {
 	}
 
 	void validatePlanetFileVariables(std::unordered_map<String, std::unordered_map<String, String>> map) {
-
+		String missingValues;
+		validationLayer(map["setup"], "mass", missingValues);
+		validationLayer(map["setup"], "radius", missingValues);
+		validationLayer(map["setup"], "pos", missingValues);
 	}
 
 	bool loadPlanet(String planetFile, PhysicsPlanet::Builder& physicsPlanet, FixedOrbitPlanet::Builder& fixedOrbitPlanet) {
@@ -266,12 +273,27 @@ namespace fileSystem {
 		auto data = loadBatches(file);
 		validatePlanetFileVariables(data);
 
-
+		//OBS the model must be normalized to a radius of 1 then it will be scaled to the right size
 		SimulationObject::Builder simObject;
 		simObject.name = planetFile.split('\\')[planetFile.split('\\').size() - 1].split('.')[0];
 		simObject.model.renderModel = std::make_shared<Model3D::Builder>(LoadManagerMaps::renderModel[data["setup"]["model"]]);
+		for (auto& i : simObject.model.renderModel->vertices) {
+			i.position.x *= STold(data["setup"]["radius"]);
+			i.position.y *= STold(data["setup"]["radius"]);
+			i.position.z *= STold(data["setup"]["radius"]);
+		}
 		simObject.model.simulationModel = std::make_shared<SimulationModel>(LoadManagerMaps::simulationModel[data["setup"]["model"]]);
-
+		for (auto& i : simObject.model.simulationModel->vertices) {
+			i.x *= STold(data["setup"]["radius"]);
+			i.y *= STold(data["setup"]["radius"]);
+			i.z *= STold(data["setup"]["radius"]);
+		}
+		simObject.model.openGLModel = std::make_shared<OpenGL::Model>(LoadManagerMaps::openGLModels[data["setup"]["model"]]);
+		for (auto& i : simObject.model.simulationModel->vertices) {
+			i.x *= STold(data["setup"]["radius"]);
+			i.y *= STold(data["setup"]["radius"]);
+			i.z *= STold(data["setup"]["radius"]);
+		}
 		if (data["setup"]["fixedorbit"] == "true") {
 			fixedOrbitPlanet.simObjectBuilder = simObject;
 			fixedOrbitPlanet.mass = STold(data["setup"]["mass"]);
@@ -395,7 +417,6 @@ namespace fileSystem {
 	void loadingFinishingTouches()
 	{
 		Vector<std::shared_ptr<TransformComponent3D>> transformComponents;
-		ModelCashNode modelNode;
 		for (auto& rocket : objectLists::rockets) {
 			transformComponents.pushBack(rocket->transform());
 			

@@ -11,8 +11,6 @@
 #include <unordered_map>
 #include <mutex>
 
-using namespace Database;
-
 struct SimulationTimeCash {
 	ld time;
 	std::unordered_map<ID::GlobaleID_T, TotalTransformComponent3D> objects;
@@ -23,6 +21,7 @@ class ObjectRenderingCash
 public:
 	void addsimulationTimeCash(const SimulationTimeCash& simulationTime);
 	SimulationTimeCash getsimulationTimeCash(ld time);
+
 	ld getNextCashTime();
 	sizeT getSize();
 

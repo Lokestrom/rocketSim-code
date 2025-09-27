@@ -2,11 +2,8 @@
 
 // std
 #include <array>
-#include <cstdlib>
-#include <cstring>
 #include <iostream>
 #include <limits>
-#include <set>
 #include <stdexcept>
 
 SwapChain::SwapChain(Device& deviceRef, vk::Extent2D extent)
@@ -68,7 +65,9 @@ SwapChain::~SwapChain() {
 }
 
 vk::Result SwapChain::acquireNextImage(uint32_t* imageIndex) {
-    _device.device().waitForFences(1, &_inFlightFences[_currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max());
+    if (_device.device().waitForFences(1, &_inFlightFences[_currentFrame], VK_TRUE, std::numeric_limits<uint64_t>::max()) != vk::Result::eSuccess) {
+		throw std::runtime_error("failed to wait for fence!");
+    }
 
     vk::Result result = _device.device().acquireNextImageKHR(
         _swapChain,
@@ -82,7 +81,9 @@ vk::Result SwapChain::acquireNextImage(uint32_t* imageIndex) {
 
 vk::Result SwapChain::submitCommandBuffers(const vk::CommandBuffer* buffers, uint32_t* imageIndex) {
     if (_imagesInFlight[*imageIndex] != NULL) {
-        _device.device().waitForFences(1, &_imagesInFlight[*imageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max());
+        if (_device.device().waitForFences(1, &_imagesInFlight[*imageIndex], VK_TRUE, std::numeric_limits<uint64_t>::max()) != vk::Result::eSuccess) {
+			throw std::runtime_error("failed to wait for fence!");
+        }
     }
     _imagesInFlight[*imageIndex] = _inFlightFences[_currentFrame];
 
@@ -102,9 +103,11 @@ vk::Result SwapChain::submitCommandBuffers(const vk::CommandBuffer* buffers, uin
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    _device.device().resetFences(1, &_inFlightFences[_currentFrame]);
+    if(_device.device().resetFences(1, &_inFlightFences[_currentFrame]) != vk::Result::eSuccess) {
+         throw std::runtime_error("failed to reset fences!");
+	}
     if (_device.graphicsQueue().submit(1, &submitInfo, _inFlightFences[_currentFrame]) != vk::Result::eSuccess) {
-         std::runtime_error("failed to submit draw command buffer!");
+         throw std::runtime_error("failed to submit draw command buffer!");
     }
 
     vk::PresentInfoKHR presentInfo = {};
@@ -174,7 +177,7 @@ void SwapChain::createSwapChain() {
                                                         : _oldSwapChain->_swapChain;
 
     if (_device.device().createSwapchainKHR(&createInfo, nullptr, &_swapChain) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create swap chain!");
+         throw std::runtime_error("failed to create swap chain!");
     }
     
 
@@ -203,7 +206,7 @@ void SwapChain::createImageViews() {
         viewInfo.subresourceRange.layerCount = 1;
 
         if (_device.device().createImageView(&viewInfo, nullptr, &_swapChainImageViews[i]) != vk::Result::eSuccess) {
-             std::runtime_error("failed to create texture image view!");
+             throw std::runtime_error("failed to create texture image view!");
         }
     }
 }
@@ -267,7 +270,7 @@ void SwapChain::createRenderPass() {
     renderPassInfo.pDependencies = &dependency;
 
     if (_device.device().createRenderPass(&renderPassInfo, nullptr, &_renderPass) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create render pass!");
+         throw std::runtime_error("failed to create render pass!");
     }
 }
 
@@ -286,7 +289,7 @@ void SwapChain::createFramebuffers() {
         framebufferInfo.layers = 1;
 
         if (_device.device().createFramebuffer(&framebufferInfo, nullptr, &_swapChainFramebuffers[i]) != vk::Result::eSuccess) {
-             std::runtime_error("failed to create framebuffer!");
+             throw std::runtime_error("failed to create framebuffer!");
         }
     }
 }
@@ -335,7 +338,7 @@ void SwapChain::createDepthResources() {
         viewInfo.subresourceRange.layerCount = 1;
 
         if (_device.device().createImageView(&viewInfo, nullptr, &_depthImageViews[i]) != vk::Result::eSuccess) {
-             std::runtime_error("failed to create texture image view!");
+             throw std::runtime_error("failed to create texture image view!");
         }
         
     }
@@ -360,7 +363,7 @@ void SwapChain::createSyncObjects() {
             _device.device().createSemaphore(&semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) !=
             vk::Result::eSuccess ||
             _device.device().createFence(&fenceInfo, nullptr, &_inFlightFences[i]) != vk::Result::eSuccess) {
-             std::runtime_error("failed to create synchronization objects for a frame!");
+             throw std::runtime_error("failed to create synchronization objects for a frame!");
         }
         
     }
@@ -390,7 +393,7 @@ vk::PresentModeKHR SwapChain::chooseSwapPresentMode(
     return vk::PresentModeKHR::eFifo;
 }
 
-vk::Extent2D SwapChain::chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities) {
+vk::Extent2D SwapChain::chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities) const {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     }

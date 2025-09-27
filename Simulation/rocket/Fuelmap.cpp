@@ -28,14 +28,16 @@ Fuelmap operator-(Fuelmap l, const Fuelmap& r)
 }
 Fuelmap Fuelmap::operator*(ld other) 
 {
+	Fuelmap temp;
 	for (auto& [key, val] : this->_fuelmap)
-		this->_fuelmap[key] *= other;
-	return *this;
+		temp._fuelmap[key] = this->_fuelmap[key] * other;
+	return temp;
 }
 Fuelmap Fuelmap::operator/(ld other) {
+	Fuelmap temp;
 	for (auto& [key, val] : this->_fuelmap)
-		this->_fuelmap[key] /= other;
-	return *this;
+		temp._fuelmap[key] = this->_fuelmap[key] / other;
+	return temp;
 }
 
 Fuelmap Fuelmap::operator+=(const Fuelmap& other) 

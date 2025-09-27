@@ -101,4 +101,3 @@ void windows::MainMenu::quit(WindowInfo& window) {
     deloadSimulation();
     getSwapFunction(Type::StartMenu)(window);
 }
-

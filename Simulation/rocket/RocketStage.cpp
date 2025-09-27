@@ -137,7 +137,7 @@ Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quater
 	Fuelmap usedfuel;
 	for (auto i : _engines)
 		if (i->active() == true) {
-			thrust += i->thrust(rotationalAcc, usedfuel, centerOfMass - i->getMountPos(), rocketOrientation, mass);
+			thrust += i->thrust(rotationalAcc, usedfuel, centerOfMass - i->getMountPos() - i->getTransform()->translation, rocketOrientation, mass);
 		}
 
 	std::unordered_map<String, int> fuelDrain;
@@ -148,7 +148,7 @@ Vector3 RocketStage::thrust(Vector3& rotationalAcc, Vector3 centerOfMass, Quater
 			fuelDrain[i->getFuelType()]++;
 	}
 	for (auto& i : _fuelTanks) {
-		i->removeFuel((usedfuel / fuelDrain[i->getFuelType()]) * timeObjects::dt);
+		i->removeFuel((usedfuel / fuelDrain[i->getFuelType()]));
 	}
 	return thrust;
 }

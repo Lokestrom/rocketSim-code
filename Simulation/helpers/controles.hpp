@@ -1,7 +1,6 @@
 #pragma once
 
 #include <unordered_map>
-#include <fstream>
 
 #include "String.hpp"
 
@@ -97,7 +96,9 @@ public:
 	Type _code;
 	recoveryType _recoveryType;
 	bool _duringRecoveryAttempt;
-	Error() {}
+	Error() : 
+		_code(Type::codeFault), _line(0), _recoveryType(recoveryType::unrecoverable), _duringRecoveryAttempt(false)
+	{}
 	Error(const String& what, Type code, recoveryType recoveryType = recoveryType::unrecoverable, String function = __builtin_FUNCTION(), String file = __builtin_FILE(), int line = __builtin_LINE());
 
 	Error(const Error&) = default;

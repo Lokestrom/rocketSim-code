@@ -1,6 +1,16 @@
 #vs files
-/.vs
-/Simulation/.vs/Simulation
-/Simulation/x64
+/Simulation/.vs
+/Simulation/Simulation.sln
+/Simulation/Simulation.vcxproj
+/Simulation/Simulation.vcxproj.filters
+/Simulation/Simulation.vcxproj.user
 
-/graffDrawer
+#build files
+/Simulation/bin
+
+#imgui config
+/Simulation/imgui.ini
+
+#test run files
+/Simulation/testing
+

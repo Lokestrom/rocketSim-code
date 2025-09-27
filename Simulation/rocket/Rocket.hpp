@@ -34,8 +34,8 @@ public:
 	Vector3 vel() const noexcept;
 	Vector3 acc() const noexcept;
 	Quaternion orientation() const noexcept;
-	Quaternion rotationVel() const noexcept;
-	Quaternion rotationAcc() const noexcept;
+	Vector3 rotationVel() const noexcept;
+	Vector3 rotationAcc() const noexcept;
 	ld mass() const noexcept;
 	bool RCS() const noexcept;
 
@@ -77,8 +77,8 @@ private:
 	std::shared_ptr<TransformComponent3D> _transform;
 
 	Vector3 _vel, _acc;
-	Quaternion _rotationVel, _rotationAcc,
-		_desierdOrientation;
+	Vector3 _rotationVel, _rotationAcc;
+	Quaternion _desierdOrientation;
 	Vector3 _centerOfMass;
 	ld _dragCoeficient;
 

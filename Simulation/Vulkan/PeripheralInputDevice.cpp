@@ -1,7 +1,6 @@
 #include "PeripheralInputDevice.hpp"
 
 #include "Camera.hpp"
-#include "glm/gtc/quaternion.hpp"
 
 #include <iostream>
 

@@ -2,6 +2,7 @@
 
 #include "fileSystem.hpp"
 #include "../ModelCash.hpp"
+#include "../openGL/Model.hpp"
 
 namespace fileSystem {
 
@@ -35,6 +36,7 @@ namespace fileSystem {
 	namespace LoadManagerMaps {
 		inline std::unordered_map<String, Model3D::Builder> renderModel;
 		inline std::unordered_map<String, SimulationModel> simulationModel;
+		inline std::unordered_map<String, std::filesystem::path> openGLModels;
 
 		inline std::unordered_map<String, Engine::Builder> engine;
 		inline std::unordered_map<String, FuelTank::Builder> fuelTank;

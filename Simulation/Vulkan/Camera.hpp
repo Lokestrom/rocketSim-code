@@ -36,6 +36,8 @@ public:
 
     void update(WindowInfo& window, double dt, Keyboard& keyboard, Mouse& mouse, bool pause);
 
+    void setCameraSetting(WindowInfo& window, CameraSettings setting);
+
 public:
     TotalTransformComponent3D transform;
     std::optional<ID::GlobaleID_T> followObj;

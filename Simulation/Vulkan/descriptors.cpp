@@ -42,7 +42,7 @@ DescriptorSetLayout::DescriptorSetLayout(
     descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
 
     if (device.device().createDescriptorSetLayout(&descriptorSetLayoutInfo, nullptr, &_descriptorSetLayout) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create descriptor set layout!");
+         throw std::runtime_error("failed to create descriptor set layout!");
     }
 }
 
@@ -88,7 +88,7 @@ DescriptorPool::DescriptorPool(
     descriptorPoolInfo.flags = poolFlags;
 
     if (device.device().createDescriptorPool(&descriptorPoolInfo, nullptr, &_descriptorPool) != vk::Result::eSuccess) {
-         std::runtime_error("failed to create descriptor pool!");
+         throw std::runtime_error("failed to create descriptor pool!");
     }
     
 }

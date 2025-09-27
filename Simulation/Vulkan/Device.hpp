@@ -100,7 +100,7 @@ private:
     vk::Queue _graphicsQueue;
     vk::Queue _presentQueue;
 
-    const std::vector<const char*> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+    const std::vector<const char*> _validationLayers = {};//{ "VK_LAYER_KHRONOS_validation" };
     const std::vector<const char*> _deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 };
 
