@@ -1,0 +1,12 @@
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm
+[submodule "external/freetype"]
+	path = external/freetype
+	url = https://github.com/freetype/freetype.git
+[submodule "external/database"]
+	path = external/database
+	url = https://github.com/Lokestrom/database

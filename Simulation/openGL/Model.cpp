@@ -5,6 +5,7 @@
 //#define TINYOBJLOADER_IMPLEMENTATION
 #include "../FileSystem/external/tiny_obj_loader.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
 using namespace OpenGL;
