@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector.hpp"
+#include "Database/Vector.hpp"
 #include "math.hpp"
 #include <memory>
 #include <glm/ext/matrix_float3x3.hpp>
@@ -25,8 +25,8 @@ public:
 	Vector3 getTotalTranslation() const noexcept;
 	Quaternion getTotalRotation() const noexcept;
 
-	glm::mat4 mat4();
-	glm::mat3 normalMatrix();
+	glm::mat4 mat4() const noexcept;
+	glm::mat3 normalMatrix() const noexcept;
 private:
 
 	Vector<std::shared_ptr<TransformComponent3D>> _parentTransforms;

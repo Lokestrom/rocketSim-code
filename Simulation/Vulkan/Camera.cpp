@@ -163,13 +163,13 @@ void Camera::setCameraSetting(WindowInfo& window, CameraSettings setting)
     {
     case CameraSettings::lookAt:
         this->setting = CameraSettings::lookAt;
-        followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+        followObj = objectLists::rockets[0]->stages()[0]->getID().getUUID();
         break;
 
     case CameraSettings::follow:
         this->setting = CameraSettings::follow;
         glfwSetInputMode(window.window->getGLFWwindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        followObj = objectLists::rockets[0]->stages()[0]->getID().getID();
+        followObj = objectLists::rockets[0]->stages()[0]->getID().getUUID();
         break;
 
     case CameraSettings::normal:

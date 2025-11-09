@@ -40,6 +40,7 @@ public:
 	Fuelmap getFuelUsage() const noexcept;
 	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
+	std::shared_ptr<SimulationObject> getSimulationObject() const noexcept;
 
 	bool canGimble() const noexcept;
 	bool active() const noexcept;

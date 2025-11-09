@@ -17,17 +17,17 @@ struct ModelCashNode {
 class ModelCash
 {
 public:
-	Vector<ID::GlobaleID_T> getIDs();
-	std::shared_ptr<Model3D::Builder> getModel3d(ID::GlobaleID_T id);
-	std::shared_ptr<SimulationModel> getSimulationModel(ID::GlobaleID_T id);
-	std::shared_ptr<OpenGL::Model> getOpenGLModel(ID::GlobaleID_T id) { return _cash.at(id).openGLModel; }
+	Vector<ID::UUID> getIDs();
+	std::shared_ptr<Model3D::Builder> getModel3d(ID::UUID id);
+	std::shared_ptr<SimulationModel> getSimulationModel(ID::UUID id);
+	std::shared_ptr<OpenGL::Model> getOpenGLModel(ID::UUID id) { return _cash.at(id).openGLModel; }
 
-	void addModel(ID::GlobaleID_T id, const ModelCashNode& node);
+	void addModel(ID::UUID id, const ModelCashNode& node);
 
 	void clear();
 
 private:
-	std::unordered_map<ID::GlobaleID_T, ModelCashNode> _cash;
+	std::unordered_map<ID::UUID, ModelCashNode> _cash;
 };
 
 namespace objectLists {

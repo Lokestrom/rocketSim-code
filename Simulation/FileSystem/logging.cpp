@@ -80,8 +80,8 @@ namespace fileSystem {
 
 	void createNewRocketLoggingFile(const IDview& id)
 	{
-		objects::rocketFiles.insert({ id.getID(),  WriteFile<ld>(objects::runFolder + "rocket\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
-		objects::rocketFiles[id.getID()].addcolumns({"time",
+		objects::rocketFiles.insert({ id.getUUID(),  WriteFile<ld>(objects::runFolder + "rocket\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
+		objects::rocketFiles[id.getUUID()].addcolumns({"time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",
 			"acc.x", "acc.y", "acc.z",
@@ -94,14 +94,14 @@ namespace fileSystem {
 
 	void createNewRocketStageLoggingFile(const IDview& id)
 	{
-		objects::rocketStageFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
-		objects::rocketStageFiles[id.getID()].addcolumns({ "time", "staged"});
+		objects::rocketStageFiles.insert({ id.getUUID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\" + id.getName() + "." + toS(id.getLocalID()) + ".db")});
+		objects::rocketStageFiles[id.getUUID()].addcolumns({ "time", "staged"});
 	}
 
 	void createNewEngineLoggingFile(const IDview& id)
 	{
-		objects::engineFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\engine\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
-		objects::engineFiles[id.getID()].addcolumns({ "time",
+		objects::engineFiles.insert({ id.getUUID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\engine\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
+		objects::engineFiles[id.getUUID()].addcolumns({ "time",
 			"orientation.w", "orientation.x", "orientation.y", "orientation.z",
 			"active", "thrustPercent"
 			});
@@ -109,16 +109,16 @@ namespace fileSystem {
 
 	void createNewFuelTankLoggingFile(const IDview& id)
 	{
-		objects::fuelTankFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\fuelTank\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
-		objects::fuelTankFiles[id.getID()].addcolumns({ "time",
+		objects::fuelTankFiles.insert({ id.getUUID(), WriteFile<ld>(objects::runFolder + "rocket\\rocketStage\\fuelTank\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
+		objects::fuelTankFiles[id.getUUID()].addcolumns({ "time",
 			"fuelMass"
 			});
 	}
 
 	void createNewPlanetLoggingFile(const IDview& id)
 	{
-		objects::planetFiles.insert({ id.getID(), WriteFile<ld>(objects::runFolder + "planet\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
-		objects::planetFiles[id.getID()].addcolumns({ "time",
+		objects::planetFiles.insert({ id.getUUID(), WriteFile<ld>(objects::runFolder + "planet\\" + id.getName() + "." + toS(id.getLocalID()) + ".db") });
+		objects::planetFiles[id.getUUID()].addcolumns({ "time",
 			"pos.x", "pos.y", "pos.z",
 			"vel.x", "vel.y", "vel.z",
 			});
@@ -136,20 +136,20 @@ namespace fileSystem {
 			loggRocket(*rocket);
 			for (auto& rocketStage : rocket->stages()) {
 				loggRocketStage(*rocketStage);
-				simCash.objects[rocketStage->getID().getID()] = *rocketStage->getTransform();
+				simCash.objects[rocketStage->getID().getUUID()] = *rocketStage->getTransform();
 				for (auto& engine : rocketStage->getEngines()) {
 					loggEngine(*engine);
-					simCash.objects[engine->getID().getID()] = *engine->getTransform();
+					simCash.objects[engine->getID().getUUID()] = *engine->getTransform();
 				}
 				for (auto& fuelTank : rocketStage->getFuelTanks()) {
 					loggFuelTank(*fuelTank);
-					simCash.objects[fuelTank->getID().getID()] = *fuelTank->getTransform();
+					simCash.objects[fuelTank->getID().getUUID()] = *fuelTank->getTransform();
 				}
 			}
 		}
 		for (const auto planet : objectLists::physicsPlanets) {
 			loggPlanet(*planet);
-			simCash.objects[planet->getID().getID()] = *planet->getTransform();
+			simCash.objects[planet->getID().getUUID()] = *planet->getTransform();
 		}
 		for (const auto planet : objectLists::fixedOrbitPlanets) {
 			loggPlanet(*planet);
@@ -159,7 +159,7 @@ namespace fileSystem {
 	}
 
 	void loggRocket(const Rocket& rocket) {
-		objects::rocketFiles[rocket.getID().getID()].addData({ timeObjects::currentTime,
+		objects::rocketFiles[rocket.getID().getUUID()].addData({ timeObjects::currentTime,
 			rocket.pos().x, rocket.pos().y, rocket.pos().z,
 			rocket.vel().x, rocket.vel().y, rocket.vel().z,
 			rocket.acc().x, rocket.acc().y, rocket.acc().z,
@@ -171,32 +171,32 @@ namespace fileSystem {
 	}
 
 	void loggRocketStage(const RocketStage& rocketStage) {
-		objects::rocketStageFiles[rocketStage.getID().getID()].addData({ timeObjects::currentTime,
+		objects::rocketStageFiles[rocketStage.getID().getUUID()].addData({ timeObjects::currentTime,
 			});
 	}
 
 	void loggEngine(const Engine& engine) {
-		objects::engineFiles[engine.getID().getID()].addData({timeObjects::currentTime,
+		objects::engineFiles[engine.getID().getUUID()].addData({timeObjects::currentTime,
 			engine.getOrientation().w, engine.getOrientation().x, engine.getOrientation().y, engine.getOrientation().z,
 			(engine.active()) ? 1.0l : 0.0l, engine.getThrustPercent()
 			});
 	}
 
 	void loggFuelTank(const FuelTank& fuelTank) {
-		objects::fuelTankFiles[fuelTank.getID().getID()].addData({ timeObjects::currentTime,
+		objects::fuelTankFiles[fuelTank.getID().getUUID()].addData({ timeObjects::currentTime,
 			fuelTank.getFuelMass()
 			});
 	}
 
 	void loggPlanet(const PhysicsPlanet& planet) {
-		objects::planetFiles[planet.getID().getID()].addData({ timeObjects::currentTime,
+		objects::planetFiles[planet.getID().getUUID()].addData({ timeObjects::currentTime,
 			planet.getPos().x, planet.getPos().y, planet.getPos().z,
 			planet.getVel().x, planet.getVel().y, planet.getVel().z
 			});
 	}
 
 	void loggPlanet(const FixedOrbitPlanet& planet) {
-		objects::planetFiles[planet.getID().getID()].addData({ timeObjects::currentTime,
+		objects::planetFiles[planet.getID().getUUID()].addData({ timeObjects::currentTime,
 			planet.getPos().x, planet.getPos().y, planet.getPos().z,
 			planet.getVel().x, planet.getVel().y, planet.getVel().z,
 			});

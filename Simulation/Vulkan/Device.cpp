@@ -16,7 +16,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
     return VK_FALSE;
 }
-vk::DebugUtilsMessengerEXT makeDebugMessenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi) {
+/*vk::DebugUtilsMessengerEXT makeDebugMessenger(vk::Instance& instance, vk::DispatchLoaderDynamic& dldi) {
 
     vk::DebugUtilsMessengerCreateInfoEXT createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
         vk::DebugUtilsMessengerCreateFlagsEXT(),
@@ -27,7 +27,7 @@ vk::DebugUtilsMessengerEXT makeDebugMessenger(vk::Instance& instance, vk::Dispat
     );
 
     return instance.createDebugUtilsMessengerEXT(createInfo, nullptr, dldi);
-}
+}*/
 
 // class member functions
 Device::Device(Window& window) : _window{ window } {
@@ -44,7 +44,7 @@ Device::~Device() {
     _logicalDevice.destroy();
 
     if (enableValidationLayers) {
-        _instance.destroyDebugUtilsMessengerEXT(_debugMessenger, nullptr, _dldi);
+        //_instance.destroyDebugUtilsMessengerEXT(_debugMessenger, nullptr, _dldi);
     }
 
     _instance.destroySurfaceKHR(_surface);
@@ -201,8 +201,9 @@ bool Device::isDeviceSuitable(vk::PhysicalDevice device) {
 void Device::setupDebugMessenger() {
     if (!enableValidationLayers) return;
    
-    _dldi = vk::DispatchLoaderDynamic(_instance, vkGetInstanceProcAddr);
-    _debugMessenger = makeDebugMessenger(_instance, _dldi);
+	//TODO re-enable debug messenger and fix new dispatch loader issue
+    //_dldi = vk::DispatchLoaderDynamic(_instance, vkGetInstanceProcAddr);
+    //_debugMessenger = makeDebugMessenger(_instance, _dldi);
 }
 
 bool Device::checkValidationLayerSupport() {

@@ -11,7 +11,7 @@ class BoundingSphre {
 public:
 	BoundingSphre(const Vector<Vector3>& vertices);
 
-	void isInsideOtherBoundingSphre(const Vector3& pos, Vector<ID::GlobaleID_T>& ids);
+	void isInsideOtherBoundingSphre(const Vector3& pos, Vector<ID::UUID>& ids);
 private:
 	ld _radius;
 };

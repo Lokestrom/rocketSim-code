@@ -1,12 +1,11 @@
 # Rocket simulation
-Code that simulates a rocket and planets.<br>
-Renders using OpenGL with Dear ImGui or Vulkan with self-made GUI.
+Code that simulates and planets.<br>
+Renders using OpenGL with Dear ImGui.
 
 Units: SI<br>
 
 ### Building and running
-The project uses CMake and requires C++ 20 or later. For now the project requires the vulkan sdk for both OpenGL and Vulkan rendering.
->Download the Vulkan SDK here: https://vulkan.lunarg.com/sdk/home.<br>
+The project uses CMake and requires C++ 20 or later.
 >Only tested building on windows 10 so results on other platforms may vary.
 1. Clone the repository and submodules
     ```bash
@@ -14,29 +13,29 @@ The project uses CMake and requires C++ 20 or later. For now the project require
     ```
     >Forgot to use --recursive just run: `git submodule update --init --recursive`
 
-2. Build using CMake (version 4.1 or greater)<br>
-use -DUSE_VULKAN when creating cmake files for vulkan rendering.
+2. Build using CMake (version 4.1 or later)<br>
     ```bash
     cd rocketSim-code
-    mkdir build
-    cd build
-    cmake .. 
-    cmake --build .
+    cmake -S . -B build # create CMake files
+    cmake --build build --config <configuration> # debug or release
     ```
 
 3. Run the program<br>
-Moves the `app.exe` to the simulation folder, creates a testing folder then runs it.
     ```bash
-    cd ../
-    move build\<configuration>\app.exe simulation
-    cd simulation
-    mkdir testing
-    app
+    build/<configuration>/app # debug or release
     ```
 
 ### Using
-Inside of the `Simulation/FileSystem/default/config` is the files for the simulation settings.
-How to use the program is somewhat stated in the `Simulation/Rocket simulation.txt` file.
+1. Click **"new simulation"** then **"create"** in the popup (ignore the text input not in use currently).
+2. Now 3 windows will open (they may be small just expand them as needed). 
+3. In the Test Adder window, you can:
+    * Add an example system (one light body orbiting a heavier one), or
+    * Create your own planet(s).
+>The simulation uses Newton’s Law of Universal Gravitation, integrated using Runge-Kutta 4 (RK4).
 
-The default currently runs a program with a rocket orbiting a **small** planet,
-then after 10 seconds the rocket runs its engine for 1 second.
+#### For Vulkan suported version:
+To use the Vulkan version, check out the following commit:
+``` bash 
+git checkout 6084fc72a0f7616009d146f76b29d1b6b456b0c9
+```
+[View on GitHub](https://github.com/Lokestrom/rocketSim-code/tree/6084fc72a0f7616009d146f76b29d1b6b456b0c9)<br>

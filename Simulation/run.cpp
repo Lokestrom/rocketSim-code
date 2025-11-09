@@ -213,5 +213,4 @@ void run() {
 
 	vulcanLoop();
 #endif // OpenGLRendering
-
 }

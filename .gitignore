@@ -1,19 +1,25 @@
 #vs files
+.vs
 /Simulation/.vs
 /Simulation/Simulation.sln
 /Simulation/Simulation.vcxproj
 /Simulation/Simulation.vcxproj.filters
 /Simulation/Simulation.vcxproj.user
 
+#vs code files
+.vscode
+
 #build files
 /Simulation/bin
 
 #imgui config
-/Simulation/imgui.ini
+imgui.ini
 
 #test run files
 /Simulation/testing
 
 #cmake
 build
+out
+CMakeSettings.json
 

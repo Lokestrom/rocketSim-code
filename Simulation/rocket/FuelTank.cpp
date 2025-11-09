@@ -67,6 +67,11 @@ std::shared_ptr<TransformComponent3D> FuelTank::getTransform()
 	return simObject->transform;
 }
 
+std::shared_ptr<SimulationObject> FuelTank::getSimulationObject() const noexcept
+{
+	return simObject;
+}
+
 void FuelTank::removeFuel(const Fuelmap& outFuel) noexcept
 {
 	_fuel -= outFuel;

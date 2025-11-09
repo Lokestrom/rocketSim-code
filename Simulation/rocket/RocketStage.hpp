@@ -42,6 +42,7 @@ public:
 	Vector<IDview> getFuelTankIDs() const noexcept;
 	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
+	std::shared_ptr<SimulationObject> getSimObject() const noexcept;
 
 	/*setters*/
 	void setID(const String& newName, ID::ID_T newLocalID) noexcept;

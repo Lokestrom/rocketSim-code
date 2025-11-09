@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Vector.hpp"
-#include "String.hpp"
-#include "Queue.hpp"
+#include "Database/Vector.hpp"
+#include "Database/String.hpp"
+#include "Database/Queue.hpp"
 
 #include "helpers/TransformComponent3D.hpp"
 #include "helpers/controles.hpp"
@@ -13,7 +13,7 @@
 
 struct SimulationTimeCash {
 	ld time;
-	std::unordered_map<ID::GlobaleID_T, TotalTransformComponent3D> objects;
+	std::unordered_map<ID::UUID, TotalTransformComponent3D> objects;
 };
 
 class ObjectRenderingCash

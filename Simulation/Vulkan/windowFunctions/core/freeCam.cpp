@@ -74,7 +74,7 @@ void FreeCam::load3dModels(WindowInfo& window)
 {
 	window.gameObjects3d.clear();
 	std::unique_ptr<GameObject3D> obj;
-	for (ID::GlobaleID_T id : objectLists::modelCash.getIDs()) {
+	for (ID::UUID id : objectLists::modelCash.getIDs()) {
 		obj = std::make_unique<GameObject3D>(GameObject3D::createGameObject(id));
 		obj->model = std::make_unique<Model3D>(*window.device, *objectLists::modelCash.getModel3d(id));
 		window.gameObjects3d.emplace(obj->getId(), std::move(*obj));

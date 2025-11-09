@@ -66,6 +66,10 @@ std::shared_ptr<TransformComponent3D> Planet::getTransform() noexcept
 	return _simObject->transform;
 }
 
+std::shared_ptr<SimulationObject> Planet::getSimulationObject() const noexcept {
+	return _simObject;
+}
+
 void Planet::setPos(Vector3 newPos) noexcept
 {
 	_simObject->transform->translation = newPos;

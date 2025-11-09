@@ -206,7 +206,7 @@ bool Vulkan::update() {
         for (auto& [_, i] : it->second->varyingTexts) {
             i->update();
         }
-        for (auto i : it->second->textInputFields)
+        for (auto& i : it->second->textInputFields)
             i->update(*it->second);
 
         if(it->second->type == windows::Type::FreeCam)

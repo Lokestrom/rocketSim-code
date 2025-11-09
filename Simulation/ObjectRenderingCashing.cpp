@@ -54,21 +54,21 @@ void addSimulationTransforms()
 	cash.time = timeObjects::currentTime;
 	for (const auto& rocket : objectLists::rockets) {
 		for (const auto& rocketStage : rocket->stages()) {
-			cash.objects[rocketStage->getID().getID()] = TotalTransformComponent3D(*rocketStage->getTransform());
+			cash.objects[rocketStage->getID().getUUID()] = TotalTransformComponent3D(*rocketStage->getTransform());
 			for (const auto& engine : rocketStage->getEngines()) {
-				cash.objects[engine->getID().getID()] = TotalTransformComponent3D(*engine->getTransform());
+				cash.objects[engine->getID().getUUID()] = TotalTransformComponent3D(*engine->getTransform());
 			}
 			for (const auto& fuelTank : rocketStage->getFuelTanks()) {
-				cash.objects[fuelTank->getID().getID()] = TotalTransformComponent3D(*fuelTank->getTransform());
+				cash.objects[fuelTank->getID().getUUID()] = TotalTransformComponent3D(*fuelTank->getTransform());
 			}
 		}
 	}
 
 	for (const auto& planet : objectLists::physicsPlanets) {
-		cash.objects[planet->getID().getID()] = TotalTransformComponent3D(*planet->getTransform());
+		cash.objects[planet->getID().getUUID()] = TotalTransformComponent3D(*planet->getTransform());
 	}
 	for (const auto& planet : objectLists::fixedOrbitPlanets) {
-		cash.objects[planet->getID().getID()] = TotalTransformComponent3D(*planet->getTransform());
+		cash.objects[planet->getID().getUUID()] = TotalTransformComponent3D(*planet->getTransform());
 	}
 	objectLists::objectCash.addsimulationTimeCash(cash);
 }

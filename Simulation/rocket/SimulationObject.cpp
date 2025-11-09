@@ -20,6 +20,6 @@ SimulationObject::SimulationObject(const Builder& builder)
 
 	transform = std::make_shared<TransformComponent3D>(builder.transform);
 	model = builder.model.simulationModel;
-	objectLists::modelCash.addModel(id.getID(), builder.model);
+	objectLists::modelCash.addModel(id.getUUID(), builder.model);
 	
 }

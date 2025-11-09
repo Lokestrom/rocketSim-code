@@ -61,6 +61,7 @@ public:
 	Vector<std::shared_ptr<Obstruction>> getObstructions() noexcept;
 	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform() noexcept;
+	std::shared_ptr<SimulationObject> getSimulationObject() const noexcept;
 
 	void setPos(Vector3 newPos) noexcept;
 	void setVel(Vector3 newVel) noexcept;

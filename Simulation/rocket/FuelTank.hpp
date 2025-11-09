@@ -36,6 +36,7 @@ public:
 	std::shared_ptr<SimulationModel> getModel() const noexcept;
 	Vector3 getCenterOfMass() const noexcept;
 	std::shared_ptr<TransformComponent3D> getTransform();
+	std::shared_ptr<SimulationObject> getSimulationObject() const noexcept;
 
 	void setID(const String& newName, ID::ID_T newLocalID) noexcept;
 	void setName(const String& newName) noexcept;

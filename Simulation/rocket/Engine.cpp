@@ -76,6 +76,10 @@ std::shared_ptr<TransformComponent3D> Engine::getTransform() noexcept
 	return simObject->transform;
 }
 
+std::shared_ptr<SimulationObject> Engine::getSimulationObject() const noexcept {
+	return simObject;
+}
+
 void Engine::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {
 	simObject->id.setName(newName);

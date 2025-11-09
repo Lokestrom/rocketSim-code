@@ -25,11 +25,11 @@ BoundingSphre::BoundingSphre(const Vector<Vector3>& vertices)
     _radius = std::max(dif.x, std::max(dif.y, dif.z));
 }
 
-void BoundingSphre::isInsideOtherBoundingSphre(const Vector3& pos, Vector<ID::GlobaleID_T>& ids)
+void BoundingSphre::isInsideOtherBoundingSphre(const Vector3& pos, Vector<ID::UUID>& ids)
 {
     for (auto& i : objectLists::simulationObjects) {
         if ((pos - i->transform->translation).lengthSquared() < (i->boundingSphre._radius + _radius) * (i->boundingSphre._radius + _radius)) {
-            ids.pushBack(i->id.getID());
+            ids.pushBack(i->id.getUUID());
         }
     }
 }

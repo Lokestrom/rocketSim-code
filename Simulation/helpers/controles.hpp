@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include "String.hpp"
+#include "Database/String.hpp"
 
 #define TESTING = true
 
@@ -42,10 +42,9 @@ public:
 	int _line;
 	Type _type;
 
-	Warning(const String& what, Type type, 
+	Warning(const String& what, Type type,
 		void (*changeFunction)(WindowInfo&) = nullptr, void (*continueFunction)(WindowInfo&) = nullptr,
 		String function = __builtin_FUNCTION(), String file = __builtin_FILE(), int line = __builtin_LINE());
-
 	Warning(const Warning&) = default;
 	Warning& operator=(const Warning&) = default;
 	Warning(Warning&&) = default;

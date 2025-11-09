@@ -100,6 +100,11 @@ std::shared_ptr<TransformComponent3D> RocketStage::getTransform() noexcept
 	return simObject->transform;
 }
 
+std::shared_ptr<SimulationObject> RocketStage::getSimObject() const noexcept
+{
+	return simObject;
+}
+
 /*setters*/
 void RocketStage::setID(const String& newName, ID::ID_T newLocalID) noexcept
 {

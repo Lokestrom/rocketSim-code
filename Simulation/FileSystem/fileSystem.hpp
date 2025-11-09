@@ -22,11 +22,11 @@ namespace fileSystem {
 	{
 		inline String simulationFolder;
 		inline String runFolder;
-		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> rocketFiles;
-		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> rocketStageFiles;
-		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> engineFiles;
-		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> fuelTankFiles;
-		inline std::unordered_map<ID::GlobaleID_T, WriteFile<ld>> planetFiles;
+		inline std::unordered_map<ID::UUID, WriteFile<ld>> rocketFiles;
+		inline std::unordered_map<ID::UUID, WriteFile<ld>> rocketStageFiles;
+		inline std::unordered_map<ID::UUID, WriteFile<ld>> engineFiles;
+		inline std::unordered_map<ID::UUID, WriteFile<ld>> fuelTankFiles;
+		inline std::unordered_map<ID::UUID, WriteFile<ld>> planetFiles;
 
 		void reset();
 		

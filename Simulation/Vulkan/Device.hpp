@@ -90,7 +90,7 @@ private:
 private:
     vk::Instance _instance;
     vk::DebugUtilsMessengerEXT _debugMessenger;
-    vk::DispatchLoaderDynamic _dldi;
+    //vk::DispatchLoaderDynamic _dldi;
     vk::PhysicalDevice _physicalDevice = VK_NULL_HANDLE;
     Window& _window;
     vk::CommandPool _commandPool;

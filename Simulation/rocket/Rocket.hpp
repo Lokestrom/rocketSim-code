@@ -68,8 +68,6 @@ public:
 	ld determenRadius(Vector3 edgePoint, Vector3 edgeToCm) noexcept;
 
 private:
-
-
 	ID _id;
 
 	Vector<std::shared_ptr<RocketStage>> _rocketStages;

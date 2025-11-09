@@ -40,7 +40,7 @@ public:
 
 public:
     TotalTransformComponent3D transform;
-    std::optional<ID::GlobaleID_T> followObj;
+    std::optional<ID::UUID> followObj;
 
     CameraSettings setting;
 

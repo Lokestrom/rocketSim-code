@@ -1,7 +1,7 @@
 #include "controles.hpp"
 
-#include "../Vulkan/windowFunctions/windowFunctions.hpp"
-#include "../Vulkan/windowFunctions/helpers/error.hpp"
+//#include "../Vulkan/windowFunctions/windowFunctions.hpp"
+//#include "../Vulkan/windowFunctions/helpers/error.hpp"
 #include "simulationObjects.hpp"
 
 Warning::Warning(const String& what, Type type, 
@@ -17,12 +17,12 @@ Warning::Warning(const String& what, Type type,
 
 	list.push_back(*this);
 
-	auto info = (windows::WarningPopup::Info*)windows::createInfo(windows::Type::WarningPopup);
-	info->warning = this;
-	info->changeFunction = changeFunction;
-	info->continueFunction = continueFunction;
-
-	windows::createWindow(windows::Type::WarningPopup, info);
+	//auto info = (windows::WarningPopup::Info*)windows::createInfo(windows::Type::WarningPopup);
+	//info->warning = this;
+	//info->changeFunction = changeFunction;
+	//info->continueFunction = continueFunction;
+	//
+	//windows::createWindow(windows::Type::WarningPopup, info);
 }
 
 Error::Error(const String& what, Type code, recoveryType recoveryType, String function, String file, int line)
@@ -52,10 +52,10 @@ Error::Error(const String& what, Type code, recoveryType recoveryType, String fu
 		 + "\nline: " + _line
 		 + "\n";
 #else
-	windows::createWindow(windows::Type::ErrorList);
-	auto info = (windows::ErrorPopup::Info*)windows::createInfo(windows::Type::ErrorPopup);
-	info->error = this;
-	createWindow(windows::Type::ErrorPopup, info);
+	//windows::createWindow(windows::Type::ErrorList);
+	//auto info = (windows::ErrorPopup::Info*)windows::createInfo(windows::Type::ErrorPopup);
+	//info->error = this;
+	//createWindow(windows::Type::ErrorPopup, info);
 #endif // _DEBUG
 }
 

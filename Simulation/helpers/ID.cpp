@@ -2,7 +2,7 @@
 
 bool operator==(const ID& l, const ID& r)
 {
-    return l.getID() == r.getID();
+    return l.getUUID() == r.getUUID();
 }
 
 bool operator!=(const ID& l, const ID& r)
@@ -12,7 +12,7 @@ bool operator!=(const ID& l, const ID& r)
 
 bool operator==(const IDview& l, const IDview& r)
 {
-    return l.getID() == r.getID();
+    return l.getUUID() == r.getUUID();
 }
 
 bool operator!=(const IDview& l, const IDview& r)
@@ -22,7 +22,7 @@ bool operator!=(const IDview& l, const IDview& r)
 
 bool operator==(const ID& l, const IDview& r)
 {
-    return l.getID() == r.getID();
+    return l.getUUID() == r.getUUID();
 }
 
 bool operator!=(const ID& l, const IDview& r)
@@ -32,7 +32,7 @@ bool operator!=(const ID& l, const IDview& r)
 
 bool operator==(const IDview& l, const ID& r)
 {
-    return l.getID() == r.getID();
+    return l.getUUID() == r.getUUID();
 }
 
 bool operator!=(const IDview& l, const ID& r)

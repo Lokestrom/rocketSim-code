@@ -50,7 +50,7 @@ Quaternion TransformComponent3D::getTotalRotation() const noexcept
     return totalRotation;
 }
 
-glm::mat4 TransformComponent3D::mat4() {
+glm::mat4 TransformComponent3D::mat4() const noexcept {
     Quaternion totalRotation = getTotalRotation();
     Vector3 totalTranslation = getTotalTranslation();
     const float c3 = glm::cos(totalRotation.z);
@@ -81,7 +81,7 @@ glm::mat4 TransformComponent3D::mat4() {
         {totalTranslation.x, totalTranslation.y, totalTranslation.z, 1.0f} };
 }
 
-glm::mat3 TransformComponent3D::normalMatrix() {
+glm::mat3 TransformComponent3D::normalMatrix() const noexcept {
     Quaternion totalRotation = getTotalRotation();
     const float c3 = glm::cos(totalRotation.z);
     const float s3 = glm::sin(totalRotation.z);
