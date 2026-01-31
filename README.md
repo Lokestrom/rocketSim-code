@@ -4,7 +4,7 @@ Rendering is done using OpenGL with Dear ImGui.
 
 Units: SI<br>
 
-![rocketSim screenshot](simulation/Assets/screenshot.PNG "screenshot of app")
+![rocketSim screenshot](./Simulation/Assets/screenshot.PNG "screenshot of app")
 
 ### Building and running
 The project uses CMake and requires C++23 or later.
