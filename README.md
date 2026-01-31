@@ -37,7 +37,7 @@ The project uses CMake and requires C++23 or later.
 
 NOTE:
 * When adding rigid bodies it takes some time before they appear. This is do to the simulation running in a separate thread. I have plans on a rework of the cache system to make it more responsive and enable saving/loading of simulations.
-* If you want more responsive adding of bodies you can go to the [`Simulation/Simulation/RenderingCache.hpp`](./Simulation\Simulation\RenderingCache.hpp) file and change the `std::atomic<unsigned int> _maxFrames` at the end of the class and file to 1 (currently set to 100). This can cause some stuttering in the rendering and a performance loss in the simulation.
+* If you want more responsive adding of bodies you can go to the [`Simulation/Simulation/RenderingCache.hpp`](./Simulation/Simulation/RenderingCache.hpp) file and change the `std::atomic<unsigned int> _maxFrames` at the end of the class and file to 1 (currently set to 100). This can cause some stuttering in the rendering and a performance loss in the simulation.
 #### Vulkan supported version:
 To use the Vulkan version, check out the following commit:
 ``` bash 
