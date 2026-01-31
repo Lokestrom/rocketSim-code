@@ -1,0 +1,260 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amssymb}
+
+\setlength{\parindent}{0pt}
+
+\title{Mathematics for Rocket Simulation} 
+
+\begin{document}
+	\maketitle
+	This document describes the mathematical model used for rigid body dynamics
+	in the rocket simulation.
+
+	\section{Rigid body}
+	\subsection*{Definitions:}
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( M \) is the mass of the rigid body. \\
+		\> \( i, j \) are indices representing particles in the rigid body. \\
+		\> \( \mathbf{r_i} \) is the position vector of particle \( i \) in the rigid body. \\
+		\> \( m_i \) is the mass of particle \( i \) in the rigid body. \\
+		\> \( O_M \) is the center of mass of the rigid body. \eqref{eq:CenterOfMassDescrete} \\
+		\> \( I \) is the inertia tensor of the rigid body about its center of mass. \eqref{eq:fullInertiaTensor} \\
+		\> \( T \) is the kinetic energy of the rigid body. \eqref{eq:KineticEnergyRigidBody} \\
+		\> \( \omega \) is the angular velocity of the rigid body. \eqref{eq:AngularVelocityIntegration} \\
+		\> \( L \) is the angular momentum of the rigid body. \eqref{eq:AngularMomentumIntegration} \\
+		\> \( \tau \) is the torque applied to the rigid body. \\
+		\> \( \rho(\mathbf{r}) \) is the mass density at position \( \mathbf{r} \). \\
+		\> \( V \) is the volume occupied by the rigid body. \\
+		\> \( a, b \) are indices representing the axes \( x, y, z \). \\
+	\end{tabbing}
+
+	A rigid body is an idealization of a solid body in which deformation is neglected. The distance between any two given points on a rigid body remains constant in time regardless of external forces or moments exerted on it.	
+	\subsection{Center of mass}
+	The center of mass \( O_M \) of a system of particles is given by:
+	\begin{equation}
+		O_M = \frac{1}{M} \sum_{i} m_i \mathbf{r_i}
+		\label{eq:CenterOfMassDescrete}
+	\end{equation}
+	There may also be use for the infinite integral form:
+	\begin{equation}
+		O_M = \frac{1}{M} \int_{V} \mathbf{r} \rho(\mathbf{r}) \, dV
+		\label{eq:CenterOfMassContinuous}
+	\end{equation}
+	If the rigid body is made up of both point masses and continuous mass distributions, the total center of mass is given by:
+	\begin{equation}
+		O_M = O_{M,\text{discrete}} + O_{M,\text{continuous}}
+		\label{eq:TotalCenterOfMass}
+	\end{equation}	
+
+	\subsection{Inertia tensor}
+	The index notation form of the inertia tensor \( I \) of a rigid body about its center of mass is given by:
+	\begin{equation}
+		I_{ab} \equiv \sum_{i} m_i \left( r_i^2 \delta_{ab} - r_{i,a} r_{i,b} \right)
+		\label{eq:InertiaTensorDiscrete}
+	\end{equation}
+	There may also be use for the infinite integral form:
+	\begin{equation}
+		I_{ab} \equiv \int_{V} \rho(\mathbf{r}) \left( r^2 \delta_{ab} - r_a r_b \right) dV
+		\label{eq:InertiaTensorContinuous}
+	\end{equation}
+	Where: 
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( \delta_{ab} \) is the Kronecker delta defined as: \\
+		\> \hspace{1cm}\= \( \delta_{ab} = \begin{cases}
+			1 & \text{if } a = b \\
+			0 & \text{if } a \neq b
+		\end{cases} \)
+	\end{tabbing}
+
+	
+	This gives simply the full matrix form as:
+	\begin{equation}
+		I = \sum_{i} m_i \begin{bmatrix}
+		  y_i^2 + z_i^2 & -x_i y_i & -x_i z_i \\
+		  -y_i x_i & x_i^2 + z_i^2 & -y_i z_i \\
+		  -z_i x_i & -z_i y_i & x_i^2 + y_i^2
+		  \end{bmatrix}
+		  \label{eq:fullInertiaTensor}
+	\end{equation}
+	Where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( x_i, y_i, z_i \) are the coordinates of particle \( i \)
+	\end{tabbing}
+	Or for the continuous case:
+	\begin{equation}
+		I = \int_{V} \rho(\mathbf{r}) \begin{bmatrix}
+			y^2 + z^2 & -x y & -x z \\
+			-y x & x^2 + z^2 & -y z \\
+			-z x & -z y & x^2 + y^2
+		\end{bmatrix} dV
+		\label{eq:fullInertiaTensorContinuous}
+	\end{equation}
+	Note that \( I \) is a symmetric, i.e., \( I_{ab} = I_{ba} \).\\
+	
+	For a rigid body that is made up of point and continuous mass distributions, the total inertia tensor is simply the sum of the two:
+	\begin{equation}
+		I = I_{\text{discrete}} + I_{\text{continuous}}
+		\label{eq:totalInertiaTensor}
+	\end{equation}
+
+	To get the inertia tensor around an arbeitrary point \( P \), we can use the parallel axis theorem:
+	\begin{equation}
+		I_{ab}^P = I_{ab}^{O_M} + M \left( d^2 \delta_{ab} - d_a d_b \right)
+		\label{eq:ParallelAxisTheorem}
+	\end{equation}
+	Where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( I_{ab}^P \) is the inertia tensor about point \( P \). \\
+		\> \( I_{ab}^{O_M} \) is the inertia tensor about the center of mass \( O_M \). \\
+		\> \( \mathbf{d} = \overrightarrow{O_M P} \) is the displacement vector from the center of mass to point \( P \). \\
+	\end{tabbing}
+
+	to get the inertia tensor in world coordinates, we can use the rotation matrix \( R \) derived from the orientation quaternion \( q \):
+	\begin{equation}
+		I_{\text{world}} = R I R^T
+		\label{eq:InertiaTensorWorld}
+	\end{equation}
+
+	if the inertia tensor is diagonalized, one can use a quaternion \( Q \) to rotate it to world coordinates as:
+	\begin{equation}
+		I_{\text{world}} = Q I Q^{-1}
+		\label{eq:InertiaTensorWorldQuaternion}
+	\end{equation}
+	
+	\subsection{Kinetic energy}
+	The rotational kinetic energy \( T_R \) of a rigid body is given by:
+	\begin{equation}
+		T_R = \frac{1}{2} \sum_ {a,b} I_{ab} \omega_a \omega_b = \frac{1}{2} \omega L
+		\label{eq:KineticEnergyRigidBody}
+	\end{equation}
+
+	\subsection{Torque and angular acceleration}
+	Torque \( \tau \) can be calculated from a force \( \mathbf{F} \) applied at point \( P \) as:
+	\begin{equation}
+		\tau = \overrightarrow{O_M P} \times \mathbf{F}
+		\label{eq:TorqueFromForce}
+	\end{equation}
+	Where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( \overrightarrow{O_M P} \) is the position vector from the center of mass \( O_M \) to point \( P \). \\
+	\end{tabbing}
+	The angular acceleration \( \alpha \) of the rigid body is given by:
+	\begin{equation}
+		\alpha = I^{-1} (\tau - \omega \times (I \omega))
+		\label{eq:TorqueAngularAcceleration}
+	\end{equation}
+	Integrating using angular momentum \( L \) is often more stable. where:
+	\begin{equation}
+		\dot{L} = \tau
+		\label{eq:AngularMomentum}
+	\end{equation}
+
+	\subsection{Conserved quanteties}
+	In the absence of external forces and torques, the following quantities are conserved for a rigid body:
+	\begin{itemize}
+		\item Linear momentum \( \mathbf{p} = M \mathbf{v} \)
+		\item Angular momentum \( \mathbf{L} = I_{\text{world}} \omega \)
+		\item Kinetic energy \( T = T_T + T_R = \frac{1}{2} M v^2 + \frac{1}{2} \omega L \)
+		\item phase space volume
+		\item Center of mass position \( O_M \)
+		\item Mass \( M \)
+		\item Inertia tensor in body space \( I \)
+		\item Volume \( V \)
+		\item Density distribution \( \rho(\mathbf{r}) \)
+		\item Total momentum \( \mathbf{P} = \sum_i \mathbf{p_i} \)
+		\item Total angular momentum \( \mathbf{L} = \sum_i \mathbf{r_i} \times \mathbf{p_i} \)
+	\end{itemize}
+
+	\subsection{Integration of position}
+	The position of a rigid body is simply integrated as a point mass, using the center of mass \( O_M \) as the reference point.
+	\begin{equation}
+		\mathbf{O_M}(t) = \mathbf{O_M}(0) + \mathbf{v}(0) t + \int_{0}^{t} (t - t') \mathbf{a}(t') dt'
+		\label{eq:PositionIntegration}
+	\end{equation}
+	or in the finite difference form:
+	\begin{equation}
+		\mathbf{O_M}(t + \Delta t) = \mathbf{O_M}(t) + \mathbf{v}(t) \Delta t + \frac{1}{2} \mathbf{a}(t) (\Delta t)^2
+		\label{eq:PositionIntegrationFinite}
+	\end{equation}
+	and the velocity as:
+	\begin{equation}
+		\mathbf{v}(t) = \mathbf{v}(0) + \int_{0}^{t} \mathbf{a}(t') dt'
+		\label{eq:VelocityIntegration}
+	\end{equation}
+	or in the finite difference form:
+	\begin{equation}
+		\mathbf{v}(t + \Delta t) = \mathbf{v}(t) + \mathbf{a}(t) \Delta t
+		\label{eq:VelocityIntegrationFinite}
+	\end{equation}
+	where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( \mathbf{v}(t) \) is the velocity of the center of mass at time \( t \). \\
+		\> \( \mathbf{a}(t) \) is the acceleration of the center of mass at time \( t \). \\
+	\end{tabbing}
+	note that this only uses second order integration for position, and can be extended using the Taylor series if higher order accuracy is needed.
+	
+	\subsection{Integration of orientation}
+	The orientation of the rigid body is reprecented using a quaternion \( q \). The quaternion is updated using the angular velocity \( \omega \) as follows:
+	\begin{equation}
+		\dot{q}(t) = \frac{1}{2} \Omega(\omega(t)) q(t)
+		\label{eq:OrientationDot}
+	\end{equation}
+	\begin{equation}
+		q(t + \Delta t) = q(t) + \dot{q}(t) \Delta t
+		\label{eq:OrientationIntegration}
+	\end{equation}
+
+	where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( \Omega(\omega(t)) \) is a pure quaternion \((0, \omega)\)
+	\end{tabbing}
+
+	Note that the quaternion should be normalized often to prevent drift.
+
+	The angular velocity \( \omega \) is updated using the angular acceleration \( \alpha \) as follows:
+	\begin{equation}
+		\omega(t) = \omega(0) + \int_{0}^{t} \alpha(t') dt'
+		\label{eq:AngularVelocityIntegration}
+	\end{equation}
+	or in the finite difference form:
+	\begin{equation}
+		\omega(t + \Delta t) = \omega(t) + \alpha(t) \Delta t
+		\label{eq:AngularVelocityIntegrationFinite}
+	\end{equation}
+	where:
+	\begin{tabbing}
+		\hspace{1cm}\= \kill
+		\> \( \alpha(t) \) is the angular acceleration of the rigid body at time \( t \), see \eqref{eq:TorqueAngularAcceleration} \\
+	\end{tabbing}
+
+	But insted of integrating the angular velocity directly, it is often more stable to integrate the angular momentum \( L \) and then compute the angular velocity from it:
+	\begin{equation}
+		L(t) = L(0) + \int_{0}^{t} \tau(t') dt'
+		\label{eq:AngularMomentumIntegration}
+	\end{equation}
+	or in the finite difference form:
+	\begin{equation}
+		L(t + \Delta t) = L(t) + \tau(t) \Delta t
+		\label{eq:AngularMomentumIntegrationFinite}
+	\end{equation}
+
+	then compute the angular velocity as:
+	\begin{equation}
+		\omega(t) = I_{\text{world}}^{-1} L(t)
+		\label{eq:AngularVelocityFromMomentum}
+	\end{equation}
+	
+
+	\section{References}
+	\url{https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/6fe39e8d5ce4ce746ca256dfea665eda_MIT8_09F14_Chapter_2.pdf}
+
+\end{document}

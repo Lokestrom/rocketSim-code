@@ -6,23 +6,23 @@ TransformComponent3D::TransformComponent3D(Vector3 translation, Quaternion rotat
 {
 }
 
-TransformComponent3D::TransformComponent3D(Vector3 translation, Quaternion rotation, const Vector<std::shared_ptr<TransformComponent3D>>& parentTransformComponents)
+TransformComponent3D::TransformComponent3D(Vector3 translation, Quaternion rotation, const Vector<TransformComponent3D*>& parentTransformComponents)
     : translation(translation), rotation(rotation),
     _parentTransforms(parentTransformComponents)
 {
 }
 
-void TransformComponent3D::addParentTransform(size_t index, std::shared_ptr<TransformComponent3D> transform) noexcept
+void TransformComponent3D::addParentTransform(size_t index, TransformComponent3D& transform) noexcept
 {
-	_parentTransforms.insert(index, transform);
+	_parentTransforms.insert(index, &transform);
 }
 
-void TransformComponent3D::addParentTransform(const Vector<std::shared_ptr<TransformComponent3D>>& transform) noexcept
+void TransformComponent3D::addParentTransform(const Vector<TransformComponent3D*>& transform) noexcept
 {
     _parentTransforms += transform;
 }
 
-Vector<std::shared_ptr<TransformComponent3D>>& TransformComponent3D::getParentTransforms() noexcept
+Vector<TransformComponent3D*>& TransformComponent3D::getParentTransforms() noexcept
 {
     return _parentTransforms;
 }

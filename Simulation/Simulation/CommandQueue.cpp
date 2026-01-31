@@ -1,19 +1,23 @@
 #include "CommandQueue.hpp"
+#include "CommandQueue.hpp"
+#include "CommandQueue.hpp"
 
-#include "Simulation/Simulation.hpp"
-
-#include "components/Planet.hpp"
+#include "ECS/Simulation.hpp"
+#include "Container.hpp"
 
 #include <memory>
 
-CommandQueue::CommandQueue(Simulation& simulation)
-	: _simulation(simulation)
+CommandQueue::CommandQueue(SimulationContainer& container)
+	: _simulation(container.getSimulation()),
+	_container(container)
 {
 }
 
-void CommandQueue::pushCommand(Command&& command) {
+size_t CommandQueue::pushCommand(Command&& command) {
+	static size_t comandID = 0;
 	std::lock_guard<std::mutex> lock(_mutex);
 	_commands.push(std::move(command));
+	return comandID++;
 }
 
 void CommandQueue::popCommands() {
@@ -22,9 +26,18 @@ void CommandQueue::popCommands() {
 	while (!_commands.empty()) {
 		auto& command = _commands.front();
 		switch (command.type) {
-		case CommandType::ADD_COMPONENT:
+		case CommandType::ADD_ENTITY:
 			processAddComponentCommand(std::get<AddComponentData>(command.data));
 			break;
+
+		case CommandType::REMOVE_ENTITY:
+			processRemoveEntityCommand(std::get<ID::UUID>(command.data));
+			break;
+		
+		case CommandType::REMOVE_ALL:
+			processRemoveAllCommand();
+			break;
+		
 		default:
 			break;
 		}
@@ -32,15 +45,24 @@ void CommandQueue::popCommands() {
 	}
 }
 
-void CommandQueue::processAddComponentCommand(const AddComponentData& data)
+void CommandQueue::processAddComponentCommand(AddComponentData& data)
 {
+	_container.getRenderingCache().invalidate();
 	switch (data.type) {
 	case ComponetType::TEST_COMPONENT:
-		auto& builder = *static_cast<PlanetBuilder*>(data.component.get());
-		auto component = std::make_unique<Planet>(
-			_simulation,
-			builder
-		);
-		_simulation.addComponent(std::move(component));
+		PhysicsBody(_simulation, data.component);
 	}
+}
+
+void CommandQueue::processRemoveAllCommand()
+{
+	_container.getRenderingCache().invalidate();
+	_simulation.getEntityContainer().clear();
+	_simulation.getIntegratorContainer().clear();
+}
+
+void CommandQueue::processRemoveEntityCommand(ID::UUID id)
+{
+	_simulation.getEntityContainer().removeEntity(id);
+	_simulation.getIntegratorContainer().remove(id);
 }

@@ -2,7 +2,7 @@
 
 #include "OpenGLApp.hpp"
 
-#include <glm/ext/scalar_constants.inl>
+//#include <glm/ext/scalar_constants.inl>
 
 #include "../ImGui/imgui.h"
 #include "../ImGui/imgui_internal.h"
@@ -22,7 +22,7 @@ void Camera::update(ImVec2 windowSize) {
     Vector3 rightDir = _rotation.rotate(Vector3::UnitX());
     Vector3 upDir = _rotation.rotate(Vector3::UnitY());
 
-    Vector3 moveDir;
+    Vector3 moveDir = Vector3::null();
     moveDir += ImGui::IsKeyDown(Keybinds::moveForward) * forwardDir;
     moveDir -= ImGui::IsKeyDown(Keybinds::moveBackward) * forwardDir;
 	moveDir += ImGui::IsKeyDown(Keybinds::moveRight) * rightDir;
@@ -30,11 +30,11 @@ void Camera::update(ImVec2 windowSize) {
 	moveDir += ImGui::IsKeyDown(Keybinds::moveUp) * upDir;
 	moveDir -= ImGui::IsKeyDown(Keybinds::moveDown) * upDir;
 
-    if (moveDir.length() > std::numeric_limits<float>::epsilon()) {
+    if (moveDir != Vector3::null()) {
         _position += _moveSpeed * App::getDeltaTime() * toglm(moveDir.normal());
     }
 
-    Vector3 rotation;
+    Vector3 rotation = Vector3::null();
     Vector3 upRotate = Vector3::UnitX();
     Vector3 rightRotate = Vector3::UnitY();
     Vector3 rollRotate = Vector3::UnitZ();

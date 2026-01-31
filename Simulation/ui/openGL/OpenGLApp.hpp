@@ -5,7 +5,6 @@
 
 #include "windows/ImguiWindow.hpp"
 #include "../ImGui/imgui.h"
-#include "../../ObjectRenderingCashing.hpp"
 
 #include "Simulation/Container.hpp"
 
@@ -46,6 +45,11 @@ namespace OpenGL {
 
 		static double getSimulationRunTime() {
 			return (std::chrono::duration<double>(std::chrono::steady_clock::now() - simStart).count()) * simulationRunning();
+		}
+
+		// temporary solution to remove invalidated model pointers after adding new entities
+		static void removeLastCacheFrame() {
+			_lastCash = RenderingCache::FrameData();
 		}
 
 	private:

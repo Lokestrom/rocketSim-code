@@ -7,6 +7,8 @@
 #include "glm/mat4x4.hpp"
 #include "helpers/ID.hpp"
 #include "gpuInterface/Model.hpp"
+#include "helpers/math/Vector3.hpp"
+#include "helpers/math/Quaternion.hpp"
 
 
 class RenderingCache
@@ -17,8 +19,14 @@ public:
 	struct FrameData {
 		struct ComponentData {
 			ID::UUID id;
-			glm::mat4 transform;
-			// never changed so safe
+			Vector3 position;
+			Quaternion orientation;
+			Vector3 scale;
+
+			Vector3 velocity;
+			Vector3 angularMomentum;
+
+			// when adding a new model to the DataArray<Model3d> the pointer may become invalid if the array resizes
 			// but in the future create a model cache on the gpu side
 			GPU::Model3D* model;
 		};
@@ -43,7 +51,7 @@ public:
 		while (frame.time < time && !_frames.empty()) {
 			frame = _frames.front();
 			_frames.pop();
-		} 
+		}
 
 		return frame;
 	}
@@ -53,6 +61,18 @@ public:
 	}
 	bool isFull() {
 		return _frames.size() == _maxFrames;
+	}
+
+	size_t size() {
+		std::lock_guard<std::mutex> lock(mutex_);
+		return _frames.size();
+	}
+	
+	void invalidate() {
+		std::lock_guard<std::mutex> lock(mutex_);
+		while (!_frames.empty()) {
+			_frames.pop();
+		}
 	}
 
 private:

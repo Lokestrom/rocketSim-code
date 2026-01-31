@@ -28,13 +28,16 @@ namespace GPU {
 	class Model3D {
 		friend class RenderingModel3D;
 	public:
+		Model3D() = delete;
 		Model3D(const std::vector<Model::Vertex>& vertices, const std::vector<unsigned int>& indices);
 		Model3D(Model3D&) = delete;
-		Model3D(Model3D&&) = default;
+		Model3D(Model3D&&) noexcept;
 		~Model3D();
 
 		Model3D& operator=(Model3D&) = delete;
 		Model3D& operator=(Model3D&& model) noexcept;
+
+		unsigned int getSize() const { return _size; }
 
 	private:
 		void createBuffer(const std::vector<Model::Vertex>& vertices, const std::vector<unsigned int>& indices);

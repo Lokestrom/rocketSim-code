@@ -21,5 +21,6 @@ imgui.ini
 #cmake
 build
 out
-CMakeSettings.json
 
+#latex
+math.synctex.gz

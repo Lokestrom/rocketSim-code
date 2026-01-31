@@ -18,10 +18,6 @@ Quaternion Quaternion::operator-() const noexcept
     return Quaternion(-w, -x, -y, -z);
 }
 
-Quaternion Quaternion::operator*(const ld other) const noexcept
-{
-    return Quaternion(w * other, x * other, y * other, z * other);
-}
 Quaternion Quaternion::operator*(const Quaternion& other) const noexcept
 {
     return Quaternion(
@@ -37,11 +33,6 @@ Vector3 Quaternion::operator*(const Vector3& other) const noexcept
     2 * x * y * other.x + y * y * other.y + 2 * z * y * other.z + 2 * w * z * other.x - z * z * other.y + w * w * other.y - 2 * x * w * other.z - x * x * other.y,
     2 * x * z * other.x + 2 * y * z * other.y + z * z * other.z - 2 * w * y * other.x - y * y * other.z + 2 * w * x * other.y - x * x * other.z + w * w * other.z
     );
-}
-
-Quaternion Quaternion::operator/(ld scalar) const noexcept
-{
-    return Quaternion(w / scalar, x / scalar, y / scalar, z / scalar);
 }
 
 Quaternion& Quaternion::operator+=(const Quaternion& q) noexcept

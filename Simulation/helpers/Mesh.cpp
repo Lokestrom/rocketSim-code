@@ -1,5 +1,5 @@
 #include "Mesh.hpp"
-#include "simulationObjects.hpp"
+//#include "simulationObjects.hpp"
 #include "../rocket/SimulationObject.hpp"
 
 #include <algorithm>

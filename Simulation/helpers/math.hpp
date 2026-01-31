@@ -2,6 +2,7 @@
 #include "math/Vector3.hpp"
 #include "math/Vector2.hpp"
 #include "math/Quaternion.hpp"
+#include <vector>
 
 #include "controles.hpp"
 
@@ -26,7 +27,7 @@ ld fixSmallValue(ld value);
 ld fixAngle360(ld angle);
 ld fixAngle180(ld angle);
 
-ld distanse(Vector3 pos, Vector3 otherPos);
+ld distance(Vector3 pos, Vector3 otherPos);
 
 //https://en.wikipedia.org/wiki/Spherical_coordinate_system#Cartesian_coordinates
 ld generateMultiplierX(geographicCoordinate cord);
@@ -37,4 +38,4 @@ ld findLongitude(Vector3 pos, Vector3 otherPos);
 
 geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos);
 
-Vector<Vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove = Vector2::null());
+std::vector<std::vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove = Vector2::null());

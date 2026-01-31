@@ -58,7 +58,7 @@ ld fixAngle180(ld angle) {
     return angle;
 }
 
-ld distanse(Vector3 pos, Vector3 otherPos)
+ld distance(Vector3 pos, Vector3 otherPos)
 {
     pos -= otherPos;
     return pos.length();
@@ -79,7 +79,7 @@ ld generateMultiplierZ(geographicCoordinate cord)
 }
 ld findLatitude(Vector3 pos, Vector3 otherPos)
 {
-    return fixSmallValue(acosl((pos.z - otherPos.z) / distanse(pos, otherPos)));
+    return fixSmallValue(acosl((pos.z - otherPos.z) / distance(pos, otherPos)));
 }
 ld findLongitude(Vector3 pos, Vector3 otherPos)
 {
@@ -92,14 +92,14 @@ geographicCoordinate findGeographicCoordinate(Vector3 pos, Vector3 otherPos)
     return { findLatitude(pos, otherPos), findLongitude(pos, otherPos) };
 }
 
-Vector<Vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove)
+std::vector<std::vector<Vector2>> createGrid(Vector2 dimentions, Vector2 seperation, Vector2 posMove)
 {
-    Vector<Vector<Vector2>> grid;
+    std::vector<std::vector<Vector2>> grid;
     Vector2 currPlace = posMove;
     for (int i = 0; i < dimentions.x; i++) {
-        grid.pushBack(Vector<Vector2>());
+        grid.push_back(std::vector<Vector2>());
         for (int j = 0; j < dimentions.y; j++) {
-            grid[i].pushBack(currPlace);
+            grid[i].push_back(currPlace);
             currPlace.y += seperation.y;
         }
         currPlace.x += seperation.x;

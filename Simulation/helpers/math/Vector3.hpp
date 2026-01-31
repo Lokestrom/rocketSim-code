@@ -1,17 +1,20 @@
 #pragma once
 
 #include <unordered_map>
+#include "glm/glm.hpp"
 
 using ld = long double;
 
-struct Vector3 {
-	ld x, y, z;
-	Vector3();
-	Vector3(ld x, ld y, ld z);
+class Vector3 {
+public:
+	Vector3() noexcept = default;
+	Vector3(ld x, ld y, ld z) noexcept;
+	Vector3(glm::vec<3, ld> v) noexcept;
+
+	Vector3(const Vector3& v) noexcept = default;
+	Vector3& operator=(const Vector3& v) noexcept = default;
 
 	/*operators*/
-	Vector3 operator=(const Vector3& v) noexcept;
-
 	friend Vector3 operator+(Vector3 l, const Vector3& r) noexcept;
 	friend Vector3 operator-(Vector3 l, const Vector3& r) noexcept;
 	friend Vector3 operator-(Vector3 l) noexcept;
@@ -30,7 +33,7 @@ struct Vector3 {
 	Vector3& operator*=(const ld& r) noexcept;
 	Vector3& operator/=(const ld& r) noexcept;
 
-	/*operasjons*/
+	/*operations*/
 	ld length() const noexcept;
 	ld lengthSquared() const noexcept;
 	Vector3 normal() const noexcept;
@@ -43,8 +46,21 @@ struct Vector3 {
 	static Vector3 UnitY() noexcept;
 	static Vector3 UnitZ() noexcept;
 	static Vector3 null() noexcept;
+
+	glm::vec<3, ld>& asGLM() noexcept;
+	const glm::vec<3, ld>& asGLM() const noexcept;
+
+	union {
+		glm::vec<3, ld> vec;
+		struct {
+			ld x;
+			ld y;
+			ld z;
+		};
+	};
 };
 
+glm::vec<3, ld> toGLM(const Vector3& vec);
 namespace std {
 	template <>
 	struct hash<Vector3> {

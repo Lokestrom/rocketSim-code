@@ -10,6 +10,7 @@
 #include "../editor/testAdder.hpp"
 #include "ui/openGL/windows/core/TimeWindow.hpp"
 #include "ui/openGL/windows/core/renderWindow.hpp"
+#include "ui/openGL/windows/core/EntityView.hpp"
 
 
 OpenGL::Launcher::Launcher()
@@ -52,10 +53,11 @@ bool OpenGL::Launcher::render()
 				SimulationBuilder builder;
 				builder.configPath = folder;
 				App::StartSimulation(builder);
-				open = false;
+				App::addWindow(std::make_unique<OpenGL::FreeCamWindow>());
 				App::addWindow(std::make_unique<OpenGL::testAdder>());
 				App::addWindow(std::make_unique<OpenGL::TimeWindow>());
-				App::addWindow(std::make_unique<OpenGL::FreeCamWindow>());
+				App::addWindow(std::make_unique<OpenGL::EntityViewer>());
+				open = false;
 			}
 			ImGui::EndPopup();
 		}

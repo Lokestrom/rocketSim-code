@@ -8,3 +8,5 @@ set(SOURCES
 )
 
 add_library(math STATIC ${SOURCES})
+
+target_link_libraries(math PRIVATE Database)

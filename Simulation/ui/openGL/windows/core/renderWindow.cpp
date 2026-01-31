@@ -57,6 +57,8 @@ namespace OpenGL
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
 		glViewport(0, 0, wsize.x, wsize.y);
 		glClearColor(0.3,0.3,0.3,1.0);
@@ -64,15 +66,45 @@ namespace OpenGL
 		
 		_shader.bind();
 
+		auto transformMatConverter = [](Vector3& vec, Quaternion& quat, Vector3& scale) {
+			auto mat = glm::mat4_cast(glm::quat(
+				static_cast<float>(quat.w),
+				static_cast<float>(quat.x),
+				static_cast<float>(quat.y),
+				static_cast<float>(quat.z)
+			));
+
+			mat = glm::scale(mat, glm::vec3(
+				static_cast<float>(scale.x),
+				static_cast<float>(scale.y),
+				static_cast<float>(scale.z)
+			));
+
+			mat[3][0] = vec.x;
+			mat[3][1] = vec.y;
+			mat[3][2] = vec.z;
+
+			return mat;
+			};
+
+		updateVectors(_lastCash.components);
+
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Camera::Matrices), &camera.getMatrices());
 		for (auto obj : _lastCash.components) {
-			glUniformMatrix4fv(2, 1, GL_FALSE, &obj.transform[0][0]);
+			_vectorsToRender[obj.id][0].Render(obj.velocity, obj.position);
+			_vectorsToRender[obj.id][1].Render(obj.orientation.rotate(Vector3::UnitX()), obj.position);
+			_vectorsToRender[obj.id][2].Render(obj.orientation.rotate(Vector3::UnitY()), obj.position);
+			_vectorsToRender[obj.id][3].Render(obj.orientation.rotate(Vector3::UnitZ()), obj.position);
+			glUniformMatrix4fv(2, 1, GL_FALSE, &(transformMatConverter(obj.position, obj.orientation, obj.scale)[0][0]));
+			glUniform4f(3, 1.0,1.0,1.0,0.5);
 			GPU::RenderingModel3D(*obj.model).render();
 		}
-			
+
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_MULTISAMPLE);
+		glDisable(GL_BLEND);
+
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, _framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _resolvedFramebuffer);
@@ -105,6 +137,7 @@ namespace OpenGL
 			glDeleteFramebuffers(1, &_framebuffer);
 			glDeleteRenderbuffers(1, &_renderBuffer);
 			glDeleteTextures(1, &_texture);
+			glDeleteTextures(1, &_resolvedTexture);
 		}
 		glGenFramebuffers(1, &_framebuffer);
 
@@ -113,9 +146,9 @@ namespace OpenGL
 		glGenTextures(1, &_texture);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _texture);
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, width, height, GL_TRUE);
-
+		
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
+		
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, _texture, 0);
 
 		glGenRenderbuffers(1, &_renderBuffer);
@@ -172,5 +205,41 @@ namespace OpenGL
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _resolvedTexture, 0);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void FreeCamWindow::addEntityVectors(ID::UUID id)
+	{
+		_vectorsToRender[id].emplace_back(glm::vec4(1.0, 1.0, 0.0, 1.0)); // velocity - yellow
+		_vectorsToRender[id].emplace_back(glm::vec4(1.0, 0.0, 0.0, 1.0)); // orientation x - red
+		_vectorsToRender[id].emplace_back(glm::vec4(0.0, 1.0, 0.0, 1.0)); // orientation y - green
+		_vectorsToRender[id].emplace_back(glm::vec4(0.0, 0.0, 1.0, 1.0)); // orientation z - blue
+	}
+	void FreeCamWindow::removeEntityVectors(ID::UUID id)
+	{
+		_vectorsToRender.erase(id);
+	}
+	void FreeCamWindow::updateVectors(std::vector<RenderingCache::FrameData::ComponentData> entities)
+	{
+		for (auto& entity : entities) {
+			if (!_vectorsToRender.contains(entity.id)) {
+				addEntityVectors(entity.id);
+			}
+		}
+		std::vector<ID::UUID> toRemove;
+		for (auto& [id, vecs] : _vectorsToRender) {
+			bool found = false;
+			for (auto& entity : entities) {
+				if (entity.id == id) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				toRemove.push_back(id);
+			}
+		}
+		for (auto& id : toRemove) {
+			removeEntityVectors(id);
+		}
 	}
 }

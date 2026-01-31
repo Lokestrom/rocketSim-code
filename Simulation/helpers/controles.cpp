@@ -2,7 +2,6 @@
 
 //#include "../Vulkan/windowFunctions/windowFunctions.hpp"
 //#include "../Vulkan/windowFunctions/helpers/error.hpp"
-#include "simulationObjects.hpp"
 
 Warning::Warning(const String& what, Type type, 
 	void (*changeFunction)(WindowInfo&), void (*continueFunction)(WindowInfo&), 
@@ -15,7 +14,7 @@ Warning::Warning(const String& what, Type type,
 	_file = file;
 	_line = line;
 
-	list.push_back(*this);
+	ErrorHandling::warnings.push_back(*this);
 
 	//auto info = (windows::WarningPopup::Info*)windows::createInfo(windows::Type::WarningPopup);
 	//info->warning = this;
@@ -37,7 +36,7 @@ Error::Error(const String& what, Type code, recoveryType recoveryType, String fu
 
 	_duringRecoveryAttempt = attemptingRecovery;
 
-	list.push_back(*this);
+	ErrorHandling::errors.push_back(*this);
 
 	if (attemptingRecovery)
 		return;

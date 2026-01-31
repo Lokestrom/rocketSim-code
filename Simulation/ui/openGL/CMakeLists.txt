@@ -12,10 +12,14 @@ set(SOURCES
 	windows/ImguiWindow.cpp
 	windows/core/renderWindow.cpp
 	windows/core/TimeWindow.cpp
+	windows/core/EntityView.cpp
 	windows/editor/testAdder.cpp
 	windows/startup/Launcher.cpp
+
+	RenderObjects/vector.cpp
 )
 
 add_library(OpenGLApp STATIC ${SOURCES})
 
-target_link_libraries(OpenGLApp PRIVATE math simulation helpers glfw Database glad dearImGui)
+target_link_libraries(OpenGLApp PRIVATE math simulation helpers glfw glad dearImGui)
+target_link_libraries(OpenGLApp PUBLIC Database)

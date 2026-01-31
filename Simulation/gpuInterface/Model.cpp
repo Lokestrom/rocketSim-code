@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include "Model.hpp"
 
 #include "glad/glad.h"
 
@@ -28,6 +29,8 @@ namespace std {
 
 Model3D Model::LoadFromFile(std::filesystem::path filepath)
 {
+	assert(std::filesystem::exists(filepath) && "Model file does not exist");
+	assert(filepath.extension() == ".obj" && "Only .obj files are supported");
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -95,23 +98,33 @@ Model3D::Model3D(const std::vector<Model::Vertex>& vertices, const std::vector<u
 	createBuffer(vertices, indices);
 }
 
+GPU::Model3D::Model3D(Model3D&& model) noexcept
+	: _size(model._size),
+	_vertexArray(model._vertexArray),
+	_vertexBuffer(model._vertexBuffer),
+	_indexBuffer(model._indexBuffer)
+{
+	model._size = 0;
+}
+Model3D& Model3D::operator=(Model3D&& model) noexcept {
+	_size = model._size;
+	_vertexArray = model._vertexArray;
+	_vertexBuffer = model._vertexBuffer;
+	_indexBuffer = model._indexBuffer;
+
+	model._size = 0;
+	return *this;
+}
+
 Model3D::~Model3D()
 {
+	if (_size == 0)
+		return;
 	glDeleteVertexArrays(1, &_vertexArray);
 	glDeleteBuffers(1, &_vertexBuffer);
 	glDeleteBuffers(1, &_indexBuffer);
 }
 
-Model3D& Model3D::operator=(Model3D&& model) noexcept {
-	_size = model._size;
-	_vertexArray = model._vertexArray;
-	_indexBuffer = model._indexBuffer;
-
-	model._size = 0;
-	model._vertexArray = 0;
-	model._indexBuffer = 0;
-	return *this;
-}
 
 void Model3D::createBuffer(const std::vector<Model::Vertex>& vertices, const std::vector<unsigned int>& indices)
 {

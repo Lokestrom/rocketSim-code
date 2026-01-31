@@ -2,6 +2,12 @@
 
 #include "GLFW/glfw3.h"
 
+#include "helpers/physics.hpp"
+#include "Integrator.hpp"
+#include "types.hpp"
+#include <algorithm>
+#include <thread>
+
 Simulation::Simulation(const SimulationBuilder& builder)
 	: _time(0), _dt(1E-3), _configPath(builder.configPath)
 {
@@ -11,10 +17,6 @@ Simulation::Simulation(const SimulationBuilder& builder)
 }
 
 Simulation::~Simulation() {
-	// order of destruction matters here
-	_components.clear();
-	_behaviorManagers.clear();
-
 	glfwDestroyWindow(_openGLContext);
 }
 
@@ -28,11 +30,6 @@ const std::filesystem::path& Simulation::getConfigPath() const noexcept
 	return _configPath;
 }
 
-std::vector<std::unique_ptr<Component>>& Simulation::getComponents() noexcept
-{
-	return _components;
-}
-
 double Simulation::getTime() const noexcept
 {
 	return _time;
@@ -42,7 +39,6 @@ double Simulation::getDT() const noexcept {
 	return _dt;
 }
 
-
 #ifdef OpenGLRendering
 GLFWwindow* Simulation::getOpenGLContext() const noexcept {
 	assert(_openGLContext && "OpenGL context not created");
@@ -51,31 +47,23 @@ GLFWwindow* Simulation::getOpenGLContext() const noexcept {
 #endif
 
 void Simulation::update() {
-	for (auto& [_, manager] : _behaviorManagers) {
-		manager->update();
+	//can be parallelized later
+	//update phase then late update phase to allow for interdependent calculations
+	for (auto [id, integrator] : _integrators) {
+		integrator.update(*this, id);
+	}
+	for (auto [id, integrator] : _integrators) {
+		integrator.lateUpdate(*this, id);
 	}
 	_time += _dt;
 }
 
-Component& Simulation::addComponent(std::unique_ptr<Component>&& component) {
-	_components.push_back(std::move(component));
-	return *_components.back();
+EntityContainer& Simulation::getEntityContainer() noexcept
+{
+	return _entities;
 }
 
-void Simulation::removeComponent(const ID::UUID& id)
+IntegratorContainer<RK4Integrator>& Simulation::getIntegratorContainer() noexcept
 {
-	static_assert(sizeof(ID::UUID) == sizeof(unsigned long long), "ID::GlobaleID size mismatch");
-	assert([&]() {
-		for (const auto& comp : _components) {
-			if (comp->getID().getUUID() == id)
-				return true;
-		}
-		return false;
-	}() && "Simulation::removeComponent: No component with the given ID exists in the simulation");
-
-	std::erase_if(_components,
-		[&id](const std::unique_ptr<Component>& comp) {
-			return comp->getID().getUUID() == id;
-		}
-	);
+	return _integrators;
 }

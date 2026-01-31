@@ -78,6 +78,8 @@ void OpenGL::App::startup()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
+    ImGui_ImplOpenGL3_CreateFontsTexture();
+
     clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 }
 
@@ -106,6 +108,9 @@ bool App::update() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+
+    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+
 
     double simRunTime = std::chrono::duration<double>(std::chrono::steady_clock::now() - simStart).count();
     if (simulation != nullptr) {
@@ -141,7 +146,6 @@ bool App::update() {
 
     glfwSwapBuffers(window);
     glFinish();
-
 	return true;
 }
 

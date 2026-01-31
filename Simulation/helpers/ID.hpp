@@ -45,15 +45,15 @@ class IDview {
 public:
 	IDview() = default;
 	IDview(const ID& id)
-		: _id(&id)
+		: _id(id)
 	{}
 
-	const ID::UUID& getUUID() const noexcept { return _id->_id; }
-	const String& getName() const noexcept { return _id->_name; }
-	const ID::ID_T& getLocalID() const noexcept { return _id->_localID; }
+	const ID::UUID& getUUID() const noexcept { return _id._id; }
+	const String& getName() const noexcept { return _id._name; }
+	const ID::ID_T& getLocalID() const noexcept { return _id._localID; }
 
 private:
-	const ID* _id;
+	const ID& _id;
 };
 
 bool operator==(const ID& l, const ID& r);

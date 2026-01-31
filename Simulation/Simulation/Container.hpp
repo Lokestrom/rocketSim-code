@@ -2,11 +2,11 @@
 #include <thread>
 #include <memory>
 
-#include "Simulation.hpp"
+#include "ECS/Simulation.hpp"
 #include "RenderingCache.hpp"
 #include "CommandQueue.hpp"
 
-#include "Simulation/behaviors/model3D.hpp"
+#include <iostream>
 
 class SimulationContainer {
 public:
@@ -14,7 +14,7 @@ public:
 
 	SimulationContainer(const SimulationBuilder& builder)
 		: simulation(std::make_unique<Simulation>(builder)), simThread(&SimulationContainer::simulationStart, this),
-		running(true), commandQueue(*simulation)
+		running(true), commandQueue(*this)
 	{
 	}
 
@@ -37,7 +37,6 @@ public:
 		return commandQueue;
 	}
 
-	//TODO: remove this
 	Simulation& getSimulation() noexcept {
 		return *simulation;
 	}
@@ -49,7 +48,7 @@ private:
 	}
 
 	void loop() {
-		float nextLoggTime = 0;
+		float nextLogTime = 0;
 		while (running) {
 			commandQueue.popCommands();
 			if (renderingCache.isFull()) {
@@ -57,9 +56,9 @@ private:
 				std::this_thread::yield();
 				continue;
 			}
-			if (simulation->getTime() >= nextLoggTime) {
+			if (simulation->getTime() >= nextLogTime) {
 				writeToCach();
-				nextLoggTime += 1/60;
+				nextLogTime += 1.f/60.f;
 			}
 			simulation->update();
 		}
@@ -68,18 +67,18 @@ private:
 	void writeToCach() {
 		RenderingCache::FrameData frameData;
 		frameData.time = simulation->getTime();
-		auto& model3DBehaviorManager = simulation->getBehaviorManagerSafe<Model3D>();
 
-		for (const auto& comp : simulation->getComponents()) {
-			if (!model3DBehaviorManager.getBehaviors().contains(comp->getID().getUUID()))
-				continue;
-			GPU::Model3D& model = model3DBehaviorManager.getModel3D(comp->getID().getUUID());
-			RenderingCache::FrameData::ComponentData componentData{
-				.id = comp->getID().getUUID(),
-				.transform = comp->getTransformMat4(),
+		for (auto [id, pos, ori, scale, vel, angMom, model] : DataView<Position, Orientation, Scale, Velosity, AngularMomentum, Model3D>()) {
+			frameData.components.emplace_back(RenderingCache::FrameData::ComponentData{
+				.id = id,
+				.position = pos,
+				.orientation = ori,
+				.scale = scale,
+				.velocity = vel,
+				.angularMomentum = angMom,
+				//breaks when adding more models and a relocation happens
 				.model = &model
-			};
-			frameData.components.push_back(componentData);
+				});
 		}
 
 		renderingCache.addFrameData(frameData);

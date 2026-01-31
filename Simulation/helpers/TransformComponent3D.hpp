@@ -16,12 +16,12 @@ public:
 public:
 	TransformComponent3D() = default;
 	TransformComponent3D(Vector3 translation, Quaternion rotation);
-	TransformComponent3D(Vector3 translation, Quaternion rotation, const Vector<std::shared_ptr<TransformComponent3D>>& parentTransformComponents);
+	TransformComponent3D(Vector3 translation, Quaternion rotation, const Vector<TransformComponent3D*>& parentTransformComponents);
 
-	void addParentTransform(size_t index, std::shared_ptr<TransformComponent3D> transform) noexcept;
-	void addParentTransform(const Vector<std::shared_ptr<TransformComponent3D>>& transform) noexcept;
+	void addParentTransform(size_t index, TransformComponent3D& transform) noexcept;
+	void addParentTransform(const Vector<TransformComponent3D*>& transform) noexcept;
 
-	Vector<std::shared_ptr<TransformComponent3D>>& getParentTransforms() noexcept;
+	Vector<TransformComponent3D*>& getParentTransforms() noexcept;
 	Vector3 getTotalTranslation() const noexcept;
 	Quaternion getTotalRotation() const noexcept;
 
@@ -29,7 +29,7 @@ public:
 	glm::mat3 normalMatrix() const noexcept;
 private:
 
-	Vector<std::shared_ptr<TransformComponent3D>> _parentTransforms;
+	Vector<TransformComponent3D*> _parentTransforms;
 };
 
 class TotalTransformComponent3D

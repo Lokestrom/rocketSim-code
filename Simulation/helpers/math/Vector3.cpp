@@ -15,23 +15,17 @@ size_t std::hash<Vector3>::operator()(Vector3 const& vertex) const {
 	return seed;
 }
 
-Vector3::Vector3() : x(0), y(0), z(0) {}
-
-Vector3::Vector3(ld x, ld y, ld z)
+Vector3::Vector3(ld x, ld y, ld z) noexcept
 	: x(x),
 	y(y),
 	z(z)
 {}
 
-/*operators*/
-Vector3 Vector3::operator=(const Vector3& v) noexcept
-{
-	this->x = v.x;
-	this->y = v.y;
-	this->z = v.z;
-	return *this;
-}
+Vector3::Vector3(glm::vec<3, ld> v) noexcept
+	: vec(v)
+{}
 
+/*operators*/
 Vector3 operator+(Vector3 l, const Vector3& r) noexcept
 {
 	l += r;
@@ -160,7 +154,19 @@ Vector3 Vector3::null() noexcept
 	return Vector3(0, 0, 0);
 }
 
+glm::vec<3, ld>& Vector3::asGLM() noexcept {
+	return vec;
+}
+const glm::vec<3, ld>& Vector3::asGLM() const noexcept {
+	return vec;
+}
+
 /*non-member function*/
+
+glm::vec<3, ld> toGLM(const Vector3& vec) {
+	return vec.asGLM();
+}
+
 Vector3 abs(const Vector3& v) noexcept
 {
 	return { fabs(v.x), fabs(v.y), fabs(v.z) };

@@ -35,7 +35,6 @@ public:
 		{Type::Text, "text"},
 	};
 
-	static inline std::vector<Warning> list;
 	String _what;
 	String _function;
 	String _file;
@@ -87,7 +86,6 @@ public:
 
 
 
-	static inline std::vector<Error> list;
 	String _what;
 	String _function;
 	String _file;
@@ -118,3 +116,8 @@ private:
 		{recoveryType::deloadSimulation, deloadSimulation}
 	};
 };
+
+namespace ErrorHandling {
+	static std::vector<Error> errors;
+	static std::vector<Warning> warnings;
+}

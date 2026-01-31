@@ -98,13 +98,13 @@ void Rocket::update() noexcept
 	thrust(t, rt, currmMass);
 	//drag(d);
 
+	//to do integrate ridig body physics corect
 	newAcc = (t + g) / currmMass;
 	newRotationAcc = Vector3(rt.x, rt.y, rt.z);
 
 	Vector3 withoutRotationPos = -_transform->rotation.rotate(_centerOfMass);
 
-	//to do integrate ridig body physics corect
-	//_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
+	_transform->rotation += _rotationVel * timeObjects::dt + _rotationAcc * (timeObjects::dt * timeObjects::dt * 0.5);
 	_transform->rotation = _transform->rotation.normalized();
 	_rotationVel += (_rotationAcc + newRotationAcc) * (timeObjects::dt * 0.5);
 
